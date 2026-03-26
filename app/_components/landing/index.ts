@@ -1,0 +1,12 @@
+export { default as AboutCompany } from "./AboutCompany";
+export { Clients } from "./Clients";
+export { Footer } from "./Footer";
+export { Header } from "./Header";
+export { ImageSectionOne } from "./ImageSectionOne";
+export { ImageSectionTwo } from "./ImageSectionTwo";
+export { Industries } from "./Industries";
+export { Intro } from "./Intro";
+export { default as MapSection } from "./MapSection";
+export { default as QualityAssurance } from "./QualityAssurance";
+export { Services } from "./Services";
+export { VacanciesPreview } from "./VacanciesPreview";
