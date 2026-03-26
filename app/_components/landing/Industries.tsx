@@ -1,129 +1,226 @@
-import type { FC } from 'react'
+'use client'
+
+import { useEffect, useRef, useState, type FC } from 'react'
+
+const easeOut = 'cubic-bezier(0.16, 1, 0.3, 1)'
+
+const useInView = <T extends HTMLElement>(
+  options?: IntersectionObserverInit & { once?: boolean }
+) => {
+  const ref = useRef<T | null>(null)
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    const node = ref.current
+
+    if (!node) {
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry) {
+          return
+        }
+
+        if (entry.isIntersecting) {
+          setInView(true)
+
+          if (options?.once !== false) {
+            observer.unobserve(node)
+          }
+
+          return
+        }
+
+        if (options?.once === false) {
+          setInView(false)
+        }
+      },
+      {
+        root: options?.root ?? null,
+        rootMargin: options?.rootMargin ?? '-40px 0px',
+        threshold: options?.threshold ?? 0.15,
+      }
+    )
+
+    observer.observe(node)
+
+    return () => observer.disconnect()
+  }, [options?.once, options?.root, options?.rootMargin, options?.threshold])
+
+  return { ref, inView }
+}
 
 const IconEnergy: FC = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.5}
-    className="size-full"
-  >
+  <svg viewBox="0 0 48.5 48.5" fill="none" className="size-full">
     <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M13 2 4.5 13.5H12l-1 8.5 8.5-11.5H12L13 2z"
+      d="M24.25 5.5 12 26.25h9.5l-2.5 16.75L36.5 21.5H26l2-16Z"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+      strokeLinejoin="miter"
     />
   </svg>
 )
 
 const IconManufacturing: FC = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.5}
-    className="size-full"
-  >
-    <circle cx="12" cy="12" r="3" />
+  <svg viewBox="0 0 48.5 48.5" fill="none" className="size-full">
     <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M12 2v3m0 14v3M2 12h3m14 0h3m-3.22-6.78-2.12 2.12M7.34 16.66l-2.12 2.12m0-14.56 2.12 2.12m9.32 9.32 2.12 2.12"
+      d="M9 35.5V22.5l10-6v19"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M19 35.5V12.5l10-6v29"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M29 35.5v-14l10-6v20"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M6 35.5h36"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
     />
   </svg>
 )
 
 const IconOilGas: FC = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.5}
-    className="size-full"
-  >
+  <svg viewBox="0 0 48.5 48.5" fill="none" className="size-full">
     <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M12 2v6m0 0-3 3m3-3 3 3M5 22h14M7 22V12a5 5 0 0 1 10 0v10"
+      d="M24.25 6 14.25 42h20L24.25 6Z"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M18.25 24.25h12M16.25 33.25h16M10.25 42h28"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
     />
   </svg>
 )
 
 const IconFood: FC = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.5}
-    className="size-full"
-  >
+  <svg viewBox="0 0 48.5 48.5" fill="none" className="size-full">
     <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M12 2C8 2 5 6 5 10c0 3.5 2 6.5 5 7.7V22h4v-4.3c3-1.2 5-4.2 5-7.7 0-4-3-8-7-8z"
+      d="M24.25 44V16"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M24.25 20 14.25 14l-2 6 12 6"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M24.25 20 34.25 14l2 6-12 6"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="m24.25 16-6-8 6-4 6 4-6 8Z"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
     />
   </svg>
 )
 
 const IconPharma: FC = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.5}
-    className="size-full"
-  >
-    <rect x="3" y="3" width="18" height="18" rx="2" />
-    <path strokeLinecap="round" d="M12 7v10M7 12h10" />
+  <svg viewBox="0 0 48.5 48.5" fill="none" className="size-full">
+    <rect
+      x="8"
+      y="8"
+      width="32.5"
+      height="32.5"
+      rx="2"
+      stroke="currentColor"
+      strokeWidth="3"
+    />
+    <path
+      d="M18 24.25h12.5M24.25 18v12.5"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
   </svg>
 )
 
 const IconChemical: FC = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.5}
-    className="size-full"
-  >
+  <svg viewBox="0 0 48.5 48.5" fill="none" className="size-full">
     <path
-      strokeLinecap="round"
+      d="M18 6h12.5M20 6v12l-8 16.5h24.5L28.5 18V6"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
       strokeLinejoin="round"
-      d="M9 3h6M10 3v6L5 18a1 1 0 0 0 .9 1.5h12.2A1 1 0 0 0 19 18l-5-9V3"
+    />
+    <path
+      d="M12 34.5h24.5"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
     />
   </svg>
 )
 
 const IconAutomotive: FC = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.5}
-    className="size-full"
-  >
+  <svg viewBox="0 0 48.5 48.5" fill="none" className="size-full">
     <path
-      strokeLinecap="round"
+      d="M10.25 31.25h28l-3-10h-22l-3 10Z"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
       strokeLinejoin="round"
-      d="M5 17H3v-5l2-5h14l2 5v5h-2M5 17a2 2 0 1 0 4 0 2 2 0 0 0-4 0zm10 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0z"
+    />
+    <path
+      d="M6.25 31.25h8M34.25 31.25h8"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M14.25 28.25h4v6h-4zM30.25 28.25h4v6h-4z"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
     />
   </svg>
 )
 
 const IconWarehouse: FC = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={1.5}
-    className="size-full"
-  >
+  <svg viewBox="0 0 48.5 48.5" fill="none" className="size-full">
     <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M3 9.5 12 4l9 5.5V20H3V9.5z"
+      d="m8.25 16.25 16-8 16 8-16 8-16-8Z"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
     />
-    <rect x="9" y="14" width="6" height="6" />
+    <path
+      d="M8.25 16.25v18l16 8v-18"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M40.25 16.25v18l-16 8"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
   </svg>
 )
 
@@ -193,28 +290,69 @@ const INDUSTRIES: Industry[] = [
   },
 ]
 
+const DrawLine: FC<{
+  inView: boolean
+  delay: number
+  color?: string
+  thickness?: number
+}> = ({ inView, delay, color = '#0a0a0a', thickness = 3 }) => (
+  <div
+    className="absolute left-0 right-0 top-0 overflow-hidden"
+    style={{ height: thickness }}
+  >
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        backgroundColor: color,
+        transform: `scaleX(${inView ? 1 : 0})`,
+        transformOrigin: '0 50%',
+        transition: `transform 0.56s ${easeOut} ${delay}s`,
+      }}
+    />
+  </div>
+)
+
 interface RowProps {
   industry: Industry
+  index: number
 }
 
-const IndustryRow: FC<RowProps> = ({ industry }) => {
+const IndustryRow: FC<RowProps> = ({ industry, index }) => {
   const { num, name, description, icon: Icon } = industry
+  const { ref, inView } = useInView<HTMLDivElement>({
+    once: false,
+    rootMargin: '-48px 0px',
+    threshold: 0.18,
+  })
+  const rowDelay = index * 0.04
 
   return (
-    <div className="group flex items-start gap-3.5 pb-6 sm:gap-3.5 lg:grid lg:grid-cols-[28px_calc(50%-36px)_minmax(0,1fr)_97px] lg:gap-x-3.5">
-      <div className="w-7 shrink-0 border-t-[3px] border-[#737373] pt-5">
+    <div
+      ref={ref}
+      className="group flex items-start gap-3.5 pb-6 sm:gap-3.5 lg:grid lg:grid-cols-[28px_calc(50%-36px)_minmax(0,1fr)_97px] lg:gap-x-3.5"
+      style={{
+        opacity: inView ? 1 : 0,
+        transform: inView ? 'translate3d(0, 0, 0)' : 'translate3d(0, 16px, 0)',
+        transition: `opacity 0.58s ${easeOut} ${rowDelay}s, transform 0.58s ${easeOut} ${rowDelay}s`,
+      }}
+    >
+      <div className="relative w-7 shrink-0 pt-5">
+        <DrawLine inView={inView} delay={rowDelay + 0.08} color="#737373" />
         <span className="block text-xl font-semibold leading-none text-[#737373]">
           {num}
         </span>
       </div>
 
-      <div className="hidden w-[220px] shrink-0 border-t-[3px] border-[#0a0a0a] pt-5 sm:block md:w-[280px] lg:w-auto">
+      <div className="relative hidden w-[220px] shrink-0 overflow-hidden pt-5 sm:block md:w-[280px] lg:w-auto">
+        <DrawLine inView={inView} delay={rowDelay + 0.12} />
         <span className="block text-xl font-semibold leading-none text-[#0a0a0a]">
           {name}
         </span>
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col gap-6 border-t-[3px] border-[#0a0a0a] pt-5 lg:w-auto lg:flex-none">
+      <div className="relative flex min-w-0 flex-1 flex-col gap-6 pt-5 lg:w-auto lg:flex-none">
+        <DrawLine inView={inView} delay={rowDelay + 0.16} />
         <span className="block text-xl font-semibold leading-none text-[#0a0a0a] sm:hidden">
           {name}
         </span>
@@ -236,7 +374,8 @@ const IndustryRow: FC<RowProps> = ({ industry }) => {
         </div>
       </div>
 
-      <div className="shrink-0 border-t-[3px] border-[#0a0a0a] pt-5 lg:w-[97px]">
+      <div className="relative shrink-0 pt-5 lg:w-[97px]">
+        <DrawLine inView={inView} delay={rowDelay + 0.2} />
         <div className="flex size-[60px] items-center justify-center rounded-[4px] bg-[#fafafa] sm:size-[80px] lg:size-[97px]">
           <div className="size-6 text-[#0a0a0a] sm:size-7 lg:size-[48px]">
             <Icon />
@@ -248,24 +387,53 @@ const IndustryRow: FC<RowProps> = ({ industry }) => {
 }
 
 export function Industries() {
+  const { ref: headerRef, inView: headerInView } = useInView<HTMLDivElement>({
+    once: false,
+    rootMargin: '-60px 0px',
+    threshold: 0.2,
+  })
+  const { ref: countRef, inView: countInView } = useInView<HTMLDivElement>({
+    once: false,
+    rootMargin: '-40px 0px',
+    threshold: 0.2,
+  })
+
   return (
-    <section className="w-full bg-white">
+    <section id="industries" data-nav-section className="w-full bg-white">
       <div className="mx-auto w-full max-w-[1440px] px-4 py-16 sm:px-8 md:px-[60px] lg:py-20">
         <div className="mb-10 lg:mb-12 lg:pl-[calc(50%+20px)]">
-          <h2 className="text-[clamp(44px,7vw,84px)] font-semibold leading-[1.14] tracking-[-0.02em] text-[#0a0a0a]">
-            Industries
-            <br />
-            We Support
-          </h2>
+          <div
+            ref={headerRef}
+            style={{
+              opacity: headerInView ? 1 : 0,
+              transform: headerInView
+                ? 'translate3d(0, 0, 0)'
+                : 'translate3d(0, 34px, 0)',
+              transition: `opacity 0.88s ${easeOut}, transform 0.88s ${easeOut}`,
+            }}
+          >
+            <h2 className="text-[clamp(44px,7vw,84px)] font-semibold leading-[1.14] tracking-[-0.02em] text-[#0a0a0a]">
+              Industries
+              <br />
+              We Support
+            </h2>
+          </div>
         </div>
 
         <div className="flex flex-col">
-          {INDUSTRIES.map((industry) => (
-            <IndustryRow key={industry.num} industry={industry} />
+          {INDUSTRIES.map((industry, index) => (
+            <IndustryRow key={industry.num} industry={industry} index={index} />
           ))}
         </div>
 
-        <div className="mt-2 flex justify-end pr-0 lg:justify-start lg:pl-[calc(50%+20px)]">
+        <div
+          ref={countRef}
+          className="mt-2 flex justify-end pr-0 lg:justify-start lg:pl-[calc(50%+20px)]"
+          style={{
+            opacity: countInView ? 1 : 0,
+            transition: 'opacity 0.7s ease-out',
+          }}
+        >
           <p className="text-xl font-medium leading-[1.4] text-[#737373]">
             {INDUSTRIES.length.toString().padStart(2, '0')} Industries
           </p>

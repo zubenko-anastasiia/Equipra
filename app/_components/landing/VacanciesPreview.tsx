@@ -1,5 +1,58 @@
+'use client'
+
 import type { FC } from 'react'
 import Image from 'next/image'
+import { useEffect, useRef, useState } from 'react'
+
+const easeOut = 'cubic-bezier(0.16, 1, 0.3, 1)'
+
+const useInView = <T extends HTMLElement>(
+  options?: IntersectionObserverInit & { once?: boolean }
+) => {
+  const ref = useRef<T | null>(null)
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    const node = ref.current
+
+    if (!node) {
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry) {
+          return
+        }
+
+        if (entry.isIntersecting) {
+          setInView(true)
+
+          if (options?.once !== false) {
+            observer.unobserve(node)
+          }
+
+          return
+        }
+
+        if (options?.once === false) {
+          setInView(false)
+        }
+      },
+      {
+        root: options?.root ?? null,
+        rootMargin: options?.rootMargin ?? '-40px 0px',
+        threshold: options?.threshold ?? 0.15,
+      }
+    )
+
+    observer.observe(node)
+
+    return () => observer.disconnect()
+  }, [options?.once, options?.root, options?.rootMargin, options?.threshold])
+
+  return { ref, inView }
+}
 
 interface VacancyCard {
   department: string
@@ -121,9 +174,29 @@ const HowToApply: FC = () => (
 )
 
 export function VacanciesPreview() {
+  const { ref: headerRef, inView: headerInView } = useInView<HTMLDivElement>({
+    once: false,
+    rootMargin: '-60px 0px',
+    threshold: 0.2,
+  })
+
   return (
-    <section className="w-full overflow-hidden bg-white py-16 lg:py-20">
-      <div className="relative mx-auto mb-8 w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px]">
+    <section
+      id="career"
+      data-nav-section
+      className="w-full overflow-hidden bg-white py-16 lg:py-20"
+    >
+      <div
+        ref={headerRef}
+        className="relative mx-auto mb-8 w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px]"
+        style={{
+          opacity: headerInView ? 1 : 0,
+          transform: headerInView
+            ? 'translate3d(0, 0, 0)'
+            : 'translate3d(0, 34px, 0)',
+          transition: `opacity 0.88s ${easeOut}, transform 0.88s ${easeOut}`,
+        }}
+      >
         <div className="mb-3 lg:absolute lg:left-[calc(50%+20px)] lg:-top-6">
           <div className="flex items-center gap-3">
             <span

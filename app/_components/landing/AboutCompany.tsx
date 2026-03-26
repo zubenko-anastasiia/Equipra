@@ -133,7 +133,11 @@ function StructuralIllustration() {
 
 export default function AboutSection() {
   return (
-    <section className="relative w-full overflow-hidden bg-white">
+    <section
+      id="about-us"
+      data-nav-section
+      className="relative w-full overflow-hidden bg-white"
+    >
       <div className="mx-auto w-full max-w-[1440px] px-4 py-16 sm:px-8 md:px-[60px] lg:py-24">
         {/* Decorative structural drawing — desktop only, absolutely positioned */}
 

@@ -1,24 +1,13 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
 import { useState } from 'react'
-
-type NavItem = {
-  label: string
-  href: string
-  key: string
-}
-
-const navItems: NavItem[] = [
-  { label: 'About Us', href: '#about-us', key: 'about' },
-  { label: 'Industries', href: '#industries', key: 'industries' },
-  { label: 'Services', href: '#services', key: 'services' },
-  { label: 'Projects', href: '#projects', key: 'projects' },
-  { label: 'Contact', href: '#contact', key: 'contact' },
-  { label: 'Career', href: '#career', key: 'career' },
-  { label: 'Blog', href: '#blog', key: 'blog' },
-]
+import {
+  SECTION_NAV_ITEMS,
+  scrollToSectionWithOffset,
+  useSectionNavigation,
+  type SectionNavItem,
+} from './useSectionNavigation'
 
 type HeaderProps = {
   activeItem?: string
@@ -37,48 +26,122 @@ function LogoMark() {
   )
 }
 
-export function Header({ activeItem = 'industries' }: HeaderProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+function DesktopNavButton({
+  item,
+  isActive,
+  hasActiveItem,
+  onClick,
+}: {
+  item: SectionNavItem
+  isActive: boolean
+  hasActiveItem: boolean
+  onClick: () => void
+}) {
+  const [hovered, setHovered] = useState(false)
+  const allowHoverState = !hasActiveItem || isActive
+  const showUnderline = isActive || (allowHoverState && hovered)
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-white/80 backdrop-blur-md">
+    <button
+      type="button"
+      aria-current={isActive ? 'page' : undefined}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="relative inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-sm font-medium tracking-[-0.01em] transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500 active:scale-[0.97]"
+      style={{
+        color:
+          isActive
+            ? '#22c55e'
+            : allowHoverState && hovered
+              ? '#0a0a0a'
+              : 'rgba(9, 9, 11, 0.7)',
+      }}
+    >
+      <span>{item.label}</span>
+      <span className="absolute inset-x-3 bottom-1 h-0.5 overflow-hidden rounded-full">
+        <span
+          className="block h-full w-full rounded-full bg-green-500"
+          style={{
+            transform: showUnderline
+              ? 'translate3d(0, 0, 0)'
+              : 'translate3d(-102%, 0, 0)',
+            transition: 'transform 0.24s cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
+        />
+      </span>
+    </button>
+  )
+}
+
+function MobileNavButton({
+  item,
+  isActive,
+  onClick,
+}: {
+  item: SectionNavItem
+  isActive: boolean
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      aria-current={isActive ? 'page' : undefined}
+      className={`flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500 active:scale-[0.98] ${
+        isActive ? 'text-green-500' : 'text-zinc-950/70 hover:text-black'
+      }`}
+      onClick={onClick}
+    >
+      <span>{item.label}</span>
+      <span
+        className={`h-2 w-2 rounded-full transition-colors duration-200 ${
+          isActive ? 'bg-green-500' : 'bg-zinc-300'
+        }`}
+      />
+    </button>
+  )
+}
+
+export function Header({ activeItem }: HeaderProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const initialItem = SECTION_NAV_ITEMS.find((item) => item.key === activeItem)
+  const { activeSectionId, scrollToSection } = useSectionNavigation({
+    sectionIds: SECTION_NAV_ITEMS.map((item) => item.id),
+  })
+  const currentSectionId = activeSectionId || initialItem?.id || ''
+  const hasActiveItem = Boolean(currentSectionId)
+
+  return (
+    <header
+      data-site-header
+      className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-white/80 backdrop-blur-md"
+    >
       <div className="mx-auto flex min-h-16 w-full max-w-[1440px] items-center gap-3 px-4 sm:px-8 md:px-[60px]">
-        <Link
-          href="#top"
+        <button
+          type="button"
           className="group flex shrink-0 items-center rounded-md py-3 pr-2 transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500 active:scale-[0.98]"
           aria-label="Equipra home"
+          onClick={() => scrollToSectionWithOffset('top')}
         >
           <LogoMark />
-        </Link>
+        </button>
 
         <nav
           aria-label="Primary"
           className="hidden min-w-0 flex-1 items-center justify-center lg:flex"
         >
           <ul className="flex flex-wrap items-center justify-center gap-1 xl:gap-1.5">
-            {navItems.map((item) => {
-              const isActive = item.key === activeItem
+            {SECTION_NAV_ITEMS.map((item) => {
+              const isActive = item.id === currentSectionId
 
               return (
                 <li key={item.key}>
-                  <Link
-                    href={item.href}
-                    aria-current={isActive ? 'page' : undefined}
-                    className={`group relative inline-flex cursor-pointer items-center justify-center rounded-md px-3 py-2 text-sm font-medium tracking-[-0.01em] transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500 active:scale-[0.97] ${
-                      isActive
-                        ? 'text-black'
-                        : 'text-zinc-950/70 hover:bg-zinc-950/[0.04] hover:text-black'
-                    }`}
-                  >
-                    <span>{item.label}</span>
-                    <span
-                      className={`absolute inset-x-3 bottom-1 h-0.5 rounded-full bg-green-500 transition-all duration-200 ${
-                        isActive
-                          ? 'scale-100 opacity-100'
-                          : 'scale-75 opacity-0 group-hover:scale-100 group-hover:opacity-100'
-                      }`}
-                    />
-                  </Link>
+                  <DesktopNavButton
+                    item={item}
+                    isActive={isActive}
+                    hasActiveItem={hasActiveItem}
+                    onClick={() => scrollToSection(item.id)}
+                  />
                 </li>
               )
             })}
@@ -137,28 +200,19 @@ export function Header({ activeItem = 'industries' }: HeaderProps) {
           className="mx-auto w-full max-w-[1440px] px-4 py-3 sm:px-8 md:px-[60px]"
         >
           <ul className="space-y-1">
-            {navItems.map((item) => {
-              const isActive = item.key === activeItem
+            {SECTION_NAV_ITEMS.map((item) => {
+              const isActive = item.id === currentSectionId
 
               return (
                 <li key={item.key}>
-                  <Link
-                    href={item.href}
-                    aria-current={isActive ? 'page' : undefined}
-                    className={`flex cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500 active:scale-[0.98] ${
-                      isActive
-                        ? 'bg-green-500/10 text-black'
-                        : 'text-zinc-950/70 hover:bg-zinc-950/[0.04] hover:text-black'
-                    }`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <span>{item.label}</span>
-                    <span
-                      className={`h-2 w-2 rounded-full transition-colors duration-200 ${
-                        isActive ? 'bg-green-500' : 'bg-zinc-300'
-                      }`}
-                    />
-                  </Link>
+                  <MobileNavButton
+                    item={item}
+                    isActive={isActive}
+                    onClick={() => {
+                      scrollToSection(item.id)
+                      setIsMenuOpen(false)
+                    }}
+                  />
                 </li>
               )
             })}
