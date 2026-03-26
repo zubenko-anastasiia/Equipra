@@ -1,19 +1,14 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import MapSectionClient from "./MapSectionClient";
-
-const geoUrl = "https://unpkg.com/world-atlas@2/countries-110m.json";
 
 type GeographyData = Record<string, unknown>;
 
 async function getGeographyData(): Promise<GeographyData> {
-  const response = await fetch(geoUrl, {
-    cache: "force-cache",
-  });
+  const filePath = path.join(process.cwd(), "public", "countries-110m.json");
+  const fileContents = await readFile(filePath, "utf8");
 
-  if (!response.ok) {
-    throw new Error(`Failed to load world map data: ${response.status}`);
-  }
-
-  return response.json();
+  return JSON.parse(fileContents) as GeographyData;
 }
 
 export default async function MapSection() {

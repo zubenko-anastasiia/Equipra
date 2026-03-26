@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is the Equipra landing site built with [Next.js](https://nextjs.org).
 
-## Getting Started
+## Local development
 
-First, run the development server:
+Install dependencies, then start the dev server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Production checks
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+./node_modules/.bin/tsc --noEmit
+npm run build
+```
 
-## Learn More
+## Deploying on Vercel
 
-To learn more about Next.js, take a look at the following resources:
+This project is ready to deploy on Vercel as a standard Next.js app.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Recommended environment variables:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `NEXT_PUBLIC_SITE_URL`
+  Use your production domain, for example `https://equipra.com`.
 
-## Deploy on Vercel
+Notes:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- On Vercel, metadata falls back to `VERCEL_PROJECT_PRODUCTION_URL` automatically if `NEXT_PUBLIC_SITE_URL` is not set.
+- `next.config.ts` pins `turbopack.root` to this project directory so builds do not inherit the wrong root when multiple lockfiles exist nearby.
+- `app/robots.ts` and `app/sitemap.ts` are included for production crawlers.
+- The project currently builds through webpack (`next build --webpack`), which is the verified production path for this repo.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deployment steps:
+
+1. Import the repository into Vercel.
+2. Keep the framework preset as `Next.js`.
+3. Add `NEXT_PUBLIC_SITE_URL` in Project Settings for production.
+4. Deploy.

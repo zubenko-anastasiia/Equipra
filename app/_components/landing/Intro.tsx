@@ -156,7 +156,7 @@ export function Intro() {
             <span
               className="whitespace-nowrap text-center leading-6 text-black"
               style={{
-                fontFamily: "'Geist', sans-serif",
+                fontFamily: 'var(--font-geist-sans)',
                 fontSize: '16px',
                 fontWeight: 500,
               }}

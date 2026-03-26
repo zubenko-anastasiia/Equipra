@@ -8,6 +8,7 @@ import {
   Marker,
   Graticule,
   Line,
+  createCoordinates,
 } from "@vnedyalk0v/react19-simple-maps";
 
 type GeographyData = Record<string, unknown>;
@@ -18,69 +19,69 @@ const projectSites = [
     city: "Louvain-la-Neuve",
     countryName: "Belgium",
     yearLabel: "2024",
-    coordinates: [4.6144, 50.6683] as [number, number],
+    coordinates: createCoordinates(4.6144, 50.6683),
   },
   {
     name: "Vandemoortele Polska",
     city: "Kutno",
     countryName: "Poland",
     yearLabel: "2024",
-    coordinates: [19.3641, 52.2306] as [number, number],
+    coordinates: createCoordinates(19.3641, 52.2306),
   },
   {
     name: "Paname Brewing Company",
     city: "Paris",
     countryName: "France",
     yearLabel: "2024",
-    coordinates: [2.3522, 48.8566] as [number, number],
+    coordinates: createCoordinates(2.3522, 48.8566),
   },
   {
     name: "TZF Polfa",
     city: "Warsaw",
     countryName: "Poland",
     yearLabel: "2024-2025",
-    coordinates: [21.0122, 52.2297] as [number, number],
+    coordinates: createCoordinates(21.0122, 52.2297),
   },
   {
     name: "Ciments Calcia",
     city: "Airvault",
     countryName: "France",
     yearLabel: "2024",
-    coordinates: [-0.1364, 46.8259] as [number, number],
+    coordinates: createCoordinates(-0.1364, 46.8259),
   },
   {
     name: "Industrial Steel",
     city: "Radomsko",
     countryName: "Poland",
     yearLabel: "2024",
-    coordinates: [19.4514, 51.0674] as [number, number],
+    coordinates: createCoordinates(19.4514, 51.0674),
   },
   {
     name: "Steico",
     city: "Osla",
     countryName: "Poland",
     yearLabel: "2024",
-    coordinates: [15.7167, 51.3167] as [number, number],
+    coordinates: createCoordinates(15.7167, 51.3167),
   },
   {
     name: "BV Gulpener Bierbrouwerij",
     city: "Gulpen",
     countryName: "Netherlands",
     yearLabel: "2022-2025",
-    coordinates: [5.8889, 50.8158] as [number, number],
+    coordinates: createCoordinates(5.8889, 50.8158),
   },
   {
     name: "Repsol",
     city: "Sines",
     countryName: "Portugal",
     yearLabel: "2026",
-    coordinates: [-8.8698, 37.9561] as [number, number],
+    coordinates: createCoordinates(-8.8698, 37.9561),
   },
 ];
 
 const centralHub = {
   name: "Poland Hub",
-  coordinates: [19.1451, 51.9194] as [number, number],
+  coordinates: createCoordinates(19.1451, 51.9194),
 };
 
 const borderColor = "#1CC14B";
@@ -120,7 +121,7 @@ export default function MapSectionClient({
               projection="geoMercator"
               projectionConfig={{
                 scale: 940,
-                center: [2.5, 50.2],
+                center: createCoordinates(2.5, 50.2),
               }}
               style={{
                 width: "100%",
