@@ -54,39 +54,26 @@ const useInView = <T extends HTMLElement>(
 }
 
 const IconEnergy: FC = () => (
-  <svg viewBox="0 0 48.5 48.5" fill="none" className="size-full">
+  <svg viewBox="0 0 30 42" fill="none" className="size-full">
     <path
-      d="M24.25 5.5 12 26.25h9.5l-2.5 16.75L36.5 21.5H26l2-16Z"
+      d="M17.8382 0.844971L2.8382 22.845H12.8382L8.8382 40.845L26.8382 16.845H15.8382L17.8382 0.844971Z"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
-      strokeLinejoin="miter"
     />
   </svg>
 )
 
 const IconManufacturing: FC = () => (
-  <svg viewBox="0 0 48.5 48.5" fill="none" className="size-full">
+  <svg viewBox="0 0 49 49" fill="none" className="size-full">
     <path
-      d="M9 35.5V22.5l10-6v19"
+      d="M24 8H28L29 12L33 14L37 12L39 16L36 19L37 23L41 24V28L37 29L36 33L39 36L37 39L33 37L29 38L28 42H24L23 38L19 37L15 39L13 36L16 33L15 29L11 28V24L15 23L16 19L13 16L15 13L19 15L23 14L24 8Z"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
     />
     <path
-      d="M19 35.5V12.5l10-6v29"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="square"
-    />
-    <path
-      d="M29 35.5v-14l10-6v20"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="square"
-    />
-    <path
-      d="M6 35.5h36"
+      d="M22 21L26 19L30 21L31 25L30 29L26 31L22 29L21 25L22 21Z"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
@@ -95,15 +82,27 @@ const IconManufacturing: FC = () => (
 )
 
 const IconOilGas: FC = () => (
-  <svg viewBox="0 0 48.5 48.5" fill="none" className="size-full">
+  <svg viewBox="0 0 49 49" fill="none" className="size-full">
     <path
-      d="M24.25 6 14.25 42h20L24.25 6Z"
+      d="M24 6L14 42H34L24 6Z"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
     />
     <path
-      d="M18.25 24.25h12M16.25 33.25h16M10.25 42h28"
+      d="M18 24H30"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M16 33H32"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M10 42H38"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
@@ -112,27 +111,39 @@ const IconOilGas: FC = () => (
 )
 
 const IconFood: FC = () => (
-  <svg viewBox="0 0 48.5 48.5" fill="none" className="size-full">
+  <svg viewBox="0 0 49 49" fill="none" className="size-full">
     <path
-      d="M24.25 44V16"
+      d="M24 44V16"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
     />
     <path
-      d="M24.25 20 14.25 14l-2 6 12 6"
+      d="M24 20L14 14L12 20L24 26"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
     />
     <path
-      d="M24.25 20 34.25 14l2 6-12 6"
+      d="M24 20L34 14L36 20L24 26"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
     />
     <path
-      d="m24.25 16-6-8 6-4 6 4-6 8Z"
+      d="M24 28L14 22L12 28L24 34"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M24 28L34 22L36 28L24 34"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M24 16L18 8L24 4L30 8L24 16Z"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
@@ -141,18 +152,21 @@ const IconFood: FC = () => (
 )
 
 const IconPharma: FC = () => (
-  <svg viewBox="0 0 48.5 48.5" fill="none" className="size-full">
-    <rect
-      x="8"
-      y="8"
-      width="32.5"
-      height="32.5"
-      rx="2"
+  <svg viewBox="0 0 49 49" fill="none" className="size-full">
+    <path
+      d="M24 8L36 16V32L24 40L12 32V16L24 8Z"
       stroke="currentColor"
       strokeWidth="3"
+      strokeLinecap="square"
     />
     <path
-      d="M18 24.25h12.5M24.25 18v12.5"
+      d="M18 24H30"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M24 18V30"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
@@ -161,16 +175,21 @@ const IconPharma: FC = () => (
 )
 
 const IconChemical: FC = () => (
-  <svg viewBox="0 0 48.5 48.5" fill="none" className="size-full">
+  <svg viewBox="0 0 49 49" fill="none" className="size-full">
     <path
-      d="M18 6h12.5M20 6v12l-8 16.5h24.5L28.5 18V6"
+      d="M18 6V18L8 38V42H40V38L30 18V6"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
-      strokeLinejoin="round"
     />
     <path
-      d="M12 34.5h24.5"
+      d="M16 6H32"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M12 34H36"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
@@ -179,22 +198,45 @@ const IconChemical: FC = () => (
 )
 
 const IconAutomotive: FC = () => (
-  <svg viewBox="0 0 48.5 48.5" fill="none" className="size-full">
+  <svg viewBox="0 0 49 49" fill="none" className="size-full">
     <path
-      d="M10.25 31.25h28l-3-10h-22l-3 10Z"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="square"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M6.25 31.25h8M34.25 31.25h8"
+      d="M4 32V22H12L18 12H36L42 22H44V32"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
     />
     <path
-      d="M14.25 28.25h4v6h-4zM30.25 28.25h4v6h-4z"
+      d="M4 32H14"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M22 32H34"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M42 32H44"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M14 29H18V35H14V29Z"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M34 29H38V35H34V29Z"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M28 14V22"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
@@ -203,21 +245,33 @@ const IconAutomotive: FC = () => (
 )
 
 const IconWarehouse: FC = () => (
-  <svg viewBox="0 0 48.5 48.5" fill="none" className="size-full">
+  <svg viewBox="0 0 49 49" fill="none" className="size-full">
     <path
-      d="m8.25 16.25 16-8 16 8-16 8-16-8Z"
+      d="M8 16L24 8L40 16L24 24L8 16Z"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
     />
     <path
-      d="M8.25 16.25v18l16 8v-18"
+      d="M8 16V34L24 42V24"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
     />
     <path
-      d="M40.25 16.25v18l-16 8"
+      d="M40 16V34L24 42"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M16 12V30"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="square"
+    />
+    <path
+      d="M32 12V30"
       stroke="currentColor"
       strokeWidth="3"
       strokeLinecap="square"
@@ -337,6 +391,18 @@ interface RowProps {
   index: number
 }
 
+const SectionLabel: FC = () => (
+  <div className="flex items-center gap-3">
+    <span
+      aria-hidden="true"
+      className="block h-1 w-8 shrink-0 rounded-full bg-[#1cc14b]"
+    />
+    <span className="font-mono text-[11px] font-normal uppercase tracking-[1.8px] text-[#737373]">
+      We work across regulate
+    </span>
+  </div>
+)
+
 const IndustryRow: FC<RowProps> = ({ industry, index }) => {
   const { num, name, description, icon: Icon, photoSrc, photoAlt } = industry
   const { ref, inView } = useInView<HTMLDivElement>({
@@ -433,6 +499,9 @@ export function Industries() {
               transition: `opacity 0.88s ${easeOut}, transform 0.88s ${easeOut}`,
             }}
           >
+            <div className="mb-5">
+              <SectionLabel />
+            </div>
             <h2 className="text-[clamp(44px,7vw,84px)] font-semibold leading-[1.14] tracking-[-0.02em] text-[#0a0a0a]">
               Industries
               <br />

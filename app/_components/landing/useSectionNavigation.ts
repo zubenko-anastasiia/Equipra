@@ -86,6 +86,33 @@ export function useSectionNavigation(
   const [activeSectionId, setActiveSectionId] = useState('')
   const visibleSectionIdsRef = useRef<Set<string>>(new Set())
   const rafRef = useRef<number | null>(null)
+  const pendingSectionIdRef = useRef<string | null>(null)
+  const pendingSectionTimeoutRef = useRef<number | null>(null)
+
+  const clearPendingSection = useCallback(() => {
+    pendingSectionIdRef.current = null
+
+    if (pendingSectionTimeoutRef.current !== null) {
+      window.clearTimeout(pendingSectionTimeoutRef.current)
+      pendingSectionTimeoutRef.current = null
+    }
+  }, [])
+
+  const markPendingSection = useCallback(
+    (sectionId: string) => {
+      pendingSectionIdRef.current = sectionId
+
+      if (pendingSectionTimeoutRef.current !== null) {
+        window.clearTimeout(pendingSectionTimeoutRef.current)
+      }
+
+      pendingSectionTimeoutRef.current = window.setTimeout(() => {
+        pendingSectionIdRef.current = null
+        pendingSectionTimeoutRef.current = null
+      }, 1600)
+    },
+    []
+  )
 
   const evaluateActiveSection = useCallback(() => {
     const headerOffset = getHeaderOffset(headerSelector)
@@ -125,6 +152,7 @@ export function useSectionNavigation(
         return current
       }
 
+      replaceHash(nextActiveSectionId || null)
       return nextActiveSectionId
     })
   }, [focusLineRatio, headerSelector, sectionIds])
@@ -156,6 +184,10 @@ export function useSectionNavigation(
 
           if (entry.isIntersecting) {
             visibleSectionIdsRef.current.add(sectionId)
+
+            if (pendingSectionIdRef.current === sectionId) {
+              clearPendingSection()
+            }
           } else {
             visibleSectionIdsRef.current.delete(sectionId)
           }
@@ -176,11 +208,16 @@ export function useSectionNavigation(
 
     const handleScroll = () => {
       if (visibleSectionIdsRef.current.size === 0) {
+        if (pendingSectionIdRef.current) {
+          return
+        }
+
         setActiveSectionId((current) => {
           if (!current) {
             return current
           }
 
+          replaceHash(null)
           return ''
         })
         return
@@ -211,6 +248,7 @@ export function useSectionNavigation(
       observer.disconnect()
       window.removeEventListener('scroll', handleScroll)
       window.removeEventListener('resize', handleResize)
+      clearPendingSection()
 
       if (rafRef.current !== null) {
         window.cancelAnimationFrame(rafRef.current)
@@ -220,10 +258,11 @@ export function useSectionNavigation(
 
   const scrollToSection = useCallback(
     (sectionId: string) => {
+      markPendingSection(sectionId)
       scrollToSectionWithOffset(sectionId, { headerSelector })
       setActiveSectionId(sectionId)
     },
-    [headerSelector]
+    [headerSelector, markPendingSection]
   )
 
   return {

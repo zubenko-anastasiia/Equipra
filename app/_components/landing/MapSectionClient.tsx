@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ComposableMap,
   Geographies,
@@ -86,37 +86,134 @@ const centralHub = {
 
 const borderColor = "#1CC14B";
 const baseFill = "#E9F8EC";
+const highlightedFill = "#D7F3DF";
 const polandFill = "rgba(28, 193, 75, 0.5)";
 const hoverFill = "#DDF3E2";
 const polandHoverFill = "rgba(28, 193, 75, 0.58)";
+const selectedStroke = "#16A34A";
+const selectedPolandStroke = "#15803D";
+const defaultCountryPriority = "Poland";
+
+function FileIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      className="size-4 shrink-0"
+      aria-hidden="true"
+    >
+      <path
+        d="M5 1.5h4.6L12.5 4.4V14a.5.5 0 0 1-.5.5H5A1.5 1.5 0 0 1 3.5 13V3A1.5 1.5 0 0 1 5 1.5Z"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.5 1.5V4a.5.5 0 0 0 .5.5h2.5"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M5.8 7.2h4.4M5.8 9.5h4.4M5.8 11.8h3.1"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
 
 export default function MapSectionClient({
   geographyData,
 }: {
   geographyData: GeographyData;
 }) {
-  const [activeCountry, setActiveCountry] = useState<string | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
   const highlightedCountries = useMemo(
     () => new Set(projectSites.map((project) => project.countryName)),
     []
   );
+  const activeCountry = selectedCountry ?? hoveredCountry;
+  const sortedProjects = useMemo(() => {
+    return [...projectSites].sort((leftProject, rightProject) => {
+      const leftPriority =
+        leftProject.countryName === defaultCountryPriority ? 0 : 1;
+      const rightPriority =
+        rightProject.countryName === defaultCountryPriority ? 0 : 1;
+
+      if (leftPriority !== rightPriority) {
+        return leftPriority - rightPriority;
+      }
+
+      const countryComparison = leftProject.countryName.localeCompare(
+        rightProject.countryName
+      );
+
+      if (countryComparison !== 0) {
+        return countryComparison;
+      }
+
+      const cityComparison = leftProject.city.localeCompare(rightProject.city);
+
+      if (cityComparison !== 0) {
+        return cityComparison;
+      }
+
+      return leftProject.name.localeCompare(rightProject.name);
+    });
+  }, []);
+
+  useEffect(() => {
+    const node = sectionRef.current;
+
+    if (!node) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) {
+          setSelectedCountry(null);
+          setHoveredCountry(null);
+        }
+      },
+      {
+        threshold: 0.12,
+      }
+    );
+
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, []);
+
   const visibleProjects = useMemo(() => {
-    if (!activeCountry) return projectSites;
-    return projectSites.filter((project) => project.countryName === activeCountry);
-  }, [activeCountry]);
+    if (!activeCountry) {
+      return sortedProjects;
+    }
+
+    return sortedProjects.filter(
+      (project) => project.countryName === activeCountry
+    );
+  }, [activeCountry, sortedProjects]);
 
   return (
     <section
+      id="projects"
+      data-nav-section
+      ref={sectionRef}
       className="relative overflow-hidden bg-background pb-12 pt-16 lg:pb-16 lg:pt-20"
       style={{ backgroundColor: "rgba(28, 193, 75, 0.01)" }}
     >
-      <div className="w-full">
-        <div
-          className="relative w-full"
-          style={{ backgroundColor: "rgba(28, 193, 75, 0.01)" }}
-        >
-          <div className="h-[600px] overflow-hidden">
+      <div
+        className="relative w-full"
+        style={{ backgroundColor: "rgba(28, 193, 75, 0.01)" }}
+      >
+        <div className="h-[600px] overflow-hidden">
             <ComposableMap
               projection="geoMercator"
               projectionConfig={{
@@ -133,6 +230,7 @@ export default function MapSectionClient({
               <Graticule
                 stroke="rgba(28, 193, 75, 0.1)"
                 strokeWidth={0.6}
+                pointerEvents="none"
               />
 
               <Geographies geography={geographyData as never}>
@@ -143,9 +241,36 @@ export default function MapSectionClient({
                     const isHighlightedCountry =
                       highlightedCountries.has(countryName);
                     const isPoland = countryName === "Poland";
+                    const isSelectedCountry = selectedCountry === countryName;
+                    const isActiveCountry = activeCountry === countryName;
                     const geographyKey =
                       String((geo.id ?? countryName) || `geo-${index}`) +
                       `-${index}`;
+                    const currentFill = isPoland
+                      ? isActiveCountry
+                        ? polandHoverFill
+                        : polandFill
+                      : isActiveCountry
+                        ? hoverFill
+                        : isHighlightedCountry
+                          ? highlightedFill
+                          : baseFill;
+                    const currentStroke = isSelectedCountry
+                      ? isPoland
+                        ? selectedPolandStroke
+                        : selectedStroke
+                      : borderColor;
+                    const currentStrokeWidth = isSelectedCountry
+                      ? isPoland
+                        ? 2.2
+                        : 1.8
+                      : isPoland
+                        ? isActiveCountry
+                          ? 2
+                          : 1.9
+                        : isActiveCountry
+                          ? 1.25
+                          : 1.1;
 
                     return (
                       <Geography
@@ -154,39 +279,64 @@ export default function MapSectionClient({
                         strokeLinejoin="round"
                         strokeLinecap="round"
                         className="cursor-pointer"
-                        fill={isPoland ? polandFill : baseFill}
-                        stroke={borderColor}
-                        strokeWidth={isPoland ? 1.9 : 1.1}
+                        fill={currentFill}
+                        stroke={currentStroke}
+                        strokeWidth={currentStrokeWidth}
                         onMouseEnter={() => {
-                          setActiveCountry(countryName);
+                          if (!selectedCountry) {
+                            setHoveredCountry(countryName);
+                          }
+                        }}
+                        onMouseMove={() => {
+                          if (!selectedCountry && hoveredCountry !== countryName) {
+                            setHoveredCountry(countryName);
+                          }
+                        }}
+                        onFocus={() => {
+                          if (!selectedCountry) {
+                            setHoveredCountry(countryName);
+                          }
+                        }}
+                        onClick={() => {
+                          setSelectedCountry(countryName);
+                          setHoveredCountry(countryName);
                         }}
                         onMouseLeave={() => {
-                          setActiveCountry(null);
+                          if (!selectedCountry) {
+                            setHoveredCountry((currentCountry) =>
+                              currentCountry === countryName ? null : currentCountry
+                            );
+                          }
                         }}
                         style={{
                           default: {
-                            fill: isPoland ? polandFill : baseFill,
-                            stroke: borderColor,
-                            strokeWidth: isPoland ? 1.9 : 1.1,
+                            fill: currentFill,
+                            stroke: currentStroke,
+                            strokeWidth: currentStrokeWidth,
                             outline: "none",
                             vectorEffect: "non-scaling-stroke",
                             opacity: 1,
+                            transition:
+                              "fill 180ms ease, stroke 180ms ease, stroke-width 180ms ease, opacity 180ms ease",
+                            cursor: "pointer",
                           },
                           hover: {
-                            fill: isPoland ? polandHoverFill : hoverFill,
-                            stroke: borderColor,
-                            strokeWidth: isPoland ? 2 : 1.2,
+                            fill: currentFill,
+                            stroke: currentStroke,
+                            strokeWidth: currentStrokeWidth,
                             outline: "none",
                             vectorEffect: "non-scaling-stroke",
                             opacity: 1,
+                            cursor: "pointer",
                           },
                           pressed: {
-                            fill: isPoland ? polandHoverFill : hoverFill,
-                            stroke: borderColor,
-                            strokeWidth: isPoland ? 2 : 1.2,
+                            fill: currentFill,
+                            stroke: currentStroke,
+                            strokeWidth: currentStrokeWidth,
                             outline: "none",
                             vectorEffect: "non-scaling-stroke",
                             opacity: 1,
+                            cursor: "pointer",
                           },
                         }}
                       />
@@ -204,6 +354,7 @@ export default function MapSectionClient({
                   strokeWidth={1}
                   strokeLinecap="round"
                   strokeDasharray="3 6"
+                  pointerEvents="none"
                 />
               ))}
 
@@ -211,6 +362,7 @@ export default function MapSectionClient({
                 <Marker
                   key={project.name}
                   coordinates={project.coordinates}
+                  pointerEvents="none"
                 >
                   <>
                     <circle r={7} fill="rgba(28, 193, 75, 0.12)" />
@@ -221,6 +373,7 @@ export default function MapSectionClient({
 
               <Marker
                 coordinates={centralHub.coordinates}
+                pointerEvents="none"
               >
                 <>
                   <circle r={14} fill="rgba(28, 193, 75, 0.12)" />
@@ -231,7 +384,8 @@ export default function MapSectionClient({
             </ComposableMap>
           </div>
 
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 px-4  sm:px-8 md:px-[60px]">
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10">
+          <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px]">
             <div className="inline-flex max-w-[634px] justify-center bg-white">
               <div className="text-4xl font-medium leading-10 text-neutral-950">
                 From Europe to beyond, Equipra transforms complex challenges
@@ -239,58 +393,106 @@ export default function MapSectionClient({
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="absolute inset-x-0 bottom-0 z-10 px-4 pb-4 sm:px-8 md:px-[60px]">
-            <div className="w-[320px] max-w-full overflow-hidden rounded-[6px] border border-[#1CC14B] bg-[#fafafa] p-3 shadow-[0_18px_40px_rgba(12,32,21,0.1)]">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-mono text-[11px] font-normal uppercase leading-4 tracking-[1.8px] text-[#737373]">
-                    Project locations
-                  </p>
-                  <p className="mt-2 max-w-[220px] text-sm font-normal leading-5 text-[#0a0a0a]">
-                    {activeCountry
-                      ? `Showing projects in ${activeCountry}`
-                      : "Hover a highlighted country to filter the list."}
-                  </p>
-                </div>
-                <div className="flex size-10 items-center justify-center rounded-[6px] bg-[#f5f5f5] text-sm font-medium leading-none text-[#737373]">
-                  {visibleProjects.length}
-                </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10">
+          <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px]">
+            <div className="flex flex-col gap-4 pb-4 lg:flex-row lg:items-end lg:justify-between">
+              <div className="pointer-events-auto flex flex-wrap gap-2">
+                <a
+                  href="#contact"
+                  className="inline-flex h-9 shrink-0 items-center px-[20px] gap-1 rounded-[2px] border border-[#1cc14b] bg-[#1cc14b] no-underline transition-colors hover:bg-[#18ad43]"
+                >
+                 
+
+                  <span
+                    className="whitespace-nowrap text-center leading-6 text-white"
+                    style={{
+                      fontFamily: "var(--font-geist-sans)",
+                      fontSize: "16px",
+                      fontWeight: 500,
+                    }}
+                  >
+                    Request a Quote
+                  </span>
+                </a>
+
+                <a
+                  href="#contact"
+                  className="inline-flex h-9 w-[177px] shrink-0 items-center gap-1 rounded-[2px] border border-[#e5e5e5] bg-white px-[9px] no-underline transition-colors hover:bg-neutral-100"
+                >
+                  <span className="relative flex h-4 w-6 shrink-0 items-center justify-center text-black">
+                    <FileIcon />
+                  </span>
+
+                  <span
+                    className="whitespace-nowrap text-center leading-6 text-black"
+                    style={{
+                      fontFamily: "var(--font-geist-sans)",
+                      fontSize: "16px",
+                      fontWeight: 500,
+                    }}
+                  >
+                   View our catalog
+                  </span>
+                </a>
               </div>
 
-              <div className="mt-4 max-h-[240px] overflow-y-auto pr-1">
-                {visibleProjects.length > 0 ? (
-                  <div className="space-y-2">
-                    {visibleProjects.map((project) => (
-                      <div
-                        key={`${project.name}-${project.city}`}
-                        className="bg-white px-3 py-3 transition-colors hover:bg-[#f0f0f0]"
-                      >
+              <div className="flex justify-start lg:justify-end">
+                <div className="pointer-events-auto w-[320px] max-w-full overflow-hidden rounded-[2px] border border-[#1CC14B] bg-[#fafafa] p-3 shadow-[0_18px_40px_rgba(12,32,21,0.1)]">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-mono text-[11px] font-normal uppercase leading-4 tracking-[1.8px] text-[#737373]">
+                        Project locations
+                      </p>
+                      {/* <p className="mt-2 max-w-[220px] text-sm font-normal leading-5 text-[#0a0a0a]">
+                      {selectedCountry
+                        ? `Showing projects in ${selectedCountry}. Select another country or scroll away to reset.`
+                        : activeCountry
+                          ? `Previewing projects in ${activeCountry}. Click a country to keep it selected.`
+                          : "Hover any country, then click to keep that country selected."}
+                    </p> */}
+                    </div>
+                    <div className="flex size-10 items-center justify-center rounded-[6px] bg-[#f5f5f5] text-sm font-medium leading-none text-[#737373]">
+                      {visibleProjects.length}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 max-h-[240px] overflow-y-auto pr-1">
+                    {visibleProjects.length > 0 ? (
+                      <div className="space-y-2">
+                        {visibleProjects.map((project) => (
+                          <div
+                            key={`${project.name}-${project.city}`}
+                            className="bg-white px-3 py-3 transition-colors hover:bg-[#f0f0f0]"
+                          >
+                            <p className="font-mono text-[11px] font-normal uppercase leading-4 tracking-[1.8px] text-[#737373]">
+                              {project.countryName}
+                            </p>
+                            <p className="mt-[14px] text-[22px] font-semibold leading-none text-[#0a0a0a]">
+                              {project.name}
+                            </p>
+                            <p className="mt-3 text-sm font-normal leading-5 text-[#0a0a0a]">
+                              {project.city}
+                            </p>
+                            <p className="mt-1 text-sm font-normal leading-5 text-[#737373]">
+                              {project.yearLabel}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-white px-3 py-4">
                         <p className="font-mono text-[11px] font-normal uppercase leading-4 tracking-[1.8px] text-[#737373]">
-                          {project.countryName}
-                        </p>
-                        <p className="mt-[14px] text-[22px] font-semibold leading-none text-[#0a0a0a]">
-                          {project.name}
+                          {activeCountry ?? "No country selected"}
                         </p>
                         <p className="mt-3 text-sm font-normal leading-5 text-[#0a0a0a]">
-                          {project.city}
-                        </p>
-                        <p className="mt-1 text-sm font-normal leading-5 text-[#737373]">
-                          {project.yearLabel}
+                          No projects yet
                         </p>
                       </div>
-                    ))}
+                    )}
                   </div>
-                ) : (
-                  <div className="bg-white px-3 py-4">
-                    <p className="font-mono text-[11px] font-normal uppercase leading-4 tracking-[1.8px] text-[#737373]">
-                      {activeCountry ?? "No country selected"}
-                    </p>
-                    <p className="mt-3 text-sm font-normal leading-5 text-[#0a0a0a]">
-                      No projects yet
-                    </p>
-                  </div>
-                )}
+                </div>
               </div>
             </div>
           </div>

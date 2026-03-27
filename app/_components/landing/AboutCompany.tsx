@@ -213,12 +213,12 @@ function StructuralIllustration({ inView }: { inView: boolean }) {
       aria-hidden="true"
       className="pointer-events-none absolute left-0 top-0 h-[498px] w-[489px] mix-blend-multiply"
       style={{
-        opacity: inView ? 0.42 : 0,
+        opacity: inView ? 1 : 0,
         transform: inView ? "translateY(0)" : "translateY(24px)",
         transition: `transform 1.2s ${easeOut} 0.22s, opacity 1.5s ease-out 0.4s`,
       }}
     >
-      <div className="h-full w-full -scale-y-100 rotate-180">
+      <div className="h-full w-full ">
         <div className="relative h-full w-full overflow-hidden">
           <Image
             src="/img2.webp"

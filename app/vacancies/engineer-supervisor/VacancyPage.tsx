@@ -35,7 +35,7 @@ function BackButton() {
   return (
     <Link
       href="/#career"
-      className="inline-flex items-center gap-1.5 rounded-full border border-neutral-300 bg-white px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-400 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400"
+      className="inline-flex items-center gap-1.5 rounded-[2px] border border-neutral-300 bg-[] px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-400 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400"
     >
       <svg
         width="16"
@@ -228,20 +228,20 @@ export default function VacancyPage() {
                 Send your CV and a short description of your most relevant project
                 supervision experience (1-2 paragraphs) to
               </p>
-              <div className="mt-4 flex flex-col items-start gap-4 border-t border-neutral-200 pt-5 sm:flex-row sm:items-center">
-                <button
-                  type="button"
-                  className="rounded-lg bg-neutral-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-500 focus-visible:ring-offset-2"
-                >
-                  Apply here
-                </button>
-                <a
-                  href="mailto:office@equipra.eu"
-                  className="text-sm text-neutral-500 underline-offset-2 hover:underline"
-                >
-                  office@equipra.eu
-                </a>
-              </div>
+               <div className="flex items-center gap-[9px]">
+        <a
+          href="mailto:sales@equipra.eu"
+          className="inline-flex h-8 items-center justify-center whitespace-nowrap rounded-[2px] bg-[#171717] px-[10px] py-2 text-sm font-medium leading-5 text-[#fafafa] transition-opacity hover:opacity-80"
+        >
+          Apply here
+        </a>
+
+        <div className="h-[18px] w-px bg-[#e5e5e5]" aria-hidden="true" />
+
+        <span className="whitespace-nowrap text-sm font-normal leading-none text-[#0a0a0a]">
+          sales@equipra.eu
+        </span>
+      </div>
             </article>
 
             <aside className="hidden w-52 shrink-0 lg:block">

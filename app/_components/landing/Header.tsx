@@ -1,10 +1,9 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import {
-  SECTION_NAV_ITEMS,
   scrollToSectionWithOffset,
   useSectionNavigation,
   type SectionNavItem,
@@ -13,6 +12,22 @@ import {
 type HeaderProps = {
   activeItem?: string
 }
+
+type HeaderNavItem = SectionNavItem & {
+  href?: string
+  isRoute?: boolean
+}
+
+const HEADER_NAV_ITEMS: HeaderNavItem[] = [
+  { id: 'about-us', key: 'about', label: 'About Us' },
+  { id: 'industries', key: 'industries', label: 'Industries' },
+  { id: 'services', key: 'services', label: 'Services' },
+  { id: 'projects', key: 'projects', label: 'Projects' },
+  { id: 'career', key: 'career', label: 'Career' },
+  { id: 'contact', key: 'contact', label: 'Contact' },
+    { id: 'blog', key: 'blog', label: 'Blog', href: '/blog', isRoute: true },
+
+]
 
 function LogoMark() {
   return (
@@ -108,12 +123,23 @@ export function Header({ activeItem }: HeaderProps) {
   const pathname = usePathname()
   const router = useRouter()
   const isHomePage = pathname === '/'
-  const initialItem = SECTION_NAV_ITEMS.find((item) => item.key === activeItem)
+  const isBlogPage = pathname === '/blog' || pathname.startsWith('/blog/')
+  const initialItem = HEADER_NAV_ITEMS.find((item) => item.key === activeItem)
   const { activeSectionId, scrollToSection } = useSectionNavigation({
-    sectionIds: isHomePage ? SECTION_NAV_ITEMS.map((item) => item.id) : [],
+    sectionIds: isHomePage
+      ? HEADER_NAV_ITEMS.filter((item) => !item.isRoute).map((item) => item.id)
+      : [],
   })
-  const currentSectionId = activeSectionId || initialItem?.id || ''
+  const currentSectionId = isBlogPage
+    ? 'blog'
+    : isHomePage
+      ? activeSectionId || initialItem?.id || ''
+      : ''
   const hasActiveItem = Boolean(currentSectionId)
+
+  useEffect(() => {
+    setIsMenuOpen(false)
+  }, [pathname])
 
   const handleHomeNavigation = () => {
     if (isHomePage) {
@@ -124,13 +150,28 @@ export function Header({ activeItem }: HeaderProps) {
     router.push('/')
   }
 
-  const handleSectionNavigation = (sectionId: string) => {
+  const handleNavigation = (item: HeaderNavItem) => {
+    if (item.isRoute && item.href) {
+      if (typeof window !== 'undefined' && window.location.hash) {
+        window.history.replaceState(
+          window.history.state,
+          '',
+          `${window.location.pathname}${window.location.search}`
+        )
+      }
+
+      router.push(item.href)
+      return
+    }
+
+    const sectionId = item.id
+
     if (isHomePage) {
       scrollToSection(sectionId)
       return
     }
 
-    router.push(`/#${sectionId}`)
+    window.location.assign(`/#${sectionId}`)
   }
 
   return (
@@ -153,7 +194,7 @@ export function Header({ activeItem }: HeaderProps) {
           className="hidden min-w-0 flex-1 items-center justify-center lg:flex"
         >
           <ul className="flex flex-wrap items-center justify-center gap-1 xl:gap-1.5">
-            {SECTION_NAV_ITEMS.map((item) => {
+            {HEADER_NAV_ITEMS.map((item) => {
               const isActive = item.id === currentSectionId
 
               return (
@@ -162,7 +203,7 @@ export function Header({ activeItem }: HeaderProps) {
                     item={item}
                     isActive={isActive}
                     hasActiveItem={hasActiveItem}
-                    onClick={() => handleSectionNavigation(item.id)}
+                    onClick={() => handleNavigation(item)}
                   />
                 </li>
               )
@@ -222,7 +263,7 @@ export function Header({ activeItem }: HeaderProps) {
           className="mx-auto w-full max-w-[1440px] px-4 py-3 sm:px-8 md:px-[60px]"
         >
           <ul className="space-y-1">
-            {SECTION_NAV_ITEMS.map((item) => {
+            {HEADER_NAV_ITEMS.map((item) => {
               const isActive = item.id === currentSectionId
 
               return (
@@ -231,7 +272,7 @@ export function Header({ activeItem }: HeaderProps) {
                     item={item}
                     isActive={isActive}
                     onClick={() => {
-                      handleSectionNavigation(item.id)
+                      handleNavigation(item)
                       setIsMenuOpen(false)
                     }}
                   />

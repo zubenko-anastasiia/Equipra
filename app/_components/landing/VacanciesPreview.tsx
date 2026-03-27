@@ -160,7 +160,7 @@ const HowToApply: FC = () => (
 
       <div className="flex items-center gap-[9px]">
         <a
-          href="mailto:office@equipra.eu"
+          href="mailto:sales@equipra.eu"
           className="inline-flex h-8 items-center justify-center whitespace-nowrap rounded-[2px] bg-[#171717] px-[10px] py-2 text-sm font-medium leading-5 text-[#fafafa] transition-opacity hover:opacity-80"
         >
           Apply here
@@ -169,7 +169,7 @@ const HowToApply: FC = () => (
         <div className="h-[18px] w-px bg-[#e5e5e5]" aria-hidden="true" />
 
         <span className="whitespace-nowrap text-sm font-normal leading-none text-[#0a0a0a]">
-          office@equipra.eu
+          sales@equipra.eu
         </span>
       </div>
     </div>

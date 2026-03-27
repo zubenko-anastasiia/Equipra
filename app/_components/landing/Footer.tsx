@@ -527,11 +527,11 @@ const ContactForm: FC = () => {
               <div className="flex flex-col gap-1">
                 <MonoLabel>Email</MonoLabel>
                 <a
-                  href="mailto:office@equipra.eu"
+                  href="mailto:sales@equipra.eu"
                   className="text-sm font-semibold leading-5 text-[#0a0a0a]"
                   style={{ transition: 'opacity 0.18s ease' }}
                 >
-                  office@equipra.eu
+                  sales@equipra.eu
                 </a>
               </div>
               <div className="flex flex-col gap-1">

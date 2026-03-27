@@ -189,6 +189,14 @@ const ServiceMedia: FC<{
           <source src={videoSrc} type="video/mp4" />
         </video>
       ) : null}
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          boxShadow: 'inset 0 0 34px 14px rgba(244, 244, 245, 0.96)',
+        }}
+      />
     </div>
   )
 }

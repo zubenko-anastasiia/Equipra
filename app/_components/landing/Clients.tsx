@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import type { FC } from 'react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -78,6 +79,7 @@ const DrawLine: FC<{
 
 interface LogoItem {
   alt: string
+  src: string
   w: number
   h: number
   blendDifference?: boolean
@@ -90,13 +92,26 @@ interface ReferenceItem {
 }
 
 const LOGOS: LogoItem[] = [
-  { alt: "Kellogg's", w: 119, h: 40 },
-  { alt: 'Steico', w: 82, h: 40 },
-  { alt: 'Boccard', w: 172, h: 40 },
-  { alt: 'Paname', w: 135, h: 30, blendDifference: true },
-  { alt: 'TZ Polfa', w: 137, h: 30 },
-  { alt: 'DS Smith', w: 59, h: 40 },
-  { alt: 'Holmen', w: 170, h: 26, blendDifference: true },
+  { alt: "Kellogg's", src: '/kellogg-logo-black.png.svg', w: 119, h: 40 },
+  { alt: 'Steico', src: '/steico.svg', w: 82, h: 40 },
+  { alt: 'Boccard', src: '/boccard.svg', w: 172, h: 40 },
+  {
+    alt: 'Paname',
+    src: '/logo-paname.svg',
+    w: 135,
+    h: 30,
+    blendDifference: true,
+  },
+  { alt: 'TZ Polfa', src: '/tzf_logo_dark%201.svg', w: 137, h: 30 },
+  { alt: 'DS Smith', src: '/ds-logo-color.svg', w: 59, h: 40 },
+  {
+    alt: 'Holmen',
+    src: '/Holmen%20white.svg',
+    w: 170,
+    h: 26,
+    blendDifference: true,
+  },
+  { alt: 'Repsol', src: '/repsol.svg', w: 126, h: 32 },
 ]
 
 const REFERENCES: ReferenceItem[] = [
@@ -166,36 +181,35 @@ const LogoPlaceholder: FC<{ logo: LogoItem; index: number }> = ({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className={[
-        'relative flex shrink-0 items-center justify-center rounded-sm border border-[#e5e5e5] bg-[#fafafa] px-4',
+        'relative flex min-w-0 flex-1 items-center justify-center',
         logo.blendDifference ? 'mix-blend-difference' : '',
       ]
         .filter(Boolean)
         .join(' ')}
       style={{
-        width: Math.max(logo.w + 32, 110),
-        height: Math.max(logo.h + 28, 68),
+        height: 40,
         opacity: inView ? 1 : 0,
         transform: inView
           ? `translate3d(${hovered ? 4 : 0}px, 0, 0)`
           : 'translate3d(0, 22px, 0)',
         transition: `opacity 0.62s ${easeOut} ${index * 0.05}s, transform 0.62s ${easeOut} ${index * 0.05}s, box-shadow 0.22s ease`,
-        boxShadow: hovered ? '0 0 0 1.5px rgba(28,193,75,0.55) inset' : 'none',
       }}
-      aria-label={`${logo.alt} logo placeholder`}
+      aria-label={`${logo.alt} logo`}
     >
-      <div className="pointer-events-none flex select-none flex-col items-center gap-1">
-        <div className="h-5 w-12 rounded-full border border-[#d4d4d4]" />
-        <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#a3a3a3]">
-          {logo.alt}
-        </span>
-      </div>
+      <Image
+        src={logo.src}
+        alt={logo.alt}
+        width={logo.w}
+        height={logo.h}
+        className="pointer-events-none h-auto max-h-full w-full select-none object-contain"
+      />
     </div>
   )
 }
 
 const LogoStrip: FC = () => (
-  <div className="scrollbar-none w-full overflow-x-auto">
-    <div className="flex w-full items-center gap-10 px-4 py-2 lg:justofy-between">
+  <div className="w-full px-4">
+    <div className="flex w-full flex-wrap items-center gap-x-6 gap-y-8 py-2 sm:gap-x-8 lg:flex-nowrap lg:gap-10">
       {LOGOS.map((logo, index) => (
         <LogoPlaceholder key={logo.alt} logo={logo} index={index} />
       ))}
@@ -276,7 +290,7 @@ export function Clients() {
 
   return (
     <section
-      id="projects"
+      id="clients"
       data-nav-section
       className="w-full overflow-hidden bg-white py-16 lg:py-24"
     >
