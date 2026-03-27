@@ -61,6 +61,9 @@ interface ServiceItem {
   imageSrc: string
   videoSrc?: string
   videoScale?: number
+  softenVideoBackground?: boolean
+  softenVideoEdges?: boolean
+  softenVideoBottomEdge?: boolean
 }
 
 const SERVICES: ServiceItem[] = [
@@ -87,6 +90,7 @@ const SERVICES: ServiceItem[] = [
     ],
     imageSrc: '/img5.webp',
     videoSrc: '/vid5.mp4',
+    softenVideoEdges: true,
   },
   {
     num: '03',
@@ -99,6 +103,7 @@ const SERVICES: ServiceItem[] = [
     ],
     imageSrc: '/img6.webp',
     videoSrc: '/vid6.mp4',
+    softenVideoBackground: true,
   },
   {
     num: '04',
@@ -124,6 +129,7 @@ const SERVICES: ServiceItem[] = [
     imageSrc: '/img8.webp',
     videoSrc: '/vid8.mp4',
     videoScale: 0.89,
+    softenVideoBottomEdge: true,
   },
 ]
 
@@ -151,7 +157,19 @@ const ServiceMedia: FC<{
   alt: string
   showVideo: boolean
   videoScale?: number
-}> = ({ imageSrc, videoSrc, alt, showVideo, videoScale = 1 }) => {
+  softenVideoBackground?: boolean
+  softenVideoEdges?: boolean
+  softenVideoBottomEdge?: boolean
+}> = ({
+  imageSrc,
+  videoSrc,
+  alt,
+  showVideo,
+  videoScale = 1,
+  softenVideoBackground = false,
+  softenVideoEdges = false,
+  softenVideoBottomEdge = false,
+}) => {
   const [videoReady, setVideoReady] = useState(false)
 
   useEffect(() => {
@@ -180,7 +198,7 @@ const ServiceMedia: FC<{
           preload="none"
           poster={imageSrc}
           onCanPlay={() => setVideoReady(true)}
-          className="absolute inset-0 h-full w-full object-contain transition-opacity duration-200"
+          className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-200 ${softenVideoBackground ? '[filter:brightness(0.985)_saturate(0.96)]' : ''}`}
           style={{
             opacity: videoReady ? 1 : 0,
             transform: `scale(${videoScale})`,
@@ -188,6 +206,37 @@ const ServiceMedia: FC<{
         >
           <source src={videoSrc} type="video/mp4" />
         </video>
+      ) : null}
+
+      {showVideo && softenVideoBackground ? (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_62%,rgba(250,250,250,0.24)_100%)]"
+        />
+      ) : null}
+
+      {showVideo && softenVideoEdges ? (
+        <>
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 left-0 w-[40%] bg-gradient-to-r from-[#fafafa]/90 via-[#fafafa]/38 to-transparent [filter:blur(8px)]"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 w-[40%] bg-gradient-to-l from-[#fafafa]/90 via-[#fafafa]/38 to-transparent [filter:blur(8px)]"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_64%,rgba(250,250,250,0.16)_82%,rgba(250,250,250,0.55)_100%)] [filter:blur(6px)]"
+          />
+        </>
+      ) : null}
+
+      {showVideo && softenVideoBottomEdge ? (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[8%] bg-gradient-to-t from-[#fafafa]/45 via-[#fafafa]/18 to-transparent [filter:blur(4px)]"
+        />
       ) : null}
 
       <div
@@ -229,7 +278,17 @@ const ServiceRow: FC<{
   index: number
   desktopHoverMediaEnabled: boolean
 }> = ({ service, index, desktopHoverMediaEnabled }) => {
-  const { num, title, bullets, imageSrc, videoSrc, videoScale } = service
+  const {
+    num,
+    title,
+    bullets,
+    imageSrc,
+    videoSrc,
+    videoScale,
+    softenVideoBackground,
+    softenVideoEdges,
+    softenVideoBottomEdge,
+  } = service
   const [hovered, setHovered] = useState(false)
   const { ref, inView } = useInView<HTMLDivElement>({
     rootMargin: '-48px 0px',
@@ -319,6 +378,9 @@ const ServiceRow: FC<{
               alt={title}
               showVideo={showVideo}
               videoScale={videoScale}
+              softenVideoBackground={softenVideoBackground}
+              softenVideoEdges={softenVideoEdges}
+              softenVideoBottomEdge={softenVideoBottomEdge}
             />
           </div>
         </div>
