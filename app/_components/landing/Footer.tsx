@@ -25,7 +25,7 @@ const NAV_LINKS = [
   { label: 'Projects', href: '#projects' },
   { label: 'Contact', href: '#contact' },
   { label: 'Career', href: '#career' },
-  { label: 'Blog', href: '#blog' },
+  { label: 'Blog', href: '/blog' },
 ]
 
 const CERTIFICATIONS = ['ISO 14001', 'ISO 45001', 'ISO 9001', 'SCC']
@@ -682,7 +682,7 @@ export function Footer() {
           <div className="mb-3 h-px w-full bg-[#e5e5e5]" />
 
           <AnimatedSection delay={0.18}>
-            <div className="flex w-full items-end justify-between pb-3">
+            <div className="flex w-full items-end justify-between">
               <p className="text-xs font-normal leading-4 text-[#0a0a0a]">
                 © 2026 Equipra. + HD™ Design Büro. All rights reserved.
               </p>

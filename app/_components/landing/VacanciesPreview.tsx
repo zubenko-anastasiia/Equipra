@@ -2,6 +2,7 @@
 
 import type { FC } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
 const easeOut = 'cubic-bezier(0.16, 1, 0.3, 1)'
@@ -60,36 +61,38 @@ interface VacancyCard {
   href: string
 }
 
+const VACANCY_DETAIL_HREF = '/vacancies/engineer-supervisor'
+
 const VACANCIES: VacancyCard[] = [
   {
     department: 'SITE EXECUTION',
     title: 'Mechanical Fitter',
-    href: '#',
+    href: VACANCY_DETAIL_HREF,
   },
   {
     department: 'PROJECT DELIVERY',
-    title: 'Site Supervisor',
-    href: '#',
+    title: 'Engineer Supervisor',
+    href: VACANCY_DETAIL_HREF,
   },
   {
     department: 'WELDING OPERATIONS',
     title: 'Certified Welder',
-    href: '#',
+    href: VACANCY_DETAIL_HREF,
   },
   {
     department: 'WELDING OPERATIONS',
     title: 'Certified Welder',
-    href: '#',
+    href: VACANCY_DETAIL_HREF,
   },
   {
     department: 'WELDING OPERATIONS',
     title: 'Certified Welder',
-    href: '#',
+    href: VACANCY_DETAIL_HREF,
   },
   {
     department: 'WELDING OPERATIONS',
     title: 'Certified Welder',
-    href: '#',
+    href: VACANCY_DETAIL_HREF,
   },
 ]
 
@@ -111,7 +114,7 @@ const ArrowIcon: FC = () => (
 )
 
 const RoleCard: FC<VacancyCard> = ({ department, title, href }) => (
-  <a
+  <Link
     href={href}
     className="group relative flex h-[355px] min-w-[220px] flex-1 flex-col justify-between overflow-hidden bg-[#fafafa] p-3 transition-colors hover:bg-[#f0f0f0] lg:min-w-0"
   >
@@ -138,7 +141,7 @@ const RoleCard: FC<VacancyCard> = ({ department, title, href }) => (
         {title}
       </span>
     </div>
-  </a>
+  </Link>
 )
 
 const HowToApply: FC = () => (
@@ -175,7 +178,7 @@ const HowToApply: FC = () => (
 
 export function VacanciesPreview() {
   const { ref: headerRef, inView: headerInView } = useInView<HTMLDivElement>({
-    once: false,
+    once: true,
     rootMargin: '-60px 0px',
     threshold: 0.2,
   })

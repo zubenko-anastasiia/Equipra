@@ -2,7 +2,84 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
+const easeOut = "cubic-bezier(0.16, 1, 0.3, 1)";
+
+const useInView = <T extends HTMLElement>(
+  options?: IntersectionObserverInit & { once?: boolean }
+) => {
+  const ref = useRef<T | null>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+
+    if (!node) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry) {
+          return;
+        }
+
+        if (entry.isIntersecting) {
+          setInView(true);
+
+          if (options?.once !== false) {
+            observer.unobserve(node);
+          }
+
+          return;
+        }
+
+        if (options?.once === false) {
+          setInView(false);
+        }
+      },
+      {
+        root: options?.root ?? null,
+        rootMargin: options?.rootMargin ?? "-80px 0px",
+        threshold: options?.threshold ?? 0.15,
+      }
+    );
+
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, [options?.once, options?.root, options?.rootMargin, options?.threshold]);
+
+  return { ref, inView };
+};
+
+function RevealLine({
+  children,
+  inView,
+  delay = 0,
+  className = "",
+}: {
+  children: ReactNode;
+  inView: boolean;
+  delay?: number;
+  className?: string;
+}) {
+  return (
+    <div className="overflow-hidden">
+      <div
+        className={className}
+        style={{
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(30px)",
+          transition: `transform 0.72s ${easeOut} ${delay}s, opacity 0.72s ${easeOut} ${delay}s`,
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
 
 function SectionLabel() {
   return (
@@ -19,13 +96,37 @@ function SectionLabel() {
   );
 }
 
-function Heading() {
+function Heading({ inView }: { inView: boolean }) {
+  const lines = [
+    "Equipra supports the industries",
+    "installations that keep production running",
+  ];
+
   return (
-    <h2 className="text-[clamp(32px,5.5vw,60px)] font-medium leading-[1.05] tracking-tight text-[#0a0a0a] lg:[text-indent:clamp(220px,23.611vw,340px)]">
-      Equipra supports the industries
-      <br className="hidden sm:block" />
-      <span className="sm:hidden"> </span>
-      installations that keep production running
+    <h2 className="text-[clamp(32px,5.5vw,60px)] font-medium leading-[1.05] tracking-tight text-[#0a0a0a]">
+      <span className="hidden sm:inline">
+        {lines.map((line, index) => (
+          <RevealLine key={line} inView={inView} delay={index * 0.07}>
+            <span
+              className={
+                index === 0
+                  ? "block lg:[text-indent:clamp(220px,23.611vw,340px)]"
+                  : "block"
+              }
+            >
+              {line}
+            </span>
+          </RevealLine>
+        ))}
+      </span>
+      <span className="sm:hidden">
+        <RevealLine inView={inView}>
+          <span>
+            Equipra supports the industries installations that keep production
+            running
+          </span>
+        </RevealLine>
+      </span>
     </h2>
   );
 }
@@ -106,11 +207,16 @@ function VideoCard() {
   );
 }
 
-function StructuralIllustration() {
+function StructuralIllustration({ inView }: { inView: boolean }) {
   return (
     <div
       aria-hidden="true"
       className="pointer-events-none absolute left-0 top-0 h-[498px] w-[489px] mix-blend-multiply"
+      style={{
+        opacity: inView ? 0.42 : 0,
+        transform: inView ? "translateY(0)" : "translateY(24px)",
+        transition: `transform 1.2s ${easeOut} 0.22s, opacity 1.5s ease-out 0.4s`,
+      }}
     >
       <div className="h-full w-full -scale-y-100 rotate-180">
         <div className="relative h-full w-full overflow-hidden">
@@ -121,6 +227,7 @@ function StructuralIllustration() {
             className="object-cover"
             sizes="489px"
           />
+          <div className="absolute inset-0 bg-[#005a1a]/60 mix-blend-lighten" />
         </div>
       </div>
     </div>
@@ -132,6 +239,10 @@ function StructuralIllustration() {
 // ---------------------------------------------------------------------------
 
 export default function AboutSection() {
+  const { ref: headerRef, inView: headerInView } = useInView<HTMLDivElement>({
+    rootMargin: "-80px 0px",
+  });
+
   return (
     <section
       id="about-us"
@@ -144,15 +255,22 @@ export default function AboutSection() {
         {/* ------------------------------------------------------------------ */}
         {/* Top label + heading                                                  */}
         {/* ------------------------------------------------------------------ */}
-        <div className="relative mb-16 flex flex-col gap-6">
+        <div ref={headerRef} className="relative mb-16 flex flex-col gap-6">
           {/* "About Company" label */}
-          <div className="lg:pl-[clamp(220px,23.611vw,340px)]">
+          <div
+            className="lg:pl-[clamp(220px,23.611vw,340px)]"
+            style={{
+              opacity: headerInView ? 1 : 0,
+              transform: headerInView ? "translateX(0)" : "translateX(-14px)",
+              transition: `transform 0.6s ${easeOut}, opacity 0.6s ${easeOut}`,
+            }}
+          >
             <SectionLabel />
           </div>
 
           {/* Heading spans full container width from this indent */}
           <div>
-            <Heading />
+            <Heading inView={headerInView} />
           </div>
         </div>
 
@@ -162,7 +280,7 @@ export default function AboutSection() {
         <div className="relative">
           <div className="flex w-full flex-col gap-10 sm:flex-row sm:gap-10 lg:ml-[calc(50%+20px)] lg:grid lg:w-[calc(50%-20px)] lg:grid-cols-[minmax(0,299px)_285px] lg:gap-10">
             <div className="-mt-[100px] lg:absolute lg:left-0 lg:top-0">
-              <StructuralIllustration />
+              <StructuralIllustration inView={headerInView} />
             </div>
             {/* Body copy column */}
             <div className="min-w-0 flex-1 sm:max-w-[299px]">

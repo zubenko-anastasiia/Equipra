@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   SECTION_NAV_ITEMS,
   scrollToSectionWithOffset,
@@ -104,12 +105,33 @@ function MobileNavButton({
 
 export function Header({ activeItem }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const pathname = usePathname()
+  const router = useRouter()
+  const isHomePage = pathname === '/'
   const initialItem = SECTION_NAV_ITEMS.find((item) => item.key === activeItem)
   const { activeSectionId, scrollToSection } = useSectionNavigation({
-    sectionIds: SECTION_NAV_ITEMS.map((item) => item.id),
+    sectionIds: isHomePage ? SECTION_NAV_ITEMS.map((item) => item.id) : [],
   })
   const currentSectionId = activeSectionId || initialItem?.id || ''
   const hasActiveItem = Boolean(currentSectionId)
+
+  const handleHomeNavigation = () => {
+    if (isHomePage) {
+      scrollToSectionWithOffset('top')
+      return
+    }
+
+    router.push('/')
+  }
+
+  const handleSectionNavigation = (sectionId: string) => {
+    if (isHomePage) {
+      scrollToSection(sectionId)
+      return
+    }
+
+    router.push(`/#${sectionId}`)
+  }
 
   return (
     <header
@@ -121,7 +143,7 @@ export function Header({ activeItem }: HeaderProps) {
           type="button"
           className="group flex shrink-0 items-center rounded-md py-3 pr-2 transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500 active:scale-[0.98]"
           aria-label="Equipra home"
-          onClick={() => scrollToSectionWithOffset('top')}
+          onClick={handleHomeNavigation}
         >
           <LogoMark />
         </button>
@@ -140,7 +162,7 @@ export function Header({ activeItem }: HeaderProps) {
                     item={item}
                     isActive={isActive}
                     hasActiveItem={hasActiveItem}
-                    onClick={() => scrollToSection(item.id)}
+                    onClick={() => handleSectionNavigation(item.id)}
                   />
                 </li>
               )
@@ -209,7 +231,7 @@ export function Header({ activeItem }: HeaderProps) {
                     item={item}
                     isActive={isActive}
                     onClick={() => {
-                      scrollToSection(item.id)
+                      handleSectionNavigation(item.id)
                       setIsMenuOpen(false)
                     }}
                   />

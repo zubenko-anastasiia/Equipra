@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useEffect, useRef, useState, type FC } from 'react'
 
 const easeOut = 'cubic-bezier(0.16, 1, 0.3, 1)'
@@ -229,6 +230,8 @@ interface Industry {
   name: string
   description: string
   icon: FC
+  photoSrc: string
+  photoAlt: string
 }
 
 const INDUSTRIES: Industry[] = [
@@ -238,6 +241,8 @@ const INDUSTRIES: Industry[] = [
     description:
       'Electrical and mechanical installation for power plants, substations, and renewable energy facilities.',
     icon: IconEnergy,
+    photoSrc: '/Energy and infastructure.webp',
+    photoAlt: 'Energy and infrastructure installation site',
   },
   {
     num: '02',
@@ -245,6 +250,8 @@ const INDUSTRIES: Industry[] = [
     description:
       'Production line commissioning, conveyor systems, and heavy machinery installation.',
     icon: IconManufacturing,
+    photoSrc: '/manufacturing.webp',
+    photoAlt: 'Manufacturing facility equipment and installation systems',
   },
   {
     num: '03',
@@ -252,6 +259,8 @@ const INDUSTRIES: Industry[] = [
     description:
       'Piping and equipment installation for refineries, offshore platforms, and gas processing plants.',
     icon: IconOilGas,
+    photoSrc: '/Oil and gas.webp',
+    photoAlt: 'Oil and gas industrial installation environment',
   },
   {
     num: '04',
@@ -259,6 +268,8 @@ const INDUSTRIES: Industry[] = [
     description:
       'Hygienic process installation and stainless steel piping for food and beverage production.',
     icon: IconFood,
+    photoSrc: '/Steel pipe.webp',
+    photoAlt: 'Stainless steel process piping for food and beverage production',
   },
   {
     num: '05',
@@ -266,6 +277,8 @@ const INDUSTRIES: Industry[] = [
     description:
       'Cleanroom installation, HVAC qualification, and process piping for pharma and biotech.',
     icon: IconPharma,
+    photoSrc: '/Pharm.webp',
+    photoAlt: 'Pharmaceutical and life sciences facility installation',
   },
   {
     num: '06',
@@ -273,6 +286,8 @@ const INDUSTRIES: Industry[] = [
     description:
       'Reactor installation and specialty piping for chemical and petrochemical facilities.',
     icon: IconChemical,
+    photoSrc: '/Silo.webp',
+    photoAlt: 'Chemical industry silo and process installation',
   },
   {
     num: '07',
@@ -280,6 +295,8 @@ const INDUSTRIES: Industry[] = [
     description:
       'Assembly line installation, paint shop systems, and robotic cell integration.',
     icon: IconAutomotive,
+    photoSrc: '/Automotive.webp',
+    photoAlt: 'Automotive production and assembly installation',
   },
   {
     num: '08',
@@ -287,6 +304,8 @@ const INDUSTRIES: Industry[] = [
     description:
       'Racking systems, automated storage installation, and conveyor networks for logistics centers.',
     icon: IconWarehouse,
+    photoSrc: '/Warehouse.webp',
+    photoAlt: 'Warehouse and logistics automation environment',
   },
 ]
 
@@ -319,9 +338,9 @@ interface RowProps {
 }
 
 const IndustryRow: FC<RowProps> = ({ industry, index }) => {
-  const { num, name, description, icon: Icon } = industry
+  const { num, name, description, icon: Icon, photoSrc, photoAlt } = industry
   const { ref, inView } = useInView<HTMLDivElement>({
-    once: false,
+    once: true,
     rootMargin: '-48px 0px',
     threshold: 0.18,
   })
@@ -362,15 +381,17 @@ const IndustryRow: FC<RowProps> = ({ industry, index }) => {
         </p>
 
         <div
-          aria-label={`${name} industry photo placeholder`}
           className="relative h-0 w-full overflow-hidden rounded-sm bg-[#e5e5e5] opacity-0 transition-all delay-0 duration-300 ease-out group-hover:delay-[500ms] group-hover:h-[200px] group-hover:opacity-100 sm:group-hover:h-[260px] lg:group-hover:h-[351px]"
         >
+          <Image
+            src={photoSrc}
+            alt={photoAlt}
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 640px"
+          />
+          <div className="absolute inset-0 bg-black/10" />
           <div className="absolute bottom-0 left-0 right-0 h-[6px] bg-[#1cc14b]" />
-          <div className="flex h-full items-center justify-center pb-2">
-            <span className="text-sm font-medium text-[#a3a3a3]">
-              Industry Photo
-            </span>
-          </div>
         </div>
       </div>
 
@@ -388,12 +409,12 @@ const IndustryRow: FC<RowProps> = ({ industry, index }) => {
 
 export function Industries() {
   const { ref: headerRef, inView: headerInView } = useInView<HTMLDivElement>({
-    once: false,
+    once: true,
     rootMargin: '-60px 0px',
     threshold: 0.2,
   })
   const { ref: countRef, inView: countInView } = useInView<HTMLDivElement>({
-    once: false,
+    once: true,
     rootMargin: '-40px 0px',
     threshold: 0.2,
   })

@@ -59,6 +59,8 @@ interface ServiceItem {
   title: string
   bullets: string[]
   imageSrc: string
+  videoSrc?: string
+  videoScale?: number
 }
 
 const SERVICES: ServiceItem[] = [
@@ -72,6 +74,7 @@ const SERVICES: ServiceItem[] = [
       'Piping & structural',
     ],
     imageSrc: '/img4.webp',
+    videoSrc: '/vid4.mp4',
   },
   {
     num: '02',
@@ -83,6 +86,7 @@ const SERVICES: ServiceItem[] = [
       'Recommissioning',
     ],
     imageSrc: '/img5.webp',
+    videoSrc: '/vid5.mp4',
   },
   {
     num: '03',
@@ -94,6 +98,7 @@ const SERVICES: ServiceItem[] = [
       'Pre-commissioning checks',
     ],
     imageSrc: '/img6.webp',
+    videoSrc: '/vid6.mp4',
   },
   {
     num: '04',
@@ -105,6 +110,7 @@ const SERVICES: ServiceItem[] = [
       'Functional testing',
     ],
     imageSrc: '/img7.webp',
+    videoSrc: '/vid7.mp4',
   },
   {
     num: '05',
@@ -116,14 +122,76 @@ const SERVICES: ServiceItem[] = [
       'Commissioning & handover',
     ],
     imageSrc: '/img8.webp',
+    videoSrc: '/vid8.mp4',
+    videoScale: 0.89,
   },
 ]
 
-const ServiceImage: FC<{ src: string; alt: string }> = ({ src, alt }) => (
-  <div className="relative h-full w-full overflow-hidden bg-[#fafafa]">
-    <Image src={src} alt={alt} fill className="object-cover" sizes="33vw" />
-  </div>
-)
+const useDesktopHoverMedia = () => {
+  const [enabled, setEnabled] = useState(false)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(
+      '(min-width: 1024px) and (hover: hover) and (pointer: fine)'
+    )
+    const update = () => setEnabled(mediaQuery.matches)
+
+    update()
+    mediaQuery.addEventListener('change', update)
+
+    return () => mediaQuery.removeEventListener('change', update)
+  }, [])
+
+  return enabled
+}
+
+const ServiceMedia: FC<{
+  imageSrc: string
+  videoSrc?: string
+  alt: string
+  showVideo: boolean
+  videoScale?: number
+}> = ({ imageSrc, videoSrc, alt, showVideo, videoScale = 1 }) => {
+  const [videoReady, setVideoReady] = useState(false)
+
+  useEffect(() => {
+    if (!showVideo) {
+      setVideoReady(false)
+    }
+  }, [showVideo])
+
+  return (
+    <div className="relative h-full w-full overflow-hidden bg-zinc-50">
+      <Image
+        src={imageSrc}
+        alt={alt}
+        fill
+        className="object-contain"
+        sizes="33vw"
+      />
+
+      {showVideo && videoSrc ? (
+        <video
+          key={videoSrc}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="none"
+          poster={imageSrc}
+          onCanPlay={() => setVideoReady(true)}
+          className="absolute inset-0 h-full w-full object-contain transition-opacity duration-200"
+          style={{
+            opacity: videoReady ? 1 : 0,
+            transform: `scale(${videoScale})`,
+          }}
+        >
+          <source src={videoSrc} type="video/mp4" />
+        </video>
+      ) : null}
+    </div>
+  )
+}
 
 const DrawLine: FC<{
   inView: boolean
@@ -148,23 +216,28 @@ const DrawLine: FC<{
   </div>
 )
 
-const ServiceRow: FC<{ service: ServiceItem; index: number }> = ({
-  service,
-  index,
-}) => {
-  const { num, title, bullets, imageSrc } = service
+const ServiceRow: FC<{
+  service: ServiceItem
+  index: number
+  desktopHoverMediaEnabled: boolean
+}> = ({ service, index, desktopHoverMediaEnabled }) => {
+  const { num, title, bullets, imageSrc, videoSrc, videoScale } = service
   const [hovered, setHovered] = useState(false)
   const { ref, inView } = useInView<HTMLDivElement>({
-    once: false,
     rootMargin: '-48px 0px',
     threshold: 0.18,
   })
   const rowDelay = index * 0.06
+  const showVideo = desktopHoverMediaEnabled && hovered && Boolean(videoSrc)
 
   return (
     <div
       ref={ref}
-      onMouseEnter={() => setHovered(true)}
+      onMouseEnter={() => {
+        if (desktopHoverMediaEnabled) {
+          setHovered(true)
+        }
+      }}
       onMouseLeave={() => setHovered(false)}
       className="flex min-h-[298px] w-full items-start gap-[14px] lg:grid lg:grid-cols-[285px_calc(50%-293px)_minmax(0,1fr)_29px] lg:gap-x-[14px]"
       style={{
@@ -232,15 +305,14 @@ const ServiceRow: FC<{ service: ServiceItem; index: number }> = ({
         <DrawLine inView={inView} delay={rowDelay + 0.18} />
         <div className="relative flex-1">
           <div className="h-full w-full">
-            <ServiceImage src={imageSrc} alt={title} />
+            <ServiceMedia
+              imageSrc={imageSrc}
+              videoSrc={videoSrc}
+              alt={title}
+              showVideo={showVideo}
+              videoScale={videoScale}
+            />
           </div>
-          <div
-            className="pointer-events-none absolute inset-0 border-[1.5px] border-[#1cc14b]"
-            style={{
-              opacity: hovered ? 0.55 : 0,
-              transition: 'opacity 0.22s ease',
-            }}
-          />
         </div>
       </div>
 
@@ -255,8 +327,8 @@ const ServiceRow: FC<{ service: ServiceItem; index: number }> = ({
 }
 
 export function Services() {
+  const desktopHoverMediaEnabled = useDesktopHoverMedia()
   const { ref: headerRef, inView: headerInView } = useInView<HTMLDivElement>({
-    once: false,
     rootMargin: '-60px 0px',
     threshold: 0.2,
   })
@@ -294,7 +366,12 @@ export function Services() {
 
         <div className="flex flex-col gap-6">
           {SERVICES.map((service, index) => (
-            <ServiceRow key={service.num} service={service} index={index} />
+            <ServiceRow
+              key={service.num}
+              service={service}
+              index={index}
+              desktopHoverMediaEnabled={desktopHoverMediaEnabled}
+            />
           ))}
         </div>
       </div>

@@ -154,7 +154,7 @@ const LogoPlaceholder: FC<{ logo: LogoItem; index: number }> = ({
   index,
 }) => {
   const { ref, inView } = useInView<HTMLDivElement>({
-    once: false,
+    once: true,
     rootMargin: '-30px 0px',
     threshold: 0.2,
   })
@@ -208,7 +208,7 @@ const ReferenceRow: FC<{ item: ReferenceItem; index: number }> = ({
   index,
 }) => {
   const { ref, inView } = useInView<HTMLDivElement>({
-    once: false,
+    once: true,
     rootMargin: '-48px 0px',
     threshold: 0.18,
   })
@@ -259,17 +259,17 @@ const ReferenceRow: FC<{ item: ReferenceItem; index: number }> = ({
 
 export function Clients() {
   const { ref: headerRef, inView: headerInView } = useInView<HTMLDivElement>({
-    once: false,
+    once: true,
     rootMargin: '-60px 0px',
     threshold: 0.2,
   })
   const { ref: libraryRef, inView: libraryInView } = useInView<HTMLDivElement>({
-    once: false,
+    once: true,
     rootMargin: '-60px 0px',
     threshold: 0.2,
   })
   const { ref: footerRef, inView: footerInView } = useInView<HTMLDivElement>({
-    once: false,
+    once: true,
     rootMargin: '-40px 0px',
     threshold: 0.2,
   })

@@ -125,7 +125,6 @@ export function useSectionNavigation(
         return current
       }
 
-      replaceHash(nextActiveSectionId || null)
       return nextActiveSectionId
     })
   }, [focusLineRatio, headerSelector, sectionIds])
@@ -182,7 +181,6 @@ export function useSectionNavigation(
             return current
           }
 
-          replaceHash(null)
           return ''
         })
         return
