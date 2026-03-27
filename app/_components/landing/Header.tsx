@@ -125,7 +125,7 @@ export function Header({ activeItem }: HeaderProps) {
   const isHomePage = pathname === '/'
   const isBlogPage = pathname === '/blog' || pathname.startsWith('/blog/')
   const initialItem = HEADER_NAV_ITEMS.find((item) => item.key === activeItem)
-  const { activeSectionId, scrollToSection } = useSectionNavigation({
+  const { activeSectionId, resetActiveSection, scrollToSection } = useSectionNavigation({
     sectionIds: isHomePage
       ? HEADER_NAV_ITEMS.filter((item) => !item.isRoute).map((item) => item.id)
       : [],
@@ -143,6 +143,7 @@ export function Header({ activeItem }: HeaderProps) {
 
   const handleHomeNavigation = () => {
     if (isHomePage) {
+      resetActiveSection()
       scrollToSectionWithOffset('top')
       return
     }

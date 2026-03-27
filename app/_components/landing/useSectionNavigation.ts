@@ -18,7 +18,6 @@ export const SECTION_NAV_ITEMS: SectionNavItem[] = [
 ]
 
 type UseSectionNavigationOptions = {
-  focusLineRatio?: number
   headerSelector?: string
   sectionIds?: string[]
 }
@@ -74,18 +73,13 @@ export function scrollToSectionWithOffset(
   replaceHash(sectionId)
 }
 
-export function useSectionNavigation(
-  options?: UseSectionNavigationOptions
-) {
-  const focusLineRatio = options?.focusLineRatio ?? 0.36
+export function useSectionNavigation(options?: UseSectionNavigationOptions) {
   const headerSelector = options?.headerSelector ?? DEFAULT_HEADER_SELECTOR
   const sectionIds = useMemo(
     () => options?.sectionIds ?? SECTION_NAV_ITEMS.map((item) => item.id),
     [options?.sectionIds]
   )
   const [activeSectionId, setActiveSectionId] = useState('')
-  const visibleSectionIdsRef = useRef<Set<string>>(new Set())
-  const rafRef = useRef<number | null>(null)
   const pendingSectionIdRef = useRef<string | null>(null)
   const pendingSectionTimeoutRef = useRef<number | null>(null)
 
@@ -98,175 +92,103 @@ export function useSectionNavigation(
     }
   }, [])
 
-  const markPendingSection = useCallback(
-    (sectionId: string) => {
-      pendingSectionIdRef.current = sectionId
+  const markPendingSection = useCallback((sectionId: string) => {
+    pendingSectionIdRef.current = sectionId
 
-      if (pendingSectionTimeoutRef.current !== null) {
-        window.clearTimeout(pendingSectionTimeoutRef.current)
-      }
+    if (pendingSectionTimeoutRef.current !== null) {
+      window.clearTimeout(pendingSectionTimeoutRef.current)
+    }
 
-      pendingSectionTimeoutRef.current = window.setTimeout(() => {
-        pendingSectionIdRef.current = null
-        pendingSectionTimeoutRef.current = null
-      }, 1600)
-    },
-    []
-  )
+    pendingSectionTimeoutRef.current = window.setTimeout(() => {
+      pendingSectionIdRef.current = null
+      pendingSectionTimeoutRef.current = null
+    }, 1600)
+  }, [])
 
-  const evaluateActiveSection = useCallback(() => {
-    const headerOffset = getHeaderOffset(headerSelector)
-    const focusLine = headerOffset + (window.innerHeight - headerOffset) * focusLineRatio
-    const candidates = sectionIds
-      .map((id) => {
-        const element = document.getElementById(id)
-
-        if (!element) {
-          return null
-        }
-
-        const rect = element.getBoundingClientRect()
-        const isVisible = rect.bottom > headerOffset && rect.top < window.innerHeight
-
-        if (!isVisible) {
-          return null
-        }
-
-        const distance =
-          focusLine >= rect.top && focusLine <= rect.bottom
-            ? 0
-            : Math.min(
-                Math.abs(rect.top - focusLine),
-                Math.abs(rect.bottom - focusLine)
-              )
-
-        return { distance, id }
-      })
-      .filter((candidate): candidate is { distance: number; id: string } => Boolean(candidate))
-      .sort((left, right) => left.distance - right.distance)
-
-    const nextActiveSectionId = candidates[0]?.id ?? ''
+  const resetActiveSection = useCallback(() => {
+    clearPendingSection()
 
     setActiveSectionId((current) => {
-      if (current === nextActiveSectionId) {
+      if (!current) {
         return current
       }
 
-      replaceHash(nextActiveSectionId || null)
-      return nextActiveSectionId
+      replaceHash(null)
+      return ''
     })
-  }, [focusLineRatio, headerSelector, sectionIds])
+  }, [clearPendingSection])
 
-  const queueEvaluate = useCallback(() => {
-    if (rafRef.current !== null) {
-      return
-    }
+  const isSectionInView = useCallback(
+    (sectionId: string) => {
+      const element = document.getElementById(sectionId)
 
-    rafRef.current = window.requestAnimationFrame(() => {
-      rafRef.current = null
-      evaluateActiveSection()
-    })
-  }, [evaluateActiveSection])
+      if (!element) {
+        return false
+      }
+
+      const headerOffset = getHeaderOffset(headerSelector)
+      const rect = element.getBoundingClientRect()
+
+      return rect.bottom > headerOffset && rect.top < window.innerHeight
+    },
+    [headerSelector]
+  )
 
   useEffect(() => {
-    const sectionElements = sectionIds
-      .map((id) => document.getElementById(id))
-      .filter((element): element is HTMLElement => Boolean(element))
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          const sectionId = entry.target.getAttribute('id')
-
-          if (!sectionId) {
-            continue
-          }
-
-          if (entry.isIntersecting) {
-            visibleSectionIdsRef.current.add(sectionId)
-
-            if (pendingSectionIdRef.current === sectionId) {
-              clearPendingSection()
-            }
-          } else {
-            visibleSectionIdsRef.current.delete(sectionId)
-          }
-        }
-
-        queueEvaluate()
-      },
-      {
-        root: null,
-        rootMargin: '-15% 0px -55% 0px',
-        threshold: [0, 0.15, 0.3, 0.5, 0.75, 1],
-      }
-    )
-
-    for (const sectionElement of sectionElements) {
-      observer.observe(sectionElement)
-    }
-
-    const handleScroll = () => {
-      if (visibleSectionIdsRef.current.size === 0) {
-        if (pendingSectionIdRef.current) {
-          return
-        }
-
-        setActiveSectionId((current) => {
-          if (!current) {
-            return current
-          }
-
-          replaceHash(null)
-          return ''
-        })
-        return
-      }
-
-      queueEvaluate()
-    }
-
-    const handleResize = () => {
-      queueEvaluate()
-    }
-
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    window.addEventListener('resize', handleResize)
-
     const initialHash = window.location.hash.replace(/^#/, '')
 
     if (initialHash && sectionIds.includes(initialHash)) {
+      setActiveSectionId(initialHash)
       scrollToSectionWithOffset(initialHash, {
         behavior: 'auto',
         headerSelector,
       })
     }
+  }, [headerSelector, sectionIds])
 
-    queueEvaluate()
+  useEffect(() => {
+    const handleViewportChange = () => {
+      if (!activeSectionId || pendingSectionIdRef.current) {
+        return
+      }
 
-    return () => {
-      observer.disconnect()
-      window.removeEventListener('scroll', handleScroll)
-      window.removeEventListener('resize', handleResize)
-      clearPendingSection()
-
-      if (rafRef.current !== null) {
-        window.cancelAnimationFrame(rafRef.current)
+      if (!isSectionInView(activeSectionId)) {
+        resetActiveSection()
       }
     }
-  }, [headerSelector, queueEvaluate, sectionIds])
+
+    window.addEventListener('scroll', handleViewportChange, { passive: true })
+    window.addEventListener('resize', handleViewportChange)
+
+    return () => {
+      window.removeEventListener('scroll', handleViewportChange)
+      window.removeEventListener('resize', handleViewportChange)
+    }
+  }, [
+    activeSectionId,
+    isSectionInView,
+    resetActiveSection,
+  ])
+
+  useEffect(
+    () => () => {
+      clearPendingSection()
+    },
+    [clearPendingSection]
+  )
 
   const scrollToSection = useCallback(
     (sectionId: string) => {
       markPendingSection(sectionId)
-      scrollToSectionWithOffset(sectionId, { headerSelector })
       setActiveSectionId(sectionId)
+      scrollToSectionWithOffset(sectionId, { headerSelector })
     },
     [headerSelector, markPendingSection]
   )
 
   return {
     activeSectionId,
+    resetActiveSection,
     scrollToSection,
     trackedSectionIds: sectionIds,
   }
