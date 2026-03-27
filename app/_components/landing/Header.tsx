@@ -36,7 +36,7 @@ function LogoMark() {
       alt="Equipra"
       width={58}
       height={36}
-      className="h-9 w-auto shrink-0"
+      className="h-9 w-auto cursor-pointer shrink-0"
       priority
     />
   )

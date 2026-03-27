@@ -322,7 +322,7 @@ const INDUSTRIES: Industry[] = [
     description:
       'Hygienic process installation and stainless steel piping for food and beverage production.',
     icon: IconFood,
-    photoSrc: '/Steel pipe.webp',
+    photoSrc: '/Brewery.webp',
     photoAlt: 'Stainless steel process piping for food and beverage production',
   },
   {
