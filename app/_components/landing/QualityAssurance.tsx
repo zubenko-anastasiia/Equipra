@@ -136,12 +136,16 @@ function Heading({ inView }: { inView: boolean }) {
           </span>
         </RevealLine>
       </span>
-      <span className="sm:hidden">
+      <span className="flex flex-col gap-0 sm:hidden">
         <RevealLine inView={inView}>
-          <span>
-            Our teams work across complex environments where accuracy, safety,
-            and execution discipline are critical for long-term operational
-            performance.
+          <span className="block pl-16 text-[24px] leading-none">
+            Our teams work across
+          </span>
+        </RevealLine>
+        <RevealLine inView={inView} delay={0.06}>
+          <span className="block text-[24px] leading-tight">
+            complex environments where accuracy, safety, and execution
+            discipline are critical for long-term operational performance.
           </span>
         </RevealLine>
       </span>
@@ -169,47 +173,51 @@ function StatValue({
     let frameId = 0;
 
     if (!inView) {
-      setDisplayValue(value === "Worldwide" ? "" : "1");
-    } else {
-      timeoutId = window.setTimeout(() => {
-        if (value === "Worldwide") {
-          let index = 0;
-          setDisplayValue("");
-          const stepMs = value.length > 0
-            ? valueAnimationDurationMs / value.length
-            : valueAnimationDurationMs;
-
-          intervalId = window.setInterval(() => {
-            index += 1;
-            setDisplayValue(value.slice(0, index));
-
-            if (index >= value.length) {
-              window.clearInterval(intervalId);
-            }
-          }, stepMs);
-
-          return;
-        }
-
-        const target = Number.parseInt(value, 10);
-        const hasPlus = value.endsWith("+");
-        const duration = valueAnimationDurationMs;
-        const start = performance.now();
-
-        const tick = (now: number) => {
-          const progress = Math.min((now - start) / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          const current = Math.max(1, Math.round(1 + eased * (target - 1)));
-          setDisplayValue(`${current}${hasPlus ? "+" : ""}`);
-
-          if (progress < 1) {
-            frameId = window.requestAnimationFrame(tick);
-          }
-        };
-
-        frameId = window.requestAnimationFrame(tick);
-      }, delay * 1000);
+      return () => {
+        window.clearTimeout(timeoutId);
+        window.clearInterval(intervalId);
+        window.cancelAnimationFrame(frameId);
+      };
     }
+
+    timeoutId = window.setTimeout(() => {
+      if (value === "Worldwide") {
+        let index = 0;
+        setDisplayValue("");
+        const stepMs = value.length > 0
+          ? valueAnimationDurationMs / value.length
+          : valueAnimationDurationMs;
+
+        intervalId = window.setInterval(() => {
+          index += 1;
+          setDisplayValue(value.slice(0, index));
+
+          if (index >= value.length) {
+            window.clearInterval(intervalId);
+          }
+        }, stepMs);
+
+        return;
+      }
+
+      const target = Number.parseInt(value, 10);
+      const hasPlus = value.endsWith("+");
+      const duration = valueAnimationDurationMs;
+      const start = performance.now();
+
+      const tick = (now: number) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.max(1, Math.round(1 + eased * (target - 1)));
+        setDisplayValue(`${current}${hasPlus ? "+" : ""}`);
+
+        if (progress < 1) {
+          frameId = window.requestAnimationFrame(tick);
+        }
+      };
+
+      frameId = window.requestAnimationFrame(tick);
+    }, delay * 1000);
 
     return () => {
       window.clearTimeout(timeoutId);
@@ -219,7 +227,7 @@ function StatValue({
   }, [delay, inView, value]);
 
   return (
-    <p className="text-[clamp(36px,5vw,60px)] font-medium leading-none text-[#0a0a0a]">
+    <p className="text-[24px] font-medium leading-none text-[#0a0a0a] sm:text-[clamp(36px,5vw,60px)]">
       {displayValue}
     </p>
   );
@@ -235,8 +243,8 @@ function StatTile({
   return (
     <div
       className={[
-        "flex flex-1 flex-col gap-3.5",
-        hidden ? "opacity-0 pointer-events-none select-none" : "",
+        "flex w-[120px] flex-col gap-3 sm:flex-1 sm:gap-3.5",
+        hidden ? "hidden sm:flex sm:opacity-0 sm:pointer-events-none sm:select-none" : "",
       ]
         .filter(Boolean)
         .join(" ")}
@@ -251,7 +259,7 @@ function StatTile({
             }
       }
     >
-      <p className="text-base font-semibold leading-none text-[#0a0a0a]">
+      <p className="text-[16px] font-medium leading-none text-[#0a0a0a] sm:text-base sm:font-semibold">
         {label}
       </p>
       {hidden ? (
@@ -269,6 +277,8 @@ function StatTile({
 function StatsRow() {
   const leftStats = STATS.slice(0, 2);
   const rightStats = STATS.slice(2);
+  const mobileTopStat = STATS[0];
+  const mobileBottomStats = STATS.filter((stat) => !stat.hidden).slice(1);
   const { ref, inView } = useInView<HTMLDivElement>({
     rootMargin: "-60px 0px",
   });
@@ -276,28 +286,51 @@ function StatsRow() {
   return (
     <div
       ref={ref}
-      className="flex flex-col gap-10 lg:grid lg:grid-cols-[calc(50%+20px)_minmax(0,1fr)] lg:gap-x-0 lg:gap-y-0"
+      className="pl-16 sm:pl-0"
     >
-      <div className="flex flex-wrap gap-10 sm:flex-nowrap sm:gap-x-0">
-        {leftStats.map((stat, index) => (
+      <div className="flex flex-col gap-y-5 sm:hidden">
+        <div className="flex">
           <StatTile
-            key={stat.label}
-            {...stat}
+            key={mobileTopStat.label}
+            {...mobileTopStat}
             inView={inView}
-            delay={index * 0.12}
+            delay={0}
           />
-        ))}
+        </div>
+        <div className="flex justify-between gap-x-4">
+          {mobileBottomStats.map((stat, index) => (
+            <StatTile
+              key={stat.label}
+              {...stat}
+              inView={inView}
+              delay={(index + 1) * 0.12}
+            />
+          ))}
+        </div>
       </div>
 
-      <div className="flex  gap-10 sm:flex-nowrap sm:gap-x-0">
-        {rightStats.map((stat, index) => (
-          <StatTile
-            key={stat.label}
-            {...stat}
-            inView={inView}
-            delay={(index + leftStats.length) * 0.12}
-          />
-        ))}
+      <div className="hidden sm:flex sm:flex-col sm:gap-10 lg:grid lg:grid-cols-[calc(50%+20px)_minmax(0,1fr)] lg:gap-x-0 lg:gap-y-0">
+        <div className="flex flex-wrap gap-10 sm:flex-nowrap sm:gap-x-0">
+          {leftStats.map((stat, index) => (
+            <StatTile
+              key={stat.label}
+              {...stat}
+              inView={inView}
+              delay={index * 0.12}
+            />
+          ))}
+        </div>
+
+        <div className="flex gap-10 sm:flex-nowrap sm:gap-x-0">
+          {rightStats.map((stat, index) => (
+            <StatTile
+              key={stat.label}
+              {...stat}
+              inView={inView}
+              delay={(index + leftStats.length) * 0.12}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -306,15 +339,15 @@ function StatsRow() {
 /** Right-aligned "Quality guaranteed" prose block */
 function QualityBlurb() {
   return (
-    <div className="w-full py-2.5 lg:pl-[calc(50%+20px)]">
-      <div className="flex flex-col gap-3.5">
+    <div className="w-full py-2.5 pl-16 lg:pl-[calc(50%+20px)]">
+      <div className="flex flex-col gap-2.5 sm:gap-3.5">
         {/* Label */}
-        <p className="text-base font-semibold leading-none text-[#0a0a0a]">
+        <p className="text-[16px] font-medium leading-none text-[#0a0a0a] sm:text-base sm:font-semibold">
           Quality guaranteed
         </p>
 
         {/* Body copy – mixed-weight spans exactly as in Figma */}
-        <p className="text-[clamp(18px,2vw,24px)] font-semibold leading-[1.35] text-[#737373]">
+        <p className="text-[18px] font-semibold leading-7 text-[#737373] sm:text-[clamp(18px,2vw,24px)] sm:leading-[1.35]">
           From{" "}
           <span className="text-[#0a0a0a]">workshop preparation</span> to{" "}
           <span className="text-[#0a0a0a]">on-site installation</span>
@@ -346,15 +379,18 @@ const QualityAssurance: FC = () => {
   });
 
   return (
-    <section className="w-full bg-white">
-      <div className="mx-auto w-full max-w-[1440px] px-4 py-16 sm:px-8 md:px-[60px] lg:py-24">
+    <section
+      id="quality-assurance"
+      className="landing-mobile-gradient w-full"
+    >
+      <div className="mx-auto w-full max-w-[1440px] px-4 py-8 sm:px-8 sm:py-16 md:px-[60px] lg:py-24">
         {/* ── Top block: label + heading + stats ─────────────────────────── */}
-        <div className="flex flex-col gap-16 lg:gap-24">
+        <div className="flex flex-col gap-8 sm:gap-16 lg:gap-24">
           {/* Header */}
-          <div ref={headerRef} className="flex flex-col gap-6">
+          <div ref={headerRef} className="flex flex-col gap-8 sm:gap-6">
             {/* The label is offset ~50px above the heading on desktop via spacing */}
             <div
-              className="lg:pl-[clamp(220px,23.611vw,340px)]"
+              className="pl-16 lg:pl-[clamp(220px,23.611vw,340px)]"
               style={{
                 opacity: headerInView ? 1 : 0,
                 transform: headerInView ? "translateX(0)" : "translateX(-14px)",
@@ -371,7 +407,7 @@ const QualityAssurance: FC = () => {
         </div>
 
         {/* ── Bottom block: quality blurb (right-aligned) ─────────────────── */}
-        <div className="mt-24 flex w-full items-start justify-end lg:mt-32">
+        <div className="mt-8 flex w-full items-start justify-end sm:mt-24 lg:mt-32">
           <QualityBlurb />
         </div>
       </div>

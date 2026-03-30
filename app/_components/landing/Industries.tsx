@@ -392,7 +392,7 @@ interface RowProps {
 }
 
 const SectionLabel: FC = () => (
-  <div className="flex items-center gap-3">
+  <div className="flex items-center gap-3 pl-16 sm:pl-0">
     <span
       aria-hidden="true"
       className="block h-1 w-8 shrink-0 rounded-full bg-[#1cc14b]"
@@ -415,16 +415,18 @@ const IndustryRow: FC<RowProps> = ({ industry, index }) => {
   return (
     <div
       ref={ref}
-      className="group flex items-start gap-3.5 pb-6 sm:gap-3.5 lg:grid lg:grid-cols-[28px_calc(50%-36px)_minmax(0,1fr)_97px] lg:gap-x-3.5"
+      className="group flex items-start gap-0 pb-3 sm:gap-3.5 sm:pb-6 lg:grid lg:grid-cols-[28px_calc(50%-36px)_minmax(0,1fr)_97px] lg:gap-x-3.5"
       style={{
         opacity: inView ? 1 : 0,
         transform: inView ? 'translate3d(0, 0, 0)' : 'translate3d(0, 16px, 0)',
         transition: `opacity 0.58s ${easeOut} ${rowDelay}s, transform 0.58s ${easeOut} ${rowDelay}s`,
       }}
     >
-      <div className="relative w-7 shrink-0 pt-5">
-        <DrawLine inView={inView} delay={rowDelay + 0.08} color="#737373" />
-        <span className="block text-xl font-semibold leading-none text-[#737373]">
+      <div className="relative flex w-16 shrink-0 items-start pt-6 sm:w-7 sm:pt-5">
+        <div className="hidden sm:block">
+          <DrawLine inView={inView} delay={rowDelay + 0.08} color="#737373" />
+        </div>
+        <span className="block text-[20px] font-semibold leading-none text-[#737373]">
           {num}
         </span>
       </div>
@@ -436,11 +438,34 @@ const IndustryRow: FC<RowProps> = ({ industry, index }) => {
         </span>
       </div>
 
-      <div className="relative flex min-w-0 flex-1 flex-col gap-6 pt-5 lg:w-auto lg:flex-none">
+      <div className="flex min-w-0 flex-1 flex-col items-start sm:hidden">
+        <div className="flex w-full flex-col gap-3">
+          <div className="pt-5">
+            <p className="text-[18px] font-semibold leading-7 text-[#0a0a0a]">
+              {name}
+            </p>
+          </div>
+          <div className="w-full border-t-[3px] border-black pt-5">
+            <p className="pb-2.5 text-[14px] font-medium leading-5 text-[#0a0a0a]">
+              {description}
+            </p>
+          </div>
+        </div>
+        <div className="w-full pt-3">
+          <div className="relative h-[145px] w-full bg-zinc-50">
+            <Image
+              src={photoSrc}
+              alt={photoAlt}
+              fill
+              className="object-cover mix-blend-darken"
+              sizes="264px"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="relative hidden min-w-0 flex-1 flex-col gap-6 pt-5 sm:flex lg:w-auto lg:flex-none">
         <DrawLine inView={inView} delay={rowDelay + 0.16} />
-        <span className="block text-xl font-semibold leading-none text-[#0a0a0a] sm:hidden">
-          {name}
-        </span>
 
         <p className="text-base font-medium leading-[1.4] text-[#0a0a0a] sm:text-xl sm:leading-[1.4]">
           {description}
@@ -461,7 +486,7 @@ const IndustryRow: FC<RowProps> = ({ industry, index }) => {
         </div>
       </div>
 
-      <div className="relative shrink-0 pt-5 lg:w-[97px]">
+      <div className="relative hidden shrink-0 pt-5 sm:block lg:w-[97px]">
         <DrawLine inView={inView} delay={rowDelay + 0.2} />
         <div className="flex size-[60px] items-center justify-center rounded-[4px] bg-[#fafafa] sm:size-[80px] lg:size-[97px]">
           <div className="size-6 text-[#0a0a0a] sm:size-7 lg:size-[48px]">
@@ -486,9 +511,13 @@ export function Industries() {
   })
 
   return (
-    <section id="industries" data-nav-section className="w-full bg-white">
-      <div className="mx-auto w-full max-w-[1440px] px-4 py-16 sm:px-8 md:px-[60px] lg:py-20">
-        <div className="mb-10 lg:mb-12 lg:pl-[calc(50%+20px)]">
+    <section
+      id="industries"
+      data-nav-section
+      className="landing-mobile-gradient w-full"
+    >
+      <div className="mx-auto w-full max-w-[1440px] px-4 py-8 sm:px-8 sm:py-16 md:px-[60px] lg:py-20">
+        <div className="mb-8 sm:mb-10 lg:mb-12 lg:pl-[calc(50%+20px)]">
           <div
             ref={headerRef}
             style={{
@@ -502,15 +531,15 @@ export function Industries() {
             <div className="mb-5">
               <SectionLabel />
             </div>
-            <h2 className="text-[clamp(44px,7vw,84px)] font-semibold leading-[1.14] tracking-[-0.02em] text-[#0a0a0a]">
+            <h2 className="pl-16 font-sans text-[32px] font-semibold leading-[32px] tracking-[-0.64px] text-[#0a0a0a] sm:pl-0 sm:text-[clamp(44px,7vw,84px)] sm:leading-[1.14] sm:tracking-[-0.02em]">
               Industries
-              <br />
+              <br  />
               We Support
             </h2>
           </div>
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-3 sm:gap-0">
           {INDUSTRIES.map((industry, index) => (
             <IndustryRow key={industry.num} industry={industry} index={index} />
           ))}
@@ -518,7 +547,7 @@ export function Industries() {
 
         <div
           ref={countRef}
-          className="mt-2 flex justify-end pr-0 lg:justify-start lg:pl-[calc(50%+20px)]"
+          className="mt-2 hidden justify-end pr-0 lg:flex lg:justify-start lg:pl-[calc(50%+20px)]"
           style={{
             opacity: countInView ? 1 : 0,
             transition: 'opacity 0.7s ease-out',

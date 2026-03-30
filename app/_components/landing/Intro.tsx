@@ -44,8 +44,7 @@ export function Intro() {
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-black"
-      style={{ height: 'min(846px, 100svh)' }}
+      className="relative h-[100svh] w-full overflow-hidden bg-black md:min-h-[700px] md:max-h-[846px]"
     >
       <div
         className="absolute inset-0 pointer-events-none"
@@ -106,16 +105,16 @@ export function Intro() {
       />
 
       <div
-        className="absolute inset-x-0 bottom-4 sm:bottom-8 md:bottom-[60px]"
+        className="absolute inset-x-0 bottom-3 sm:bottom-8 md:bottom-[60px]"
         style={{ zIndex: 4 }}
       >
-        <div className="mx-auto flex w-full max-w-[1440px] items-end justify-between gap-6 px-4 sm:px-8 md:px-[60px]">
+        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 px-4 sm:px-8 md:px-[60px] lg:flex-row lg:items-end lg:justify-between">
           <h1
-            className="w-full max-w-[1174px] uppercase font-medium leading-[0.82] text-white"
+            className="w-full max-w-[1174px] uppercase font-bold leading-[0.95] tracking-[0.8px] text-white md:font-medium md:leading-[0.82] md:tracking-normal"
             style={{
               fontFamily:
                 "'Druk Trial', Impact, 'Arial Narrow', Arial, sans-serif",
-              fontSize: 'clamp(64px, 10.4vw, 150px)',
+              fontSize: 'clamp(68px, 18vw, 150px)',
             }}
           >
             {headlineLines.map((line, index) => (
@@ -142,7 +141,7 @@ export function Intro() {
 
           <a
             href="#contact"
-            className="inline-flex h-9 w-[177px] shrink-0 items-center gap-1 rounded-[2px] border border-[#e5e5e5] bg-white px-[9px] no-underline transition-colors hover:bg-neutral-100"
+            className="inline-flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-[2px] border border-[#e5e5e5] bg-white px-3 no-underline transition-colors hover:bg-neutral-100 sm:h-10 sm:w-[177px] sm:justify-start sm:gap-1 sm:px-[9px]"
             style={{
               opacity: mounted ? 1 : 0,
               transform: mounted ? 'translate3d(0, 0, 0)' : 'translate3d(0, 20px, 0)',

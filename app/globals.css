@@ -33,3 +33,13 @@ select,
 textarea {
   font-family: var(--font-sans);
 }
+
+.landing-mobile-gradient {
+  background: linear-gradient(90deg, #f8f8f8 0%, #fff 16%, #fff 81%, #f8f8f8 100%);
+}
+
+@media (min-width: 640px) {
+  .landing-mobile-gradient {
+    background: #fff;
+  }
+}

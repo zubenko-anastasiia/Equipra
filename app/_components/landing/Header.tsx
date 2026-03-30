@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   scrollToSectionWithOffset,
@@ -45,17 +45,14 @@ function LogoMark() {
 function DesktopNavButton({
   item,
   isActive,
-  hasActiveItem,
   onClick,
 }: {
   item: SectionNavItem
   isActive: boolean
-  hasActiveItem: boolean
   onClick: () => void
 }) {
   const [hovered, setHovered] = useState(false)
-  const allowHoverState = !hasActiveItem || isActive
-  const showUnderline = isActive || (allowHoverState && hovered)
+  const showUnderline = isActive || hovered
 
   return (
     <button
@@ -69,7 +66,7 @@ function DesktopNavButton({
         color:
           isActive
             ? '#22c55e'
-            : allowHoverState && hovered
+            : hovered
               ? '#0a0a0a'
               : 'rgba(9, 9, 11, 0.7)',
       }}
@@ -103,18 +100,40 @@ function MobileNavButton({
     <button
       type="button"
       aria-current={isActive ? 'page' : undefined}
-      className={`flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500 active:scale-[0.98] ${
+      className={`relative inline-flex cursor-pointer flex-col items-end rounded-md px-3 py-2 text-right text-3xl font-medium leading-5 transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500 active:scale-[0.98] ${
         isActive ? 'text-green-500' : 'text-zinc-950/70 hover:text-black'
       }`}
       onClick={onClick}
     >
-      <span>{item.label}</span>
-      <span
-        className={`h-2 w-2 rounded-full transition-colors duration-200 ${
-          isActive ? 'bg-green-500' : 'bg-zinc-300'
-        }`}
-      />
+      <span className="inline-block">{item.label}</span>
+      {isActive ? (
+        <span className="mt-2 h-0.5 w-full rounded-full bg-green-500" />
+      ) : null}
     </button>
+  )
+}
+
+function LanguageSwitch() {
+  return (
+    <div
+      className="inline-flex items-center gap-1 font-mono text-xs font-medium tracking-[0.24em] text-gray-600"
+      aria-label="Language switcher"
+    >
+      <button
+        type="button"
+        className="cursor-pointer transition-colors duration-200 hover:text-black focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500"
+        aria-current="true"
+      >
+        EN
+      </button>
+      <span className="opacity-40">|</span>
+      <span
+        aria-disabled="true"
+        className="cursor-default opacity-40"
+      >
+        PL
+      </span>
+    </div>
   )
 }
 
@@ -135,11 +154,6 @@ export function Header({ activeItem }: HeaderProps) {
     : isHomePage
       ? activeSectionId || initialItem?.id || ''
       : ''
-  const hasActiveItem = Boolean(currentSectionId)
-
-  useEffect(() => {
-    setIsMenuOpen(false)
-  }, [pathname])
 
   const handleHomeNavigation = () => {
     if (isHomePage) {
@@ -152,6 +166,8 @@ export function Header({ activeItem }: HeaderProps) {
   }
 
   const handleNavigation = (item: HeaderNavItem) => {
+    setIsMenuOpen(false)
+
     if (item.isRoute && item.href) {
       if (typeof window !== 'undefined' && window.location.hash) {
         window.history.replaceState(
@@ -178,7 +194,9 @@ export function Header({ activeItem }: HeaderProps) {
   return (
     <header
       data-site-header
-      className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-white/80 backdrop-blur-md"
+      className={`fixed inset-x-0 top-0 z-50 border-b border-black/5 backdrop-blur-md ${
+        isMenuOpen ? 'bg-white' : 'bg-white/80'
+      }`}
     >
       <div className="mx-auto flex min-h-16 w-full max-w-[1440px] items-center gap-3 px-4 sm:px-8 md:px-[60px]">
         <button
@@ -203,7 +221,6 @@ export function Header({ activeItem }: HeaderProps) {
                   <DesktopNavButton
                     item={item}
                     isActive={isActive}
-                    hasActiveItem={hasActiveItem}
                     onClick={() => handleNavigation(item)}
                   />
                 </li>
@@ -213,85 +230,81 @@ export function Header({ activeItem }: HeaderProps) {
         </nav>
 
         <div className="ml-auto hidden items-center lg:flex">
-          <button
-            type="button"
-            className="inline-flex cursor-pointer items-center gap-1 rounded-sm px-2.5 py-1 font-mono text-xs font-medium tracking-[0.24em] text-gray-600 transition-all duration-200 hover:bg-zinc-950/[0.04] hover:text-black focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500 active:scale-[0.97]"
-            aria-label="Selected language English"
-          >
-            <span>EN</span>
-            <span className="opacity-40">|</span>
-            <span className="opacity-50">PL</span>
-          </button>
+          <LanguageSwitch />
         </div>
 
-        <button
-          type="button"
-          aria-expanded={isMenuOpen}
-          aria-controls="mobile-navigation"
-          aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-          className="ml-auto inline-flex cursor-pointer items-center justify-center rounded-md border border-black/10 p-2 text-zinc-950 transition-all duration-200 hover:bg-zinc-950/[0.04] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500 active:scale-95 lg:hidden"
-          onClick={() => setIsMenuOpen((open) => !open)}
-        >
-          <span className="sr-only">Menu</span>
-          <span className="flex h-5 w-5 flex-col items-center justify-center gap-1">
-            <span
-              className={`block h-0.5 w-4 rounded-full bg-current transition-transform duration-200 ${
-                isMenuOpen ? 'translate-y-1.5 rotate-45' : ''
-              }`}
-            />
-            <span
-              className={`block h-0.5 w-4 rounded-full bg-current transition-all duration-200 ${
-                isMenuOpen ? 'opacity-0' : ''
-              }`}
-            />
-            <span
-              className={`block h-0.5 w-4 rounded-full bg-current transition-transform duration-200 ${
-                isMenuOpen ? '-translate-y-1.5 -rotate-45' : ''
-              }`}
-            />
-          </span>
-        </button>
+        <div className="ml-auto flex items-center gap-2 lg:hidden">
+          <LanguageSwitch />
+
+          <button
+            type="button"
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-navigation"
+            aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            className="inline-flex cursor-pointer items-center justify-center rounded-md p-2 text-zinc-950 transition-all duration-200 hover:bg-zinc-950/[0.04] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500 active:scale-95"
+            onClick={() => setIsMenuOpen((open) => !open)}
+          >
+            <span className="sr-only">Menu</span>
+            <span className="flex h-5 w-5 flex-col items-center justify-center gap-1">
+              <span
+                className={`block h-0.5 w-4 rounded-full bg-current transition-transform duration-200 ${
+                  isMenuOpen ? 'translate-y-1.5 rotate-45' : ''
+                }`}
+              />
+              <span
+                className={`block h-0.5 w-4 rounded-full bg-current transition-all duration-200 ${
+                  isMenuOpen ? 'opacity-0' : ''
+                }`}
+              />
+              <span
+                className={`block h-0.5 w-4 rounded-full bg-current transition-transform duration-200 ${
+                  isMenuOpen ? '-translate-y-1.5 -rotate-45' : ''
+                }`}
+              />
+            </span>
+          </button>
+        </div>
       </div>
 
       <div
         id="mobile-navigation"
-        className={`absolute left-0 right-0 top-full overflow-hidden border-t border-black/5 bg-white/95 transition-[max-height,opacity] duration-300 lg:hidden ${
-          isMenuOpen ? 'max-h-[32rem] opacity-100' : 'max-h-0 opacity-0'
+        className={`absolute left-0 right-0 top-full overflow-hidden border-t border-black/5 bg-[linear-gradient(90deg,#f8f8f8_0%,#fff_16%,#fff_84%,#f8f8f8_100%)] transition-[max-height,opacity] duration-300 lg:hidden ${
+          isMenuOpen ? 'max-h-[calc(100dvh-4rem)] opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
         <nav
           aria-label="Mobile primary"
-          className="mx-auto w-full max-w-[1440px] px-4 py-3 sm:px-8 md:px-[60px]"
+          className="mx-auto flex min-h-[calc(100dvh-4rem)] w-full max-w-[1440px] flex-col justify-between px-4 py-4"
         >
-          <ul className="space-y-1">
-            {HEADER_NAV_ITEMS.map((item) => {
-              const isActive = item.id === currentSectionId
+          <div className="flex flex-col gap-16">
+            <ul className="mt-16 flex flex-col items-end justify-center gap-6">
+              {HEADER_NAV_ITEMS.map((item) => {
+                const isActive = item.id === currentSectionId
 
-              return (
-                <li key={item.key}>
-                  <MobileNavButton
-                    item={item}
-                    isActive={isActive}
-                    onClick={() => {
-                      handleNavigation(item)
-                      setIsMenuOpen(false)
-                    }}
-                  />
-                </li>
-              )
-            })}
-          </ul>
+                return (
+                  <li key={item.key}>
+                    <MobileNavButton
+                      item={item}
+                      isActive={isActive}
+                      onClick={() => handleNavigation(item)}
+                    />
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
 
-          <div className="mt-3 border-t border-black/5 pt-3">
-            <button
-              type="button"
-              className="inline-flex cursor-pointer items-center gap-1 rounded-md px-4 py-2 font-mono text-xs font-medium tracking-[0.24em] text-gray-600 transition-all duration-200 hover:bg-zinc-950/[0.04] hover:text-black focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500 active:scale-[0.97]"
-              aria-label="Selected language English"
+          <div className="pointer-events-auto w-full">
+            <a
+              href="#contact"
+              onClick={(event) => {
+                event.preventDefault()
+                handleNavigation({ id: 'contact', key: 'contact', label: 'Contact' })
+              }}
+              className="inline-flex h-12 w-full items-center justify-center overflow-hidden rounded-[2px] bg-[#1cc14b] px-2.5 py-2 text-base font-medium leading-6 text-neutral-50 no-underline transition-colors hover:bg-[#18ad43]"
             >
-              <span>EN</span>
-              <span className="opacity-40">|</span>
-              <span className="opacity-50">PL</span>
-            </button>
+              Request a Quote
+            </a>
           </div>
         </nav>
       </div>

@@ -116,7 +116,7 @@ const ArrowIcon: FC = () => (
 const RoleCard: FC<VacancyCard> = ({ department, title, href }) => (
   <Link
     href={href}
-    className="group relative flex h-[355px] min-w-[220px] flex-1 flex-col justify-between overflow-hidden bg-[#fafafa] p-3 transition-colors hover:bg-[#f0f0f0] lg:min-w-0"
+    className="group relative flex h-[260px] w-[153px] shrink-0 flex-col justify-between overflow-hidden bg-[#fafafa] p-3 transition-colors hover:bg-[#f0f0f0] sm:h-[355px] sm:min-w-[220px] sm:flex-1 lg:w-[208px] lg:min-w-[208px] lg:flex-none"
   >
     <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
       <Image
@@ -129,15 +129,15 @@ const RoleCard: FC<VacancyCard> = ({ department, title, href }) => (
       <div className="absolute inset-0 bg-black/5" />
     </div>
 
-    <div className="relative z-10 flex w-full justify-end text-[#0a0a0a] transition-colors duration-300 ">
+    <div className="relative z-10 flex w-full justify-start text-[#0a0a0a] transition-colors duration-300 sm:justify-end">
       <ArrowIcon />
     </div>
 
-    <div className="relative z-10 flex flex-col gap-[14px]">
-      <span className="font-mono text-[11px] font-normal uppercase leading-4 tracking-[1.8px] text-[#737373] transition-colors duration-300 ">
+    <div className="relative z-10 flex flex-col gap-3.5 sm:gap-[14px]">
+      <span className="font-mono text-[12px] font-normal uppercase leading-4 tracking-[1.8px] text-[#737373] transition-colors duration-300 sm:text-[11px]">
         {department}
       </span>
-      <span className="text-[clamp(22px,2.5vw,30px)] font-semibold leading-none text-[#0a0a0a] transition-colors duration-300 ">
+      <span className="text-[20px] font-semibold leading-none text-[#0a0a0a] transition-colors duration-300 sm:text-[clamp(22px,2.5vw,30px)]">
         {title}
       </span>
     </div>
@@ -145,31 +145,31 @@ const RoleCard: FC<VacancyCard> = ({ department, title, href }) => (
 )
 
 const HowToApply: FC = () => (
-  <div className="flex flex-col gap-1">
-    <div className="pt-[14px]">
-      <h3 className="text-2xl font-semibold leading-8 text-[#0a0a0a]">
+  <div className="flex flex-col gap-1 sm:pl-0">
+    <div className="pt-[14px] sm:pt-[14px]">
+      <h3 className="text-[20px] font-semibold leading-7 text-[#0a0a0a] sm:text-2xl sm:leading-8">
         Don&apos;t see your role listed?
       </h3>
     </div>
 
-    <div className="mt-1 flex flex-col gap-6">
-      <p className="text-base font-normal leading-6 text-[#0a0a0a]">
+    <div className="mt-1 flex flex-col gap-3 sm:gap-6">
+      <p className="text-[18px] font-semibold leading-7 text-[#737373] sm:text-[16px] sm:font-normal sm:leading-6 sm:text-[#0a0a0a]">
         Send your CV and a short description of your most relevant project (1-2
-        paragraphs) to
+        paragraphs) to <span className="text-[#0a0a0a]">office@equipra.eu</span>
       </p>
 
-      <div className="flex items-center gap-[9px]">
+      <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-[9px]">
         <a
-          href="mailto:sales@equipra.eu"
-          className="inline-flex h-8 items-center justify-center whitespace-nowrap rounded-[2px] bg-[#171717] px-[10px] py-2 text-sm font-medium leading-5 text-[#fafafa] transition-opacity hover:opacity-80"
+          href="mailto:office@equipra.eu"
+          className="inline-flex h-11 items-center justify-center whitespace-nowrap rounded-[2px] bg-[#171717] px-[10px] py-2 text-sm font-medium leading-5 text-[#fafafa] transition-opacity hover:opacity-80 sm:h-8"
         >
           Apply here
         </a>
 
-        <div className="h-[18px] w-px bg-[#e5e5e5]" aria-hidden="true" />
+        <div className="hidden h-[18px] w-px bg-[#e5e5e5] sm:block" aria-hidden="true" />
 
-        <span className="whitespace-nowrap text-sm font-normal leading-none text-[#0a0a0a]">
-          sales@equipra.eu
+        <span className="hidden whitespace-nowrap text-sm font-normal leading-none text-[#0a0a0a] sm:inline">
+          office@equipra.eu
         </span>
       </div>
     </div>
@@ -187,7 +187,7 @@ export function VacanciesPreview() {
     <section
       id="career"
       data-nav-section
-      className="w-full overflow-hidden bg-white py-16 lg:py-20"
+      className="landing-mobile-gradient w-full overflow-hidden py-8 sm:py-16 lg:py-20"
     >
       <div
         ref={headerRef}
@@ -200,7 +200,7 @@ export function VacanciesPreview() {
           transition: `opacity 0.88s ${easeOut}, transform 0.88s ${easeOut}`,
         }}
       >
-        <div className="mb-3 lg:absolute lg:left-[calc(50%+20px)] lg:-top-6">
+        <div className="mb-3 pl-16 lg:absolute lg:left-[calc(50%+20px)] lg:-top-6 lg:pl-0">
           <div className="flex items-center gap-3">
             <span
               aria-hidden="true"
@@ -212,15 +212,15 @@ export function VacanciesPreview() {
           </div>
         </div>
 
-        <div className="lg:pl-[calc(50%+20px)]">
-          <h2 className="text-[clamp(48px,7vw,84px)] font-semibold leading-[1.14] tracking-[-0.02em] text-[#0a0a0a]">
+        <div className="pl-16 lg:pl-[calc(50%+20px)]">
+          <h2 className="font-sans text-[32px] font-semibold leading-[32px] tracking-[-0.64px] text-[#0a0a0a] sm:text-[clamp(48px,7vw,84px)] sm:leading-[1.14] sm:tracking-[-0.02em]">
             Vacancies
           </h2>
         </div>
       </div>
 
       <div className="mx-auto mb-8 w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px] lg:grid lg:grid-cols-[calc(50%+20px)_minmax(0,1fr)] lg:gap-x-0">
-        <div className="flex w-[187px] shrink-0 flex-col items-end gap-7 lg:pr-8">
+        <div className="hidden w-[187px] shrink-0 flex-col items-end gap-7 lg:flex lg:pr-8">
           <div className="flex w-full flex-col items-end gap-2 text-right">
             <span className="text-lg font-semibold leading-none text-[#0a0a0a]">
               Open Roles
@@ -237,8 +237,8 @@ export function VacanciesPreview() {
           </div>
         </div>
 
-        <div className="mt-8 max-w-[640px] flex-1 lg:mt-0">
-          <p className="text-2xl font-semibold leading-8">
+        <div className="mt-8 max-w-[640px] flex-1 pl-16 lg:mt-0 lg:pl-0">
+          <p className="text-[18px] font-semibold leading-7 sm:text-2xl sm:leading-8">
             <span className="text-[#737373]">
               We are building teams for installation, welding, assembly, and
               commissioning
@@ -257,11 +257,31 @@ export function VacanciesPreview() {
         </div>
       </div>
 
-      <div className="mx-auto mb-8 w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px]">
-        <div className="scrollbar-none flex gap-[14px] overflow-x-auto pb-2">
+      <div className="mx-auto mb-8 w-full max-w-[1440px] overflow-hidden px-4 sm:px-8 md:px-[60px]">
+        <div className="-mx-4 flex snap-x snap-mandatory gap-3.5 overflow-x-auto px-4 pb-2 sm:mx-0 sm:gap-[14px] sm:px-0 sm:snap-none">
           {VACANCIES.map((vacancy, i) => (
-            <RoleCard key={`${vacancy.title}-${i}`} {...vacancy} />
+            <div key={`${vacancy.title}-${i}`} className="snap-start sm:flex-1">
+              <RoleCard {...vacancy} />
+            </div>
           ))}
+        </div>
+      </div>
+
+      <div className="mx-auto mb-8 w-full max-w-[1440px] px-4 sm:hidden">
+        <div className="flex items-start justify-between">
+          <div className="inline-flex h-11 flex-col items-start justify-start gap-2">
+            <div className="text-lg font-semibold leading-4 text-[#0a0a0a]">
+              Open Roles
+            </div>
+            <div className="text-lg font-semibold leading-4 text-[#737373]">
+              Industrial Installation
+            </div>
+          </div>
+          <div className="relative size-12 rounded-md bg-neutral-100">
+            <div className="absolute inset-0 flex items-center justify-center text-center text-base font-medium leading-4 text-[#737373]">
+              32+
+            </div>
+          </div>
         </div>
       </div>
 

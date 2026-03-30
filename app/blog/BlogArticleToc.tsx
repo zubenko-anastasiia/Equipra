@@ -82,7 +82,7 @@ export default function BlogArticleToc({ items }: { items: TocItem[] }) {
             type="button"
             onClick={() => scrollTo(item.id)}
             className={[
-              'rounded-full border px-3 py-2 text-sm transition-colors',
+              'rounded-[2px] border px-3 py-2 text-sm transition-colors',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400',
               activeSection === item.id
                 ? 'border-neutral-300 bg-neutral-100 text-neutral-900'

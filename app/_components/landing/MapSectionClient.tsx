@@ -206,14 +206,14 @@ export default function MapSectionClient({
       id="projects"
       data-nav-section
       ref={sectionRef}
-      className="relative overflow-hidden bg-background pb-12 pt-16 lg:pb-16 lg:pt-20"
+      className="relative overflow-hidden bg-background pb-8 pt-8 sm:pb-12 sm:pt-16 lg:pb-16 lg:pt-20"
       style={{ backgroundColor: "rgba(28, 193, 75, 0.01)" }}
     >
       <div
         className="relative w-full"
         style={{ backgroundColor: "rgba(28, 193, 75, 0.01)" }}
       >
-        <div className="h-[600px] overflow-hidden">
+        <div className="h-[760px] overflow-hidden sm:h-[600px]">
             <ComposableMap
               projection="geoMercator"
               projectionConfig={{
@@ -222,7 +222,7 @@ export default function MapSectionClient({
               }}
               style={{
                 width: "100%",
-                height: "600px",
+                height: "100%",
                 background: "transparent",
               }}
               viewBox="0 0 1000 600"
@@ -386,8 +386,8 @@ export default function MapSectionClient({
 
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10">
           <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px]">
-            <div className="inline-flex max-w-[634px] justify-center bg-white">
-              <div className="text-4xl font-medium leading-10 text-neutral-950">
+            <div className="inline-flex w-full justify-center bg-white p-0 sm:w-auto sm:max-w-[634px]">
+              <div className="w-full  pr-4 text-[24px] font-medium leading-8 text-neutral-950 sm:w-auto sm:pl-0 sm:pr-0 sm:text-4xl sm:leading-10">
                 From Europe to beyond, Equipra transforms complex challenges
                 into solutions.
               </div>
@@ -398,10 +398,49 @@ export default function MapSectionClient({
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10">
           <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px]">
             <div className="flex flex-col gap-4 pb-4 lg:flex-row lg:items-end lg:justify-between">
-              <div className="pointer-events-auto flex flex-wrap gap-2">
+              <div className="pointer-events-auto flex justify-start lg:hidden">
+                <div className="w-full max-w-full overflow-hidden rounded-[2px] border border-[#1CC14B] bg-[#fafafa] p-3 shadow-[0_18px_40px_rgba(12,32,21,0.1)]">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-mono text-[12px] font-normal uppercase leading-4 tracking-[1.8px] text-[#737373]">
+                        Project locations
+                      </p>
+                    </div>
+                    <div className="flex size-10 items-center justify-center rounded-[6px] bg-[#f5f5f5] text-sm font-medium leading-none text-[#737373]">
+                      {sortedProjects.length}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 max-h-[220px] overflow-y-auto pr-1">
+                    <div className="space-y-2">
+                      {sortedProjects.map((project) => (
+                        <div
+                          key={`${project.name}-${project.city}-mobile`}
+                          className="bg-white px-3 py-3"
+                        >
+                          <p className="font-mono text-[12px] font-normal uppercase leading-4 tracking-[1.8px] text-[#737373]">
+                            {project.countryName}
+                          </p>
+                          <p className="mt-[14px] text-[20px] font-semibold leading-none text-[#0a0a0a]">
+                            {project.name}
+                          </p>
+                          <p className="mt-3 text-[14px] font-normal leading-5 text-[#0a0a0a]">
+                            {project.city}
+                          </p>
+                          <p className="mt-1 text-[14px] font-normal leading-5 text-[#737373]">
+                            {project.yearLabel}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pointer-events-auto flex flex-col gap-2 sm:flex-row sm:flex-wrap lg:order-1">
                 <a
                   href="#contact"
-                  className="inline-flex h-9 shrink-0 items-center px-[20px] gap-1 rounded-[2px] border border-[#1cc14b] bg-[#1cc14b] no-underline transition-colors hover:bg-[#18ad43]"
+                  className="inline-flex h-11 shrink-0 items-center justify-center gap-1 rounded-[2px] border border-[#1cc14b] bg-[#1cc14b] px-[20px] no-underline transition-colors hover:bg-[#18ad43] sm:h-9 sm:justify-start"
                 >
                  
 
@@ -419,7 +458,7 @@ export default function MapSectionClient({
 
                 <a
                   href="#contact"
-                  className="inline-flex h-9 w-[177px] shrink-0 items-center gap-1 rounded-[2px] border border-[#e5e5e5] bg-white px-[9px] no-underline transition-colors hover:bg-neutral-100"
+                  className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-1 rounded-[2px] border border-[#e5e5e5] bg-white px-[9px] no-underline transition-colors hover:bg-neutral-100 sm:h-9 sm:w-[177px] sm:justify-start"
                 >
                   <span className="relative flex h-4 w-6 shrink-0 items-center justify-center text-black">
                     <FileIcon />
@@ -438,7 +477,7 @@ export default function MapSectionClient({
                 </a>
               </div>
 
-              <div className="flex justify-start lg:justify-end">
+              <div className="hidden justify-start lg:order-2 lg:flex lg:justify-end">
                 <div className="pointer-events-auto w-[320px] max-w-full overflow-hidden rounded-[2px] border border-[#1CC14B] bg-[#fafafa] p-3 shadow-[0_18px_40px_rgba(12,32,21,0.1)]">
                   <div className="flex items-center justify-between gap-3">
                     <div>

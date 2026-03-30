@@ -123,7 +123,7 @@ function BulletList({ items }: { items: string[] }) {
 
 export default function BlogArticlePage() {
   return (
-    <div className="flex flex-col bg-white pt-24 font-sans text-neutral-900 antialiased">
+    <div className="flex flex-col bg-white md:pt-24 pt-16 font-sans text-neutral-900 antialiased">
       <div className="flex-1">
         <div className="mx-auto max-w-5xl px-6 py-8 lg:px-12">
           <div className="mb-6">
@@ -155,7 +155,7 @@ export default function BlogArticlePage() {
                 />
               </div>
 
-              <div className="mb-8 lg:hidden">
+              <div className="mb-8 mt-7 lg:hidden">
                 <BlogArticleToc items={TOC_ITEMS} />
               </div>
 

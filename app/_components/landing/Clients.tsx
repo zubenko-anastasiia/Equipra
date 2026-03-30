@@ -83,6 +83,7 @@ interface LogoItem {
   w: number
   h: number
   blendDifference?: boolean
+  forceBlack?: boolean
 }
 
 interface ReferenceItem {
@@ -100,7 +101,7 @@ const LOGOS: LogoItem[] = [
     src: '/logo-paname.svg',
     w: 135,
     h: 30,
-    blendDifference: true,
+    forceBlack: true,
   },
   { alt: 'TZ Polfa', src: '/tzf_logo_dark%201.svg', w: 137, h: 30 },
   { alt: 'DS Smith', src: '/ds-logo-color.svg', w: 59, h: 40 },
@@ -109,7 +110,7 @@ const LOGOS: LogoItem[] = [
     src: '/Holmen%20white.svg',
     w: 170,
     h: 26,
-    blendDifference: true,
+    forceBlack: true,
   },
   { alt: 'Repsol', src: '/repsol.svg', w: 126, h: 32 },
 ]
@@ -164,36 +165,15 @@ const SectionLabel: FC = () => (
   </div>
 )
 
-const LogoPlaceholder: FC<{ logo: LogoItem; index: number }> = ({
-  logo,
-  index,
-}) => {
-  const { ref, inView } = useInView<HTMLDivElement>({
-    once: true,
-    rootMargin: '-30px 0px',
-    threshold: 0.2,
-  })
-  const [hovered, setHovered] = useState(false)
-
+const LogoPlaceholder: FC<{ logo: LogoItem }> = ({ logo }) => {
   return (
     <div
-      ref={ref}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       className={[
-        'relative flex min-w-0 flex-1 items-center justify-center',
+        'relative flex h-8 flex-none items-center justify-center sm:h-10',
         logo.blendDifference ? 'mix-blend-difference' : '',
       ]
         .filter(Boolean)
         .join(' ')}
-      style={{
-        height: 40,
-        opacity: inView ? 1 : 0,
-        transform: inView
-          ? `translate3d(${hovered ? 4 : 0}px, 0, 0)`
-          : 'translate3d(0, 22px, 0)',
-        transition: `opacity 0.62s ${easeOut} ${index * 0.05}s, transform 0.62s ${easeOut} ${index * 0.05}s, box-shadow 0.22s ease`,
-      }}
       aria-label={`${logo.alt} logo`}
     >
       <Image
@@ -201,17 +181,36 @@ const LogoPlaceholder: FC<{ logo: LogoItem; index: number }> = ({
         alt={logo.alt}
         width={logo.w}
         height={logo.h}
-        className="pointer-events-none h-auto max-h-full w-full select-none object-contain"
+        className={[
+          'pointer-events-none h-auto w-full select-none object-contain',
+          logo.alt === 'Holmen'
+            ? 'max-h-[16px] sm:max-h-full'
+            : 'max-h-[32px] sm:max-h-full',
+          logo.forceBlack ? 'brightness-0' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
       />
     </div>
   )
 }
 
 const LogoStrip: FC = () => (
-  <div className="w-full px-4">
-    <div className="flex w-full flex-wrap items-center gap-x-6 gap-y-8 py-2 sm:gap-x-8 lg:flex-nowrap lg:gap-10">
-      {LOGOS.map((logo, index) => (
-        <LogoPlaceholder key={logo.alt} logo={logo} index={index} />
+  <div className="w-full overflow-hidden px-0 sm:px-6">
+    <div className="overflow-hidden sm:hidden">
+      <div className="clients-logo-marquee flex w-max items-center gap-3 py-2">
+        {[...LOGOS, ...LOGOS].map((logo, index) => (
+          <LogoPlaceholder
+            key={`${logo.alt}-${index}`}
+            logo={logo}
+          />
+        ))}
+      </div>
+    </div>
+
+    <div className="hidden w-full flex-wrap items-center justify-center gap-x-8 gap-y-8 py-2 sm:flex lg:flex-nowrap lg:gap-10">
+      {LOGOS.map((logo) => (
+        <LogoPlaceholder key={logo.alt} logo={logo} />
       ))}
     </div>
   </div>
@@ -243,22 +242,24 @@ const ReferenceRow: FC<{ item: ReferenceItem; index: number }> = ({
     >
       <DrawLine inView={inView} delay={rowDelay + 0.08} color="#e5e5e5" />
       <div
-        className="flex items-center justify-between gap-4 py-[10px] lg:grid lg:grid-cols-[calc(50%+20px)_minmax(0,1fr)_auto] lg:gap-x-0"
+        className="flex items-start justify-between gap-4 py-2 lg:grid lg:grid-cols-[calc(50%+20px)_minmax(0,1fr)_auto] lg:items-center lg:gap-x-0 lg:py-[10px]"
         style={{
           transform: `translate3d(${hovered ? 6 : 0}px, 0, 0)`,
           transition: `transform 0.22s ${easeOut}`,
         }}
       >
-        <p className="w-[240px] shrink-0 text-lg font-semibold leading-7 text-[#0a0a0a] sm:w-[340px] lg:w-auto lg:pr-8">
-          {item.title}
-        </p>
+        <div className="flex max-w-[200px] flex-col gap-2 lg:contents">
+          <p className="shrink-0 text-[16px] font-semibold leading-none text-[#0a0a0a] sm:w-[340px] sm:text-lg sm:leading-7 lg:w-auto lg:pr-8">
+            {item.title}
+          </p>
 
-        <p className="truncate pr-4 text-sm font-medium leading-none text-[#737373]">
-          {item.scope}
-        </p>
+          <p className="text-[12px] font-medium leading-none text-[#737373] sm:truncate sm:pr-4 sm:text-sm">
+            {item.scope}
+          </p>
+        </div>
         <a
           href={item.href}
-          className="shrink-0 text-sm font-medium leading-none text-[#0a0a0a] underline decoration-solid underline-offset-2"
+          className="shrink-0 whitespace-nowrap text-[14px] font-medium leading-5 text-[#0a0a0a] underline decoration-solid underline-offset-2 sm:text-sm sm:leading-none"
           style={{
             opacity: hovered ? 0.7 : 1,
             transition: 'opacity 0.22s ease',
@@ -289,87 +290,106 @@ export function Clients() {
   })
 
   return (
-    <section
-      id="clients"
-      data-nav-section
-      className="w-full overflow-hidden bg-white py-16 lg:py-24"
-    >
-      <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-8">
-        <div
-          ref={headerRef}
-          className="relative"
-          style={{
-            opacity: headerInView ? 1 : 0,
-            transform: headerInView
-              ? 'translate3d(0, 0, 0)'
-              : 'translate3d(0, 34px, 0)',
-            transition: `opacity 0.88s ${easeOut}, transform 0.88s ${easeOut}`,
-          }}
-        >
-          <div className="mb-3 lg:absolute lg:left-[calc(50%+20px)] lg:-top-8">
-            <SectionLabel />
-          </div>
+    <>
+      <section
+        id="clients"
+        data-nav-section
+        className="landing-mobile-gradient w-full overflow-hidden py-8 sm:py-16 lg:py-24"
+      >
+        <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-8">
+          <div
+            ref={headerRef}
+            className="relative"
+            style={{
+              opacity: headerInView ? 1 : 0,
+              transform: headerInView
+                ? 'translate3d(0, 0, 0)'
+                : 'translate3d(0, 34px, 0)',
+              transition: `opacity 0.88s ${easeOut}, transform 0.88s ${easeOut}`,
+            }}
+          >
+            <div className="mb-3 pl-16 lg:absolute lg:left-[calc(50%+20px)] lg:-top-8 lg:pl-0">
+              <SectionLabel />
+            </div>
 
-          <div className="lg:pl-[calc(50%+20px)]">
-            <h2 className="text-[clamp(36px,5.5vw,60px)] font-medium leading-[1.05] tracking-[-0.02em] text-[#0a0a0a]">
-              Companies that trust us
-            </h2>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-12 lg:mt-14">
-        <div className="mx-auto w-full max-w-[1440px]">
-          <LogoStrip />
-        </div>
-      </div>
-
-      <div className="mx-auto mt-12 w-full max-w-[1440px] px-4 sm:px-8 lg:mt-14">
-        <div
-          ref={libraryRef}
-          className="flex justify-center lg:justify-start lg:pl-[calc(50%+20px)]"
-          style={{
-            opacity: libraryInView ? 1 : 0,
-            transform: libraryInView
-              ? 'translate3d(0, 0, 0)'
-              : 'translate3d(0, 34px, 0)',
-            transition: `opacity 0.88s ${easeOut}, transform 0.88s ${easeOut}`,
-          }}
-        >
-          <h3 className="mb-6 text-3xl font-semibold leading-9 text-[#0a0a0a]">
-            Reference Library
-          </h3>
-        </div>
-
-        <div className="w-full">
-          {REFERENCES.map((ref, index) => (
-            <ReferenceRow key={`${ref.title}-${index}`} item={ref} index={index} />
-          ))}
-          <div className="relative">
-            <DrawLine inView delay={REFERENCES.length * 0.06 + 0.08} color="#e5e5e5" />
-            <div className="h-px w-full opacity-0" role="separator" />
+            <div className="flex flex-col gap-3 pl-16 lg:pl-[calc(50%+20px)]">
+              <h2 className="w-full font-sans text-[32px] font-semibold leading-8 tracking-[-0.6px] text-[#0a0a0a] sm:w-auto sm:text-[clamp(36px,5.5vw,60px)] sm:font-medium sm:leading-[1.05] sm:tracking-[-0.02em]">
+                Companies that trust us
+              </h2>
+             
+            </div>
           </div>
         </div>
 
-        <div
-          ref={footerRef}
-          className="mt-10 flex flex-col gap-2 lg:pl-[calc(50%+20px)]"
-          style={{
-            opacity: footerInView ? 1 : 0,
-            transform: footerInView
-              ? 'translate3d(0, 0, 0)'
-              : 'translate3d(0, 18px, 0)',
-            transition: `opacity 0.6s ${easeOut} 0.08s, transform 0.6s ${easeOut} 0.08s`,
-          }}
-        >
-          <p className="text-sm font-semibold leading-none text-[#0a0a0a]">
-            Trusted across sectors
-          </p>
-          <p className="text-sm font-medium leading-none text-[#737373]">
-            25+ References
-          </p>
+        <div className="mt-8 sm:mt-12 lg:mt-14">
+          <div className="mx-auto w-full max-w-[1440px]">
+            <LogoStrip />
+          </div>
         </div>
-      </div>
-    </section>
+
+        <div className="mx-auto mt-8 w-full max-w-[1440px] px-4 sm:mt-12 sm:px-8 lg:mt-14">
+          <div
+            ref={libraryRef}
+            className="flex justify-start lg:justify-start lg:pl-[calc(50%+20px)]"
+            style={{
+              opacity: libraryInView ? 1 : 0,
+              transform: libraryInView
+                ? 'translate3d(0, 0, 0)'
+                : 'translate3d(0, 34px, 0)',
+              transition: `opacity 0.88s ${easeOut}, transform 0.88s ${easeOut}`,
+            }}
+          >
+            <h3 className="mb-3 text-center text-[20px] font-semibold leading-7 text-[#0a0a0a] sm:mb-6 sm:text-3xl sm:leading-9">
+              Reference Library
+            </h3>
+          </div>
+
+          <div className="w-full">
+            {REFERENCES.map((ref, index) => (
+              <ReferenceRow key={`${ref.title}-${index}`} item={ref} index={index} />
+            ))}
+            <div className="relative">
+              <DrawLine inView delay={REFERENCES.length * 0.06 + 0.08} color="#e5e5e5" />
+              <div className="h-px w-full opacity-0" role="separator" />
+            </div>
+          </div>
+
+          <div
+            ref={footerRef}
+            className="mt-8 flex items-start justify-between gap-4 sm:mt-10 sm:flex-col sm:gap-2 lg:pl-[calc(50%+20px)]"
+            style={{
+              opacity: footerInView ? 1 : 0,
+              transform: footerInView
+                ? 'translate3d(0, 0, 0)'
+                : 'translate3d(0, 18px, 0)',
+              transition: `opacity 0.6s ${easeOut} 0.08s, transform 0.6s ${easeOut} 0.08s`,
+            }}
+          >
+            <p className="text-[14px] font-medium leading-none text-[#0a0a0a] sm:text-sm sm:font-semibold">
+              Trusted across sectors
+            </p>
+            <p className="text-[14px] font-medium leading-none text-[#737373]">
+              25+ References
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <style jsx global>{`
+        .clients-logo-marquee {
+          animation: clients-logo-marquee-right 24s linear infinite;
+          will-change: transform;
+        }
+
+        @keyframes clients-logo-marquee-right {
+          from {
+            transform: translate3d(calc(-50% - 12px), 0, 0);
+          }
+          to {
+            transform: translate3d(0, 0, 0);
+          }
+        }
+      `}</style>
+    </>
   )
 }

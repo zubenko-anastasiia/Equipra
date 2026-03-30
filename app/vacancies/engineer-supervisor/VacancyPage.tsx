@@ -119,7 +119,7 @@ function BulletList({ items }: { items: string[] }) {
 
 export default function VacancyPage() {
   return (
-    <div className="flex flex-col bg-white pt-24 font-sans text-neutral-900 antialiased">
+    <div className="flex flex-col bg-white md:pt-24 pt-16 font-sans text-neutral-900 antialiased">
       <div className="flex-1">
         <div className="mx-auto max-w-5xl px-6 py-8 lg:px-12">
           <div className="mb-6">
@@ -152,7 +152,7 @@ export default function VacancyPage() {
                 />
               </div>
 
-              <div className="mb-8 lg:hidden">
+              <div className="mb-8 mt-7 lg:hidden">
                 <VacancyToc items={TOC_ITEMS} />
               </div>
 

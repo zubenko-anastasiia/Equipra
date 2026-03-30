@@ -79,7 +79,7 @@ const useInView = <T extends HTMLElement>(
 }
 
 const MonoLabel: FC<{ children: ReactNode }> = ({ children }) => (
-  <span className="font-mono text-[11px] font-normal uppercase leading-4 tracking-[1.8px] text-[#737373]">
+  <span className="font-mono text-[12px] font-normal uppercase leading-4 tracking-[1.8px] text-[#737373] sm:text-[11px]">
     {children}
   </span>
 )
@@ -404,7 +404,7 @@ const SubmitButton: FC = () => {
       disabled={status !== 'idle'}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="relative h-9 w-full overflow-hidden rounded-[2px] border-none text-center text-sm font-semibold leading-5 text-white"
+      className="relative h-11 w-full overflow-hidden rounded-[2px] border-none text-center text-sm font-semibold leading-5 text-white sm:h-9"
       style={{
         backgroundColor: status === 'success' ? '#1cc14b' : hovered ? '#1e1e1e' : '#0a0a0a',
         cursor: status === 'idle' ? 'pointer' : 'not-allowed',
@@ -451,7 +451,8 @@ const SubmitButton: FC = () => {
 const AnimatedSection: FC<{
   children: ReactNode
   delay?: number
-}> = ({ children, delay = 0 }) => {
+  className?: string
+}> = ({ children, delay = 0, className = '' }) => {
   const { ref, inView } = useInView<HTMLDivElement>({
     once: true,
     rootMargin: '-30px 0px',
@@ -461,6 +462,7 @@ const AnimatedSection: FC<{
   return (
     <div
       ref={ref}
+      className={className}
       style={{
         opacity: inView ? 1 : 0,
         transform: inView ? 'translate3d(0, 0, 0)' : 'translate3d(0, 18px, 0)',
@@ -480,7 +482,7 @@ const ContactForm: FC = () => {
   }
 
   return (
-    <div className="flex w-full flex-col gap-12">
+    <div className="flex w-full flex-col gap-10 sm:gap-12">
       <AnimatedSection>
         <div className="flex w-full items-center justify-between">
           <MonoLabel>Let&apos;s get connected</MonoLabel>
@@ -522,8 +524,8 @@ const ContactForm: FC = () => {
         />
 
         <AnimatedSection delay={0.25}>
-          <div className="flex flex-col items-start justify-between gap-6 pt-2 sm:flex-row sm:items-end">
-            <div className="flex items-center gap-10">
+          <div className="flex w-full flex-col items-start justify-between gap-6 pt-2 sm:flex-row sm:items-end">
+            <div className="order-2 flex w-full items-start justify-between sm:order-1 sm:w-auto sm:justify-start sm:gap-10">
               <div className="flex flex-col gap-1">
                 <MonoLabel>Email</MonoLabel>
                 <a
@@ -546,7 +548,7 @@ const ContactForm: FC = () => {
               </div>
             </div>
 
-            <div className="flex w-full shrink-0 flex-col gap-[18px] sm:w-[230px]">
+            <div className="order-1 flex w-full flex-col gap-[18px] sm:order-2 sm:w-[230px]">
               <PrivacyCheckbox checked={accepted} onChange={setAccepted} />
               <SubmitButton />
             </div>
@@ -566,9 +568,9 @@ export function Footer() {
 
   return (
     <footer id="contact" data-nav-section className="w-full bg-[#f5f5f5]">
-      <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center gap-3.5 pt-6">
+      <div className="flex w-full flex-col items-center gap-3.5 px-4 py-8 sm:mx-auto sm:max-w-[1440px] sm:px-0 sm:pt-6 sm:pb-0">
         <div className="flex w-full flex-col gap-6">
-          <div className="px-4 sm:px-8 md:px-[60px]">
+          <div className=" md:px-[60px]">
             <div
               ref={headerRef}
               className="lg:pl-[calc(50%+20px)]"
@@ -580,113 +582,115 @@ export function Footer() {
                 transition: `opacity 0.88s ${easeOut} 0.06s, transform 0.88s ${easeOut} 0.06s`,
               }}
             >
-              <h2 className="py-2.5 text-[clamp(44px,7vw,84px)] font-semibold leading-[1.14] tracking-[-0.02em] text-[#0a0a0a]">
+              <h2 className="py-0 text-[32px] font-semibold leading-8 tracking-[-0.64px] text-[#0a0a0a] sm:py-2.5 sm:text-[clamp(44px,7vw,84px)] sm:leading-[1.14] sm:tracking-[-0.02em]">
                 Contact us
               </h2>
             </div>
           </div>
 
-          <div className="flex flex-col items-start justify-between gap-16 px-4 pb-[60px] sm:px-8 md:px-[60px] lg:grid lg:grid-cols-[calc(50%+20px)_minmax(0,1fr)] lg:gap-x-0">
-            <AnimatedSection delay={0.08}>
-              <div className="flex w-full shrink-0 flex-col justify-between gap-10 lg:w-[414px]">
-                <div className="flex items-start gap-10">
-                  <div className="flex h-full w-[187px] shrink-0 flex-col justify-between gap-12">
-                    <div className="flex flex-col gap-12">
-                      <div className="flex flex-col gap-10">
-                        <MonoLabel>Legal</MonoLabel>
-                        <div className="flex flex-col gap-2.5">
-                          {LEGAL_LINKS.map((link) => (
-                            <AnimatedLink key={link.label} href={link.href}>
-                              {link.label}
-                            </AnimatedLink>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3.5">
-                      <AnimatedSocial
-                        href="https://linkedin.com"
-                        label="in"
-                        ariaLabel="LinkedIn"
-                      />
-                      <AnimatedSocial
-                        href="https://facebook.com"
-                        label="fb"
-                        ariaLabel="Facebook"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-12">
-                    <MonoLabel>Navigation</MonoLabel>
-                    <div className="flex flex-col gap-2.5">
-                      {NAV_LINKS.map((link) => (
-                        <AnimatedLink key={link.label} href={link.href}>
-                          {link.label}
-                        </AnimatedLink>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  <MonoLabel>Certifications</MonoLabel>
-                  <div className="flex flex-wrap gap-2">
-                    {CERTIFICATIONS.map((cert) => (
-                      <div
-                        key={cert}
-                        className="flex items-center justify-center bg-white p-3"
-                        style={{
-                          transition:
-                            'transform 0.18s ease, box-shadow 0.18s ease',
-                        }}
-                        onMouseEnter={(event) => {
-                          event.currentTarget.style.transform =
-                            'translate3d(0, -1px, 0)'
-                          event.currentTarget.style.boxShadow =
-                            '0 2px 8px rgba(0,0,0,0.06)'
-                        }}
-                        onMouseLeave={(event) => {
-                          event.currentTarget.style.transform =
-                            'translate3d(0, 0, 0)'
-                          event.currentTarget.style.boxShadow = 'none'
-                        }}
-                      >
-                        <span className="whitespace-nowrap text-sm font-semibold leading-none text-[#0a0a0a]">
-                          {cert}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <MonoLabel>Address</MonoLabel>
-                  <p className="text-sm font-semibold leading-5 text-[#0a0a0a]">
-                    Pulawska str. 77/U.5, 02-592 Warsaw, Poland
-                  </p>
-                </div>
+          <div className="flex flex-col items-start justify-between gap-8 pb-0 sm:gap-16  sm:pb-[60px] md:px-[60px] lg:grid lg:grid-cols-[calc(50%+20px)_minmax(0,1fr)] lg:gap-x-0">
+            <AnimatedSection delay={0.14} className="order-1 w-full lg:order-2">
+              <div className="w-full shrink-0 lg:w-auto lg:pl-0">
+                <ContactForm />
               </div>
             </AnimatedSection>
 
-            <AnimatedSection delay={0.14}>
-              <div className="w-full shrink-0 lg:w-auto lg:pl-0">
-                <ContactForm />
+            <AnimatedSection delay={0.08} className="order-2 w-full lg:order-1">
+              <div>
+                <div className="flex w-full shrink-0 flex-col justify-between gap-10 lg:w-[414px]">
+                  <div className="flex items-start gap-10">
+                    <div className="flex h-full flex-1 flex-col justify-between gap-12 sm:w-[187px] sm:shrink-0">
+                      <div className="flex flex-col gap-12">
+                        <div className="flex flex-col gap-10">
+                          <MonoLabel>Legal</MonoLabel>
+                          <div className="flex flex-col gap-2.5">
+                            {LEGAL_LINKS.map((link) => (
+                              <AnimatedLink key={link.label} href={link.href}>
+                                {link.label}
+                              </AnimatedLink>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3.5">
+                        <AnimatedSocial
+                          href="https://linkedin.com"
+                          label="in"
+                          ariaLabel="LinkedIn"
+                        />
+                        <AnimatedSocial
+                          href="https://facebook.com"
+                          label="fb"
+                          ariaLabel="Facebook"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex w-[142px] flex-col gap-12">
+                      <MonoLabel>Navigation</MonoLabel>
+                      <div className="flex flex-col gap-2.5">
+                        {NAV_LINKS.map((link) => (
+                          <AnimatedLink key={link.label} href={link.href}>
+                            {link.label}
+                          </AnimatedLink>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <MonoLabel>Certifications</MonoLabel>
+                    <div className="flex flex-wrap gap-2">
+                      {CERTIFICATIONS.map((cert) => (
+                        <div
+                          key={cert}
+                          className="flex items-center justify-center bg-white p-3"
+                          style={{
+                            transition:
+                              'transform 0.18s ease, box-shadow 0.18s ease',
+                          }}
+                          onMouseEnter={(event) => {
+                            event.currentTarget.style.transform =
+                              'translate3d(0, -1px, 0)'
+                            event.currentTarget.style.boxShadow =
+                              '0 2px 8px rgba(0,0,0,0.06)'
+                          }}
+                          onMouseLeave={(event) => {
+                            event.currentTarget.style.transform =
+                              'translate3d(0, 0, 0)'
+                            event.currentTarget.style.boxShadow = 'none'
+                          }}
+                        >
+                          <span className="whitespace-nowrap text-sm font-semibold leading-none text-[#0a0a0a]">
+                            {cert}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <MonoLabel>Address</MonoLabel>
+                    <p className="text-sm font-semibold leading-5 text-[#0a0a0a]">
+                      Pulawska str. 77/U.5, 02-592 Warsaw, Poland
+                    </p>
+                  </div>
+                </div>
               </div>
             </AnimatedSection>
           </div>
         </div>
 
-        <div className="w-full px-4 sm:px-8 md:px-[60px]">
+        <div className="w-full pt-4  md:px-[60px]">
           <div className="mb-3 h-px w-full bg-[#e5e5e5]" />
 
           <AnimatedSection delay={0.18}>
-            <div className="flex w-full items-end justify-between">
+            <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <p className="text-xs font-normal leading-4 text-[#0a0a0a]">
                 © 2026 Equipra. + HD™ Design Büro. All rights reserved.
               </p>
-              <p className="hidden text-right text-xs font-normal leading-4 text-[#0a0a0a] sm:block">
+              <p className="md:text-right text-left text-xs font-normal leading-4 text-[#0a0a0a]">
                 Pulawska str. 77/U.5, 02-592 Warsaw, Poland
               </p>
             </div>

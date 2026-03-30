@@ -83,7 +83,7 @@ function RevealLine({
 
 function SectionLabel() {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-3 pl-16 sm:pl-0">
       {/* Green accent bar */}
       <span
         aria-hidden="true"
@@ -119,11 +119,15 @@ function Heading({ inView }: { inView: boolean }) {
           </RevealLine>
         ))}
       </span>
-      <span className="sm:hidden">
+      <span className="flex flex-col gap-0 sm:hidden">
         <RevealLine inView={inView}>
-          <span>
-            Equipra supports the industries installations that keep production
-            running
+          <span className="block pl-16 text-[24px] leading-none">
+            Equipra supports
+          </span>
+        </RevealLine>
+        <RevealLine inView={inView} delay={0.06}>
+          <span className="block text-[24px] leading-tight">
+            the industries installations that keep production running
           </span>
         </RevealLine>
       </span>
@@ -133,15 +137,19 @@ function Heading({ inView }: { inView: boolean }) {
 
 function BodyText() {
   return (
-    <div className="space-y-4 text-[15px] leading-[1.6]">
+    <div className="space-y-4 pl-16 text-[16px] font-medium leading-6 sm:pl-0 sm:text-[15px] sm:font-normal sm:leading-[1.6]">
       <p>
-        <span className="font-medium text-[#0a0a0a]">
-          Equipra was built on a straightforward belief:
-        </span>{" "}
+        <span className="text-[#0a0a0a] sm:font-medium">Equipra was built </span>
+        <span className="text-[#0a0a0a] sm:font-medium">
+          on a straightforward belief:
+        </span>
         <span className="text-[#737373]">
+          {" "}
           that industrial clients deserve an installation partner who executes{" "}
         </span>
-        <span className="font-medium text-[#0a0a0a]">with the same precision</span>
+        <span className="text-[#0a0a0a] sm:font-medium">
+          with the same precision
+        </span>
         <span className="text-[#737373]">
           {" "}
           the engineers designed for — every time, on every project.
@@ -159,9 +167,9 @@ function BodyText() {
 
       <p>
         <span className="text-[#737373]">Today, we operate </span>
-        <span className="font-medium text-[#0a0a0a]">worldwide</span>
+        <span className="text-[#0a0a0a] sm:font-medium">worldwide</span>
         <span className="text-[#737373]"> — across </span>
-        <span className="font-medium text-[#0a0a0a]">
+        <span className="text-[#0a0a0a] sm:font-medium">
           food, pharma, processing, energy and data infrastructure
         </span>
         <span className="text-[#737373]">
@@ -175,25 +183,28 @@ function BodyText() {
 
 function VideoCard() {
   return (
-    <div className="flex flex-col items-end gap-[14px]">
+    <div className="flex w-full flex-col gap-2 sm:w-auto sm:items-end sm:gap-[14px]">
+      <p className="order-1 w-full pl-16 text-[14px] font-medium text-[#0a0a0a] sm:order-2 sm:w-auto sm:pl-0 sm:text-right sm:text-sm">
+        Watch how we work
+      </p>
       <Link
         href="https://www.youtube.com"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Watch how we work on YouTube"
-        className="group relative block w-[218px] h-[146px] overflow-hidden rounded-sm"
+        className="group order-2 relative block aspect-video w-full overflow-hidden rounded-none sm:order-1 sm:h-[146px] sm:w-[218px] sm:rounded-sm"
       >
         <Image
           src="/img3.webp"
           alt="Equipra project preview"
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
-          sizes="218px"
+          sizes="(min-width: 640px) 218px, 100vw"
         />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.28),transparent_45%),linear-gradient(0deg,rgba(12,32,21,0.2),rgba(12,32,21,0.2))]" />
         <div className="absolute inset-x-4 bottom-4 top-4 rounded-[2px] border border-white/40" />
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="flex h-[51px] w-[51px] items-center justify-center rounded-full bg-white/90 shadow-[0_10px_30px_rgba(0,0,0,0.18)] transition-transform duration-200 group-hover:scale-110">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-[0_10px_30px_rgba(0,0,0,0.18)] transition-transform duration-200 group-hover:scale-110 sm:h-[51px] sm:w-[51px]">
             <span
               aria-hidden="true"
               className="ml-1 h-0 w-0 border-b-[10px] border-l-[16px] border-t-[10px] border-b-transparent border-l-[#007321] border-t-transparent"
@@ -201,8 +212,6 @@ function VideoCard() {
           </div>
         </div>
       </Link>
-
-      <p className="text-sm font-medium text-[#0a0a0a]">Watch how we work</p>
     </div>
   );
 }
@@ -211,7 +220,7 @@ function StructuralIllustration({ inView }: { inView: boolean }) {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute left-0 top-0 h-[498px] w-[489px] mix-blend-multiply"
+      className="pointer-events-none absolute left-0 top-0 hidden h-[498px] w-[489px] mix-blend-multiply lg:block"
       style={{
         opacity: inView ? 1 : 0,
         transform: inView ? "translateY(0)" : "translateY(24px)",
@@ -247,15 +256,15 @@ export default function AboutSection() {
     <section
       id="about-us"
       data-nav-section
-      className="relative w-full overflow-hidden bg-white"
+      className="landing-mobile-gradient relative w-full overflow-hidden"
     >
-      <div className="mx-auto w-full max-w-[1440px] px-4 py-16 sm:px-8 md:px-[60px] lg:py-24">
+      <div className="mx-auto w-full max-w-[1440px] px-4 py-8 sm:px-8 sm:py-16 md:px-[60px] lg:py-24">
         {/* Decorative structural drawing — desktop only, absolutely positioned */}
 
         {/* ------------------------------------------------------------------ */}
         {/* Top label + heading                                                  */}
         {/* ------------------------------------------------------------------ */}
-        <div ref={headerRef} className="relative mb-16 flex flex-col gap-6">
+        <div ref={headerRef} className="relative mb-8 flex flex-col gap-8 sm:mb-16 sm:gap-6">
           {/* "About Company" label */}
           <div
             className="lg:pl-[clamp(220px,23.611vw,340px)]"
@@ -278,8 +287,8 @@ export default function AboutSection() {
         {/* Body content – right-aligned two-column block                        */}
         {/* ------------------------------------------------------------------ */}
         <div className="relative">
-          <div className="flex w-full flex-col gap-10 sm:flex-row sm:gap-10 lg:ml-[calc(50%+20px)] lg:grid lg:w-[calc(50%-20px)] lg:grid-cols-[minmax(0,299px)_285px] lg:gap-10">
-            <div className="-mt-[100px] lg:absolute lg:left-0 lg:top-0">
+          <div className="flex w-full flex-col gap-8 sm:flex-row sm:gap-10 lg:ml-[calc(50%+20px)] lg:grid lg:w-[calc(50%-20px)] lg:grid-cols-[minmax(0,299px)_285px] lg:gap-10">
+            <div className="-mt-[100px] hidden lg:absolute lg:left-0 lg:top-0 lg:block">
               <StructuralIllustration inView={headerInView} />
             </div>
             {/* Body copy column */}

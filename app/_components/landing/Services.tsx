@@ -170,14 +170,6 @@ const ServiceMedia: FC<{
   softenVideoEdges = false,
   softenVideoBottomEdge = false,
 }) => {
-  const [videoReady, setVideoReady] = useState(false)
-
-  useEffect(() => {
-    if (!showVideo) {
-      setVideoReady(false)
-    }
-  }, [showVideo])
-
   return (
     <div className="relative h-full w-full overflow-hidden bg-zinc-50">
       <Image
@@ -197,10 +189,9 @@ const ServiceMedia: FC<{
           playsInline
           preload="none"
           poster={imageSrc}
-          onCanPlay={() => setVideoReady(true)}
           className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-200 ${softenVideoBackground ? '[filter:brightness(0.985)_saturate(0.96)]' : ''}`}
           style={{
-            opacity: videoReady ? 1 : 0,
+            opacity: 1,
             transform: `scale(${videoScale})`,
           }}
         >
@@ -306,14 +297,135 @@ const ServiceRow: FC<{
         }
       }}
       onMouseLeave={() => setHovered(false)}
-      className="flex min-h-[298px] w-full items-start gap-[14px] lg:grid lg:grid-cols-[285px_calc(50%-293px)_minmax(0,1fr)_29px] lg:gap-x-[14px]"
+      className="flex w-full items-start gap-0 lg:grid lg:min-h-[298px] lg:grid-cols-[285px_calc(50%-293px)_minmax(0,1fr)_29px] lg:gap-x-[14px]"
       style={{
         opacity: inView ? 1 : 0,
         transform: inView ? 'translate3d(0, 0, 0)' : 'translate3d(0, 22px, 0)',
         transition: `opacity 0.62s ${easeOut} ${rowDelay}s, transform 0.62s ${easeOut} ${rowDelay}s`,
       }}
     >
-      <div className="relative flex w-[180px] shrink-0 items-start pt-5 sm:w-[220px] lg:w-[285px]">
+      <div className="relative flex w-16 shrink-0 items-start pt-6 md:hidden">
+        <span className="text-[20px] font-semibold leading-none text-[#737373]">
+          {num}
+        </span>
+      </div>
+
+      <div className="flex w-[264px] flex-col sm:hidden">
+        <div className="pt-5">
+          <p className="text-[18px] font-semibold leading-7 text-[#0a0a0a]">
+            {title}
+          </p>
+        </div>
+        <div className="border-t-[3px] border-black pt-5">
+          {bullets.map((bullet, i) => (
+            <div
+              key={bullet}
+              className={[
+                'flex items-center py-2.5',
+                i === 0 ? '' : 'border-t border-[#0a0a0a]',
+                i === bullets.length - 1 ? 'border-b border-[#0a0a0a]' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              <span className="whitespace-nowrap text-[14px] font-medium leading-5 text-[#0a0a0a]">
+                {bullet}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="pt-5">
+          <div className="relative h-[145px] w-full bg-zinc-50">
+            <Image
+              src={imageSrc}
+              alt={title}
+              fill
+              className="object-contain mix-blend-darken"
+              sizes="264px"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="hidden w-full items-start gap-[14px] md:flex lg:hidden">
+        <div className="relative w-[29px] shrink-0 pt-5">
+          <DrawLine inView={inView} delay={rowDelay + 0.08} color="#737373" />
+          <span className="text-xl font-semibold leading-none text-[#737373]">
+            {num}
+          </span>
+        </div>
+
+        <div className="relative flex min-w-0 w-[320px] shrink-0 flex-col pt-5">
+          <DrawLine inView={inView} delay={rowDelay + 0.13} />
+          <h3
+            className="pb-5 text-xl font-semibold leading-[1.33] text-[#0a0a0a] sm:text-2xl"
+            style={{
+              transform: `translate3d(${hovered ? 6 : 0}px, 0, 0)`,
+              transition: `transform 0.22s ${easeOut}`,
+            }}
+          >
+            {title}
+          </h3>
+          <div className="border-t-[3px] border-[#0a0a0a] pt-5">
+            {bullets.map((bullet, i) => (
+              <div
+                key={bullet}
+                className="relative flex w-full items-center"
+                style={{
+                  paddingTop: i === 0 ? 0 : 10,
+                  paddingBottom: 10,
+                  transform: `translate3d(${hovered ? 4 : 0}px, 0, 0)`,
+                  transition: `transform 0.22s ${easeOut} ${i * 0.025}s`,
+                }}
+              >
+                {i > 0 ? (
+                  <DrawLine
+                    inView={inView}
+                    delay={rowDelay + 0.17 + i * 0.04}
+                    color="#0a0a0a"
+                    thickness={1}
+                  />
+                ) : null}
+                {i === bullets.length - 1 ? (
+                  <div className="absolute inset-x-0 bottom-0 h-px overflow-hidden">
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: '#0a0a0a',
+                        transform: `scaleX(${inView ? 1 : 0})`,
+                        transformOrigin: '0 50%',
+                        transition: `transform 0.56s ${easeOut} ${rowDelay + 0.17 + i * 0.04}s`,
+                      }}
+                    />
+                  </div>
+                ) : null}
+                <span className="whitespace-nowrap text-base font-medium leading-6 text-[#0a0a0a]">
+                  {bullet}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative min-w-0 flex-1 self-stretch pt-5">
+          <DrawLine inView={inView} delay={rowDelay + 0.18} />
+          <div className="relative h-full min-h-[220px] w-full">
+            <ServiceMedia
+              imageSrc={imageSrc}
+              videoSrc={videoSrc}
+              alt={title}
+              showVideo={false}
+              videoScale={videoScale}
+              softenVideoBackground={softenVideoBackground}
+              softenVideoEdges={softenVideoEdges}
+              softenVideoBottomEdge={softenVideoBottomEdge}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="relative hidden w-[180px] shrink-0 items-start pt-5 lg:flex lg:w-[285px]">
         <DrawLine inView={inView} delay={rowDelay + 0.08} />
         <h3
           className="w-full text-xl font-semibold leading-[1.33] text-[#0a0a0a] sm:text-2xl"
@@ -326,7 +438,7 @@ const ServiceRow: FC<{
         </h3>
       </div>
 
-      <div className="relative flex w-[180px] shrink-0 flex-col pt-5 sm:w-[260px] lg:w-auto">
+      <div className="relative hidden w-[180px] shrink-0 flex-col pt-5 lg:flex lg:w-auto">
         <DrawLine inView={inView} delay={rowDelay + 0.13} />
         {bullets.map((bullet, i) => (
           <div
@@ -368,7 +480,7 @@ const ServiceRow: FC<{
         ))}
       </div>
 
-      <div className="relative hidden min-w-0 flex-1 self-stretch pt-5 sm:flex sm:flex-col lg:w-auto lg:flex-none">
+      <div className="relative hidden min-w-0 flex-1 self-stretch pt-5 lg:flex lg:w-auto lg:flex-none">
         <DrawLine inView={inView} delay={rowDelay + 0.18} />
         <div className="relative flex-1">
           <div className="h-full w-full">
@@ -386,7 +498,7 @@ const ServiceRow: FC<{
         </div>
       </div>
 
-      <div className="relative w-[29px] shrink-0 pt-5">
+      <div className="relative hidden w-[29px] shrink-0 pt-5 lg:block">
         <DrawLine inView={inView} delay={rowDelay + 0.23} color="#737373" />
         <span className="text-xl font-semibold leading-none text-[#737373]">
           {num}
@@ -404,8 +516,12 @@ export function Services() {
   })
 
   return (
-    <section id="services" data-nav-section className="w-full bg-white">
-      <div className="mx-auto w-full max-w-[1440px] px-4 py-16 sm:px-8 md:px-[60px] lg:py-20">
+    <section
+      id="services"
+      data-nav-section
+      className="landing-mobile-gradient w-full"
+    >
+      <div className="mx-auto w-full max-w-[1440px] px-4 py-8 sm:px-8 sm:py-16 md:px-[60px] lg:py-20">
         <div
           ref={headerRef}
           className="relative mb-8 lg:mb-10"
@@ -417,7 +533,7 @@ export function Services() {
             transition: `opacity 0.88s ${easeOut}, transform 0.88s ${easeOut}`,
           }}
         >
-          <div className="mb-3 flex items-center gap-3 lg:ml-[calc(50%+20px)] lg:-mt-1">
+          <div className="mb-3 flex items-center gap-3 pl-16 lg:ml-[calc(50%+20px)] lg:-mt-1 lg:pl-0">
             <span
               aria-hidden="true"
               className="block h-1 w-8 shrink-0 rounded-full bg-[#1cc14b]"
@@ -427,14 +543,14 @@ export function Services() {
             </span>
           </div>
 
-          <div className="lg:pl-[calc(50%+20px)]">
-            <h2 className="text-[clamp(44px,7vw,84px)] font-semibold leading-[1.14] tracking-[-0.02em] text-[#0a0a0a]">
+          <div className="pl-16 lg:pl-[calc(50%+20px)]">
+            <h2 className="font-sans text-[32px] font-semibold leading-[32px] tracking-[-0.64px] text-[#0a0a0a] sm:text-[clamp(44px,7vw,84px)] sm:leading-[1.14] sm:tracking-[-0.02em]">
               Services
             </h2>
           </div>
         </div>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-7 sm:gap-6">
           {SERVICES.map((service, index) => (
             <ServiceRow
               key={service.num}
