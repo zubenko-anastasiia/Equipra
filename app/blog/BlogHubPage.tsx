@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { blogPosts, type BlogPost } from './blogData'
+import { type BlogPostSummary } from './blogData'
 
 function BackButton() {
   return (
@@ -38,7 +38,7 @@ function formatDate(date: string) {
   }).format(new Date(date))
 }
 
-function BlogCard({ post }: { post: BlogPost }) {
+function BlogCard({ post }: { post: BlogPostSummary }) {
   return (
     <article className="group flex w-full flex-col gap-6 sm:flex-row sm:items-start sm:gap-6">
       <Link
@@ -79,15 +79,8 @@ function BlogCard({ post }: { post: BlogPost }) {
         </div>
 
         <footer className="flex items-center gap-4">
-          <div className="relative size-10 shrink-0 overflow-hidden rounded-md bg-neutral-100">
-            <Image
-              src={post.author.avatar}
-              alt={post.author.name}
-              fill
-              sizes="40px"
-              className="object-cover"
-              unoptimized
-            />
+          <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md bg-[linear-gradient(135deg,#f5f5f5_0%,#e5e5e5_55%,#d4d4d4_100%)] text-sm font-semibold text-neutral-600">
+            {post.author.name.charAt(0).toUpperCase()}
           </div>
           <div className="flex flex-col text-sm leading-5">
             <span className="font-medium text-neutral-950">{post.author.name}</span>
@@ -99,7 +92,19 @@ function BlogCard({ post }: { post: BlogPost }) {
   )
 }
 
-export default function BlogHubPage() {
+function EmptyState() {
+  return (
+    <div className="rounded-2xl border border-neutral-200 bg-neutral-50 px-6 py-8 text-sm leading-6 text-neutral-600">
+      <p className="font-medium text-neutral-900">No blog posts published yet.</p>
+      <p className="mt-2">
+        New project updates and company insights will appear here once they are
+        available.
+      </p>
+    </div>
+  )
+}
+
+export default function BlogHubPage({ posts }: { posts: BlogPostSummary[] }) {
   return (
     <div className="flex flex-col bg-white pt-16 font-sans text-neutral-900 antialiased md:pt-24">
       <div className="flex-1">
@@ -126,7 +131,8 @@ export default function BlogHubPage() {
 
             <div className="min-w-0 flex-1">
               <div className="flex flex-col gap-10 sm:gap-8">
-                {blogPosts.map((post) => (
+                {posts.length === 0 ? <EmptyState /> : null}
+                {posts.map((post) => (
                   <BlogCard key={post.slug} post={post} />
                 ))}
               </div>

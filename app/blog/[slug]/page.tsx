@@ -1,22 +1,23 @@
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
 import { Footer, Header } from '../../_components/landing'
 import BlogArticlePage from '../BlogArticlePage'
-import { blogPosts, getBlogPost } from '../blogData'
+import { getBlogPost, getBlogPosts } from '../blogData'
 
 export async function generateStaticParams() {
-  return blogPosts.map((post) => ({ slug: post.slug }))
+  const posts = await getBlogPosts()
+  return posts.map((post) => ({ slug: post.slug }))
 }
 
 export async function generateMetadata(
   props: PageProps<'/blog/[slug]'>
 ): Promise<Metadata> {
   const { slug } = await props.params
-  const post = getBlogPost(slug)
+  const post = await getBlogPost(slug)
 
   if (!post) {
     return {
       title: 'Article Not Found',
+      description: 'The requested Equipra blog article could not be found.',
     }
   }
 
@@ -31,11 +32,7 @@ export async function generateMetadata(
 
 export default async function BlogPostRoute(props: PageProps<'/blog/[slug]'>) {
   const { slug } = await props.params
-  const post = getBlogPost(slug)
-
-  if (!post) {
-    notFound()
-  }
+  const post = await getBlogPost(slug)
 
   return (
     <>
