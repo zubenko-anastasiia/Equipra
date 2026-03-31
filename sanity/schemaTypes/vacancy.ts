@@ -44,6 +44,7 @@ export const vacancy = defineType({
       title: 'Image',
       type: 'image',
       options: { hotspot: true },
+      validation: (Rule) => Rule.required().error('An image is required before publishing.'),
     }),
     defineField({
       name: 'description',

@@ -39,6 +39,7 @@ export const blogPost = defineType({
       title: 'Cover image',
       type: 'image',
       options: { hotspot: true },
+      validation: (Rule) => Rule.required().error('A cover image is required before publishing.'),
     }),
     defineField({
       name: 'publishedAt',

@@ -2,9 +2,7 @@ import {
   Header,
   Intro,
   AboutCompany,
-  ImageSectionOne,
   Industries,
-  ImageSectionTwo,
   Services,
   MapSection,
   Clients,
@@ -12,8 +10,19 @@ import {
   Footer,
 } from './_components/landing'
 import QualityAssurance from './_components/landing/QualityAssurance'
+import { getVacancies } from './vacancies/vacancyData'
 
-export default function HomePage() {
+export default async function HomePage() {
+  const vacancies = await getVacancies()
+  const previewVacancies = vacancies
+    .slice(0, 6)
+    .map((vacancy) => ({
+      department: vacancy.department,
+      title: vacancy.title,
+      href: `/vacancies/${vacancy.slug}`,
+    }))
+    .reverse()
+
   return (
     <>
       <Header />
@@ -27,7 +36,7 @@ export default function HomePage() {
         <Services />
         <MapSection />
         <Clients />
-        <VacanciesPreview />
+        <VacanciesPreview vacancies={previewVacancies} />
       </main>
       <Footer />
     </>

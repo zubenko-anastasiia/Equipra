@@ -61,41 +61,6 @@ interface VacancyCard {
   href: string
 }
 
-const VACANCY_DETAIL_HREF = '/vacancies/engineer-supervisor'
-
-const VACANCIES: VacancyCard[] = [
-  {
-    department: 'SITE EXECUTION',
-    title: 'Mechanical Fitter',
-    href: VACANCY_DETAIL_HREF,
-  },
-  {
-    department: 'PROJECT DELIVERY',
-    title: 'Engineer Supervisor',
-    href: VACANCY_DETAIL_HREF,
-  },
-  {
-    department: 'WELDING OPERATIONS',
-    title: 'Certified Welder',
-    href: VACANCY_DETAIL_HREF,
-  },
-  {
-    department: 'WELDING OPERATIONS',
-    title: 'Certified Welder',
-    href: VACANCY_DETAIL_HREF,
-  },
-  {
-    department: 'WELDING OPERATIONS',
-    title: 'Certified Welder',
-    href: VACANCY_DETAIL_HREF,
-  },
-  {
-    department: 'WELDING OPERATIONS',
-    title: 'Certified Welder',
-    href: VACANCY_DETAIL_HREF,
-  },
-]
-
 const ArrowIcon: FC = () => (
   <svg
     viewBox="0 0 24 24"
@@ -116,7 +81,7 @@ const ArrowIcon: FC = () => (
 const RoleCard: FC<VacancyCard> = ({ department, title, href }) => (
   <Link
     href={href}
-    className="group relative flex h-[260px] w-[153px] shrink-0 flex-col justify-between overflow-hidden bg-[#fafafa] p-3 transition-colors hover:bg-[#f0f0f0] sm:h-[355px] sm:min-w-[220px] sm:flex-1 lg:w-[208px] lg:min-w-[208px] lg:flex-none"
+    className="group relative flex h-[260px] w-[153px] shrink-0 flex-col justify-between overflow-hidden bg-[#fafafa] p-3 transition-colors hover:bg-[#f0f0f0] sm:h-[355px] sm:w-[220px] sm:min-w-[220px] lg:w-[208px] lg:min-w-[208px]"
   >
     <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
       <Image
@@ -176,12 +141,13 @@ const HowToApply: FC = () => (
   </div>
 )
 
-export function VacanciesPreview() {
+export function VacanciesPreview({ vacancies }: { vacancies: VacancyCard[] }) {
   const { ref: headerRef, inView: headerInView } = useInView<HTMLDivElement>({
     once: true,
     rootMargin: '-60px 0px',
     threshold: 0.2,
   })
+  const hasVacancies = vacancies.length > 0
 
   return (
     <section
@@ -220,24 +186,36 @@ export function VacanciesPreview() {
       </div>
 
       <div className="mx-auto mb-8 w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px] lg:grid lg:grid-cols-[calc(50%+20px)_minmax(0,1fr)] lg:gap-x-0">
-        <div className="hidden w-[187px] shrink-0 flex-col items-end gap-7 lg:flex lg:pr-8">
-          <div className="flex w-full flex-col items-end gap-2 text-right">
-            <span className="text-lg font-semibold leading-none text-[#0a0a0a]">
-              Open Roles
-            </span>
-            <span className="text-lg font-semibold leading-none text-[#737373]">
-              Industrial Installation
-            </span>
-          </div>
+        {hasVacancies ? (
+          <div className="hidden w-[187px] shrink-0 flex-col items-end gap-7 lg:flex lg:pr-8">
+            <div className="flex w-full flex-col items-end gap-2 text-right">
+              <span className="text-lg font-semibold leading-none text-[#0a0a0a]">
+                Open Roles
+              </span>
+              <span className="text-lg font-semibold leading-none text-[#737373]">
+                Industrial Installation
+              </span>
+            </div>
 
-          <div className="flex size-12 items-center justify-center rounded-[6px] bg-[#f5f5f5]">
-            <span className="text-center text-base font-medium leading-none text-[#737373]">
-              32+
-            </span>
+            <Link
+              href="/vacancies"
+              className="group flex size-12 items-center justify-center rounded-[6px] bg-[#f5f5f5] transition-colors hover:bg-[#1cc14b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400"
+              aria-label="View all vacancies"
+            >
+              <span className="text-center text-base font-medium leading-none text-[#737373] transition-colors group-hover:text-white">
+                {vacancies.length}+
+              </span>
+            </Link>
           </div>
-        </div>
+        ) :           <div className="hidden w-[187px] shrink-0 flex-col items-end gap-7 lg:flex lg:pr-8">
+</div>}
 
-        <div className="mt-8 max-w-[640px] flex-1 pl-16 lg:mt-0 lg:pl-0">
+        <div
+          className={[
+            'mt-8 max-w-[640px] flex-1',
+            hasVacancies ? ' lg:mt-0 lg:pl-0' : ' lg:mt-0 ',
+          ].join(' ')}
+        >
           <p className="text-[18px] font-semibold leading-7 sm:text-2xl sm:leading-8">
             <span className="text-[#737373]">
               We are building teams for installation, welding, assembly, and
@@ -258,32 +236,40 @@ export function VacanciesPreview() {
       </div>
 
       <div className="mx-auto mb-8 w-full max-w-[1440px] overflow-hidden px-4 sm:px-8 md:px-[60px]">
-        <div className="-mx-4 flex snap-x snap-mandatory gap-3.5 overflow-x-auto px-4 pb-2 sm:mx-0 sm:gap-[14px] sm:px-0 sm:snap-none">
-          {VACANCIES.map((vacancy, i) => (
-            <div key={`${vacancy.title}-${i}`} className="snap-start sm:flex-1">
-              <RoleCard {...vacancy} />
-            </div>
-          ))}
-        </div>
+        {hasVacancies ? (
+          <div className="-mx-4 flex snap-x snap-mandatory justify-end gap-3.5 overflow-x-auto px-4 pb-2 sm:mx-0 sm:gap-[14px] sm:px-0 sm:snap-none">
+            {vacancies.map((vacancy, i) => (
+              <div key={`${vacancy.title}-${i}`} className="snap-start sm:flex-none">
+                <RoleCard {...vacancy} />
+              </div>
+            ))}
+          </div>
+        ) : null}
       </div>
 
-      <div className="mx-auto mb-8 w-full max-w-[1440px] px-4 sm:hidden">
-        <div className="flex items-start justify-between">
-          <div className="inline-flex h-11 flex-col items-start justify-start gap-2">
-            <div className="text-lg font-semibold leading-4 text-[#0a0a0a]">
-              Open Roles
+      {hasVacancies ? (
+        <div className="mx-auto mb-8 w-full max-w-[1440px] px-4 sm:hidden">
+          <div className="flex items-start justify-between">
+            <div className="inline-flex h-11 flex-col items-start justify-start gap-2">
+              <div className="text-lg font-semibold leading-4 text-[#0a0a0a]">
+                Open Roles
+              </div>
+              <div className="text-lg font-semibold leading-4 text-[#737373]">
+                Industrial Installation
+              </div>
             </div>
-            <div className="text-lg font-semibold leading-4 text-[#737373]">
-              Industrial Installation
-            </div>
-          </div>
-          <div className="relative size-12 rounded-md bg-neutral-100">
-            <div className="absolute inset-0 flex items-center justify-center text-center text-base font-medium leading-4 text-[#737373]">
-              32+
-            </div>
+            <Link
+              href="/vacancies"
+              className="group relative size-12 rounded-md bg-neutral-100 transition-colors hover:bg-[#1cc14b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400"
+              aria-label="View all vacancies"
+            >
+              <div className="absolute inset-0 flex items-center justify-center text-center text-base font-medium leading-4 text-[#737373] transition-colors group-hover:text-white">
+                {vacancies.length}+
+              </div>
+            </Link>
           </div>
         </div>
-      </div>
+      ) : null}
 
       <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px]">
         <div className="lg:pl-[calc(50%+20px)]">
