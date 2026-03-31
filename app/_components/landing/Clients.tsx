@@ -174,6 +174,7 @@ const LogoPlaceholder: FC<{ logo: LogoItem }> = ({ logo }) => {
       ]
         .filter(Boolean)
         .join(' ')}
+      style={{ width: logo.w, maxWidth: '100%' }}
       aria-label={`${logo.alt} logo`}
     >
       <Image
@@ -181,6 +182,9 @@ const LogoPlaceholder: FC<{ logo: LogoItem }> = ({ logo }) => {
         alt={logo.alt}
         width={logo.w}
         height={logo.h}
+        unoptimized
+        loading="eager"
+        sizes={`${logo.w}px`}
         className={[
           'pointer-events-none h-auto w-full select-none object-contain',
           logo.alt === 'Holmen'
@@ -379,6 +383,8 @@ export function Clients() {
         .clients-logo-marquee {
           animation: clients-logo-marquee-right 24s linear infinite;
           will-change: transform;
+          transform: translate3d(0, 0, 0);
+          backface-visibility: hidden;
         }
 
         @keyframes clients-logo-marquee-right {
@@ -387,6 +393,12 @@ export function Clients() {
           }
           to {
             transform: translate3d(0, 0, 0);
+          }
+        }
+
+        @media (max-width: 639px) {
+          .clients-logo-marquee {
+            animation-duration: 32s;
           }
         }
       `}</style>
