@@ -25,7 +25,7 @@ const HEADER_NAV_ITEMS: HeaderNavItem[] = [
   { id: 'projects', key: 'projects', label: 'Projects' },
   { id: 'career', key: 'career', label: 'Career' },
   { id: 'contact', key: 'contact', label: 'Contact' },
-    { id: 'blog', key: 'blog', label: 'Blog', href: '/blog', isRoute: true },
+  { id: 'blog', key: 'blog', label: 'Blog', href: '/blog', isRoute: true },
 
 ]
 

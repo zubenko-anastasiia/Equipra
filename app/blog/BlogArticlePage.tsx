@@ -1,43 +1,13 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import BlogArticleToc, { type TocItem } from './BlogArticleToc'
-
-const TOC_ITEMS: TocItem[] = [
-  { id: 'project-overview', label: 'Project Overview' },
-  { id: 'scope-of-electrical-works', label: 'Scope of Electrical Works' },
-  { id: 'coordination-and-compliance', label: 'Coordination and Compliance' },
-  {
-    id: 'international-project-delivery',
-    label: 'International Project Delivery',
-  },
-]
-
-function ImagePlaceholder({
-  label,
-  className,
-}: {
-  label: string
-  className?: string
-}) {
-  return (
-    <div
-      aria-label={label}
-      role="img"
-      className={[
-        'bg-neutral-200',
-        'bg-[linear-gradient(135deg,#e5e5e5_0%,#f5f5f5_55%,#d4d4d4_100%)]',
-        className,
-      ]
-        .filter(Boolean)
-        .join(' ')}
-    />
-  )
-}
+import { type ArticleBlock, type BlogPost } from './blogData'
 
 function BackButton() {
   return (
     <Link
-      href="/"
+      href="/blog"
       scroll
       className="inline-flex items-center gap-1.5 rounded-[2px] border border-neutral-300 bg-white px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-400 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400"
     >
@@ -63,18 +33,26 @@ function BackButton() {
   )
 }
 
-function AuthorTag() {
+function AuthorTag({ post }: { post: BlogPost }) {
   return (
     <div className="flex items-center gap-3">
-      <ImagePlaceholder
-        label="Equipra Team avatar placeholder"
-        className="size-9 shrink-0 overflow-hidden rounded-full"
-      />
+      <div className="relative size-9 shrink-0 overflow-hidden rounded-full bg-neutral-100">
+        <Image
+          src={post.author.avatar}
+          alt={post.author.name}
+          fill
+          sizes="36px"
+          className="object-cover"
+          unoptimized
+        />
+      </div>
       <div className="flex flex-col">
         <span className="text-sm font-semibold leading-tight text-neutral-900">
-          Equipra Team
+          {post.author.name}
         </span>
-        <span className="text-xs leading-tight text-neutral-500">Company News</span>
+        <span className="text-xs leading-tight text-neutral-500">
+          {post.author.role}
+        </span>
       </div>
     </div>
   )
@@ -121,9 +99,47 @@ function BulletList({ items }: { items: string[] }) {
   )
 }
 
-export default function BlogArticlePage() {
+function renderBlock(block: ArticleBlock, key: string) {
+  if (block.type === 'paragraph') {
+    return (
+      <p key={key} className="mb-4 text-sm leading-relaxed text-neutral-700">
+        {block.content}
+      </p>
+    )
+  }
+
+  if (block.type === 'quote') {
+    return <Blockquote key={key}>{block.content}</Blockquote>
+  }
+
   return (
-    <div className="flex flex-col bg-white md:pt-24 pt-16 font-sans text-neutral-900 antialiased">
+    <div key={key}>
+      {block.title ? (
+        <h3 className="mb-3 text-base font-semibold text-neutral-900">
+          {block.title}
+        </h3>
+      ) : null}
+      <BulletList items={block.items} />
+    </div>
+  )
+}
+
+function formatDate(date: string) {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date(date))
+}
+
+export default function BlogArticlePage({ post }: { post: BlogPost }) {
+  const tocItems: TocItem[] = post.sections.map((section) => ({
+    id: section.id,
+    label: section.label,
+  }))
+
+  return (
+    <div className="flex flex-col bg-white pt-16 font-sans text-neutral-900 antialiased md:pt-24">
       <div className="flex-1">
         <div className="mx-auto max-w-5xl px-6 py-8 lg:px-12">
           <div className="mb-6">
@@ -132,138 +148,56 @@ export default function BlogArticlePage() {
 
           <div className="flex flex-col gap-10 lg:flex-row lg:gap-16">
             <article className="min-w-0 flex-1 pb-24">
-              <p className="mb-2 text-sm text-neutral-500">Articles</p>
+              <div className="mb-2 flex items-center gap-2 text-sm text-neutral-500">
+                <time dateTime={post.date}>{formatDate(post.date)}</time>
+                <span aria-hidden="true">·</span>
+                <span>{post.category}</span>
+              </div>
 
               <h1 className="mb-4 text-4xl font-bold leading-[1.15] tracking-tight text-neutral-900 lg:text-[2.5rem]">
-                Equipra Begins Electrical Installation Works in Portugal
+                {post.title}
               </h1>
 
               <p className="mb-6 text-sm leading-relaxed text-neutral-500">
-                Equipra has commenced electrical installation works as part of the
-                Sines Industrial Complex expansion in Portugal, reinforcing its role
-                in large-scale international industrial projects.
+                {post.excerpt}
               </p>
 
               <div className="mb-7">
-                <AuthorTag />
+                <AuthorTag post={post} />
               </div>
 
-              <div className="mb-8 overflow-hidden rounded-xl">
-                <ImagePlaceholder
-                  label="Sines Industrial Complex aerial view placeholder"
-                  className="aspect-[16/9] w-full"
+              <div className="relative mb-8 aspect-[16/9] overflow-hidden rounded-xl bg-neutral-100">
+                <Image
+                  src={post.image}
+                  alt={post.title}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 768px"
+                  className="object-cover"
+                  unoptimized
                 />
               </div>
 
               <div className="mb-8 mt-7 lg:hidden">
-                <BlogArticleToc items={TOC_ITEMS} />
+                <BlogArticleToc items={tocItems} />
               </div>
 
               <p className="mb-8 text-sm leading-relaxed text-neutral-700">
-                Equipra has begun electrical installation works in Portugal as a
-                subcontractor within the expansion project of the Sines Industrial
-                Complex, operated by Repsol. The project involves the expansion of
-                production capacity at the Sines site, including the development of
-                new industrial units focused on advanced polymer materials.
+                {post.intro}
               </p>
 
-              <SectionHeading id="project-overview">Project Overview</SectionHeading>
-              <p className="mb-4 text-sm leading-relaxed text-neutral-700">
-                This investment forms part of Repsol&apos;s broader industrial
-                development program in Portugal, aimed at strengthening operational
-                efficiency and technological capabilities. The project encompasses
-                the development of new industrial units focused on advanced polymer
-                materials at the Sines site.
-              </p>
-              <Blockquote>
-                &ldquo;Participation in this project reflects Equipra&apos;s continued
-                involvement in international industrial developments, where precision,
-                execution discipline, and adherence to project timelines remain key
-                priorities.&rdquo;
-              </Blockquote>
-
-              <SectionHeading id="scope-of-electrical-works">
-                Scope of Electrical Works
-              </SectionHeading>
-              <p className="mb-4 text-sm leading-relaxed text-neutral-700">
-                Within the scope of its engagement, Equipra is responsible for
-                executing electrical installation works across the Sines expansion
-                site.
-              </p>
-
-              <h3 className="mb-3 text-base font-semibold text-neutral-900">
-                Work Scope
-              </h3>
-              <BulletList
-                items={[
-                  'Installation of cable trays and cable routing systems',
-                  'Power and distribution equipment installation',
-                  'Electrical system connections',
-                  'Ensuring compliance with technical specifications and site safety standards',
-                ]}
-              />
-
-              <SectionHeading id="coordination-and-compliance">
-                Coordination and Compliance
-              </SectionHeading>
-              <BulletList
-                items={[
-                  'All works carried out in coordination with the general contractor',
-                  'Collaboration with other project stakeholders',
-                  'Adherence to local regulations and established safety procedures',
-                  'Compliance with technical specifications and site safety standards',
-                ]}
-              />
-
-              <SectionHeading id="international-project-delivery">
-                International Project Delivery
-              </SectionHeading>
-              <BulletList
-                items={[
-                  'Precision and execution discipline as key priorities',
-                  'Strict adherence to project timelines',
-                  'Continued involvement in international industrial developments',
-                  'Supporting the expansion of production capacity at major industrial sites',
-                ]}
-              />
-
-              <h2 className="mb-4 mt-10 text-xl font-bold text-neutral-900">
-                About the Sines Industrial Complex
-              </h2>
-              <p className="mb-8 text-sm leading-relaxed text-neutral-700">
-                The Sines Industrial Complex is operated by Repsol and is undergoing
-                a significant expansion of production capacity. The investment forms
-                part of Repsol&apos;s broader industrial development program in
-                Portugal, aimed at strengthening operational efficiency and
-                technological capabilities across the site.
-              </p>
-
-              <h2 className="mb-3 mt-10 text-xl font-bold text-neutral-900">
-                How to Apply
-              </h2>
-              <p className="mb-2 text-sm leading-relaxed text-neutral-700">
-                Send your CV and a short description of your most relevant project
-                (1-2 paragraphs) to
-              </p>
-                <div className="flex items-center gap-[9px]">
-        <a
-          href="mailto:sales@equipra.eu"
-          className="inline-flex h-8 items-center justify-center whitespace-nowrap rounded-[2px] bg-[#171717] px-[10px] py-2 text-sm font-medium leading-5 text-[#fafafa] transition-opacity hover:opacity-80"
-        >
-          Apply here
-        </a>
-
-        <div className="h-[18px] w-px bg-[#e5e5e5]" aria-hidden="true" />
-
-        <span className="whitespace-nowrap text-sm font-normal leading-none text-[#0a0a0a]">
-          sales@equipra.eu
-        </span>
-      </div>
+              {post.sections.map((section) => (
+                <div key={section.id}>
+                  <SectionHeading id={section.id}>{section.heading}</SectionHeading>
+                  {section.body.map((block, index) =>
+                    renderBlock(block, `${section.id}-${index}`)
+                  )}
+                </div>
+              ))}
             </article>
 
             <aside className="hidden w-52 shrink-0 lg:block">
               <div className="sticky top-8 pt-[calc(1.75rem+1.5rem+2px)]">
-                <BlogArticleToc items={TOC_ITEMS} />
+                <BlogArticleToc items={tocItems} />
               </div>
             </aside>
           </div>

@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 import { Footer, Header } from '../_components/landing'
-import BlogArticlePage from './BlogArticlePage'
+import BlogHubPage from './BlogHubPage'
 
 export const metadata: Metadata = {
   title: 'Blog',
   description:
-    'Example Equipra blog article covering international electrical installation works in Portugal.',
+    'Latest Equipra news, updates, partnerships, certifications, and industry insights.',
   alternates: {
     canonical: '/blog',
   },
@@ -14,9 +14,9 @@ export const metadata: Metadata = {
 export default function BlogPage() {
   return (
     <>
-      <Header />
+      <Header activeItem="blog" />
       <main>
-        <BlogArticlePage />
+        <BlogHubPage />
       </main>
       <Footer />
     </>
