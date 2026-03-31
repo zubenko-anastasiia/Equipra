@@ -2,6 +2,7 @@ import { PortableText, type PortableTextComponents } from '@portabletext/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
+import VacancyApplyButton from './VacancyApplyButton'
 import VacancyToc, { type TocItem } from './engineer-supervisor/VacancyToc'
 import { type Vacancy } from './vacancyData'
 
@@ -236,12 +237,7 @@ export default function VacancyArticlePage({ vacancy }: { vacancy: Vacancy | nul
                   experience (1-2 paragraphs) to
                 </p>
                 <div className="flex items-center gap-[9px]">
-                  <a
-                    href="mailto:office@equipra.eu"
-                    className="inline-flex h-8 items-center justify-center whitespace-nowrap rounded-[2px] bg-[#171717] px-[10px] py-2 text-sm font-medium leading-5 text-[#fafafa] transition-opacity hover:opacity-80"
-                  >
-                    Apply here
-                  </a>
+                  <VacancyApplyButton />
 
                   <div className="h-[18px] w-px bg-[#e5e5e5]" aria-hidden="true" />
 

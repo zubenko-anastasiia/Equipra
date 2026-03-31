@@ -1,6 +1,7 @@
 'use client'
 
 import type { FC } from 'react'
+import CareerApplicationModal from '@/app/_components/CareerApplicationModal'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
@@ -78,6 +79,7 @@ const ArrowIcon: FC = () => (
   </svg>
 )
 
+
 const RoleCard: FC<VacancyCard> = ({ department, title, href }) => (
   <Link
     href={href}
@@ -109,7 +111,7 @@ const RoleCard: FC<VacancyCard> = ({ department, title, href }) => (
   </Link>
 )
 
-const HowToApply: FC = () => (
+const HowToApply: FC<{ onApplyClick: () => void }> = ({ onApplyClick }) => (
   <div className="flex flex-col gap-1 sm:pl-0">
     <div className="pt-[14px] sm:pt-[14px]">
       <h3 className="text-[20px] font-semibold leading-7 text-[#0a0a0a] sm:text-2xl sm:leading-8">
@@ -124,12 +126,13 @@ const HowToApply: FC = () => (
       </p>
 
       <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-[9px]">
-        <a
-          href="mailto:office@equipra.eu"
-          className="inline-flex h-11 items-center justify-center whitespace-nowrap rounded-[2px] bg-[#171717] px-[10px] py-2 text-sm font-medium leading-5 text-[#fafafa] transition-opacity hover:opacity-80 sm:h-8"
+        <button
+          type="button"
+          onClick={onApplyClick}
+          className="inline-flex h-11 cursor-pointer items-center justify-center whitespace-nowrap rounded-[2px] bg-[#171717] px-[10px] py-2 text-sm font-medium leading-5 text-[#fafafa] transition-opacity hover:opacity-80 sm:h-8"
         >
           Apply here
-        </a>
+        </button>
 
         <div className="hidden h-[18px] w-px bg-[#e5e5e5] sm:block" aria-hidden="true" />
 
@@ -148,136 +151,144 @@ export function VacanciesPreview({ vacancies }: { vacancies: VacancyCard[] }) {
     threshold: 0.2,
   })
   const hasVacancies = vacancies.length > 0
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
 
   return (
-    <section
-      id="career"
-      data-nav-section
-      className="landing-mobile-gradient w-full overflow-hidden py-8 sm:py-16 lg:py-20"
-    >
-      <div
-        ref={headerRef}
-        className="relative mx-auto mb-8 w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px]"
-        style={{
-          opacity: headerInView ? 1 : 0,
-          transform: headerInView
-            ? 'translate3d(0, 0, 0)'
-            : 'translate3d(0, 34px, 0)',
-          transition: `opacity 0.88s ${easeOut}, transform 0.88s ${easeOut}`,
-        }}
+    <>
+      <section
+        id="career"
+        data-nav-section
+        className="landing-mobile-gradient w-full overflow-hidden py-8 sm:py-16 lg:py-20"
       >
-        <div className="mb-3 pl-16 lg:absolute lg:left-[calc(50%+20px)] lg:-top-6 lg:pl-0">
-          <div className="flex items-center gap-3">
-            <span
-              aria-hidden="true"
-              className="block h-1 w-8 shrink-0 rounded-full bg-[#1cc14b]"
-            />
-            <span className="font-mono text-[11px] font-normal uppercase tracking-[1.8px] text-[#737373]">
-              We are growing across industrial projects
-            </span>
-          </div>
-        </div>
-
-        <div className="pl-16 lg:pl-[calc(50%+20px)]">
-          <h2 className="font-sans text-[32px] font-semibold leading-[32px] tracking-[-0.64px] text-[#0a0a0a] sm:text-[clamp(48px,7vw,84px)] sm:leading-[1.14] sm:tracking-[-0.02em]">
-            Vacancies
-          </h2>
-        </div>
-      </div>
-
-      <div className="mx-auto mb-8 w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px] lg:grid lg:grid-cols-[calc(50%+20px)_minmax(0,1fr)] lg:gap-x-0">
-        {hasVacancies ? (
-          <div className="hidden w-[187px] shrink-0 flex-col items-end gap-7 lg:flex lg:pr-8">
-            <div className="flex w-full flex-col items-end gap-2 text-right">
-              <span className="text-lg font-semibold leading-none text-[#0a0a0a]">
-                Open Roles
-              </span>
-              <span className="text-lg font-semibold leading-none text-[#737373]">
-                Industrial Installation
+        <div
+          ref={headerRef}
+          className="relative mx-auto mb-8 w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px]"
+          style={{
+            opacity: headerInView ? 1 : 0,
+            transform: headerInView
+              ? 'translate3d(0, 0, 0)'
+              : 'translate3d(0, 34px, 0)',
+            transition: `opacity 0.88s ${easeOut}, transform 0.88s ${easeOut}`,
+          }}
+        >
+          <div className="mb-3 pl-16 lg:absolute lg:left-[calc(50%+20px)] lg:-top-6 lg:pl-0">
+            <div className="flex items-center gap-3">
+              <span
+                aria-hidden="true"
+                className="block h-1 w-8 shrink-0 rounded-full bg-[#1cc14b]"
+              />
+              <span className="font-mono text-[11px] font-normal uppercase tracking-[1.8px] text-[#737373]">
+                We are growing across industrial projects
               </span>
             </div>
-
-            <Link
-              href="/vacancies"
-              className="group flex size-12 items-center justify-center rounded-[6px] bg-[#f5f5f5] transition-colors hover:bg-[#1cc14b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400"
-              aria-label="View all vacancies"
-            >
-              <span className="text-center text-base font-medium leading-none text-[#737373] transition-colors group-hover:text-white">
-                {vacancies.length}+
-              </span>
-            </Link>
           </div>
-        ) :           <div className="hidden w-[187px] shrink-0 flex-col items-end gap-7 lg:flex lg:pr-8">
-</div>}
 
-        <div
-          className={[
-            'mt-8 max-w-[640px] flex-1',
-            hasVacancies ? ' lg:mt-0 lg:pl-0' : ' lg:mt-0 ',
-          ].join(' ')}
-        >
-          <p className="text-[18px] font-semibold leading-7 sm:text-2xl sm:leading-8">
-            <span className="text-[#737373]">
-              We are building teams for installation, welding, assembly, and
-              commissioning
-            </span>
-            <span className="text-[#0a0a0a]">
-              {' '}
-              projects across Europe. At Equipra, you work in structured
-              industrial environments where safety,
-            </span>
-            <span className="text-[#737373]">
-              {' '}
-              precision, and accountability matter from
-            </span>
-            <span className="text-[#0a0a0a]"> mobilisation to handover.</span>
-          </p>
+          <div className="pl-16 lg:pl-[calc(50%+20px)]">
+            <h2 className="font-sans text-[32px] font-semibold leading-[32px] tracking-[-0.64px] text-[#0a0a0a] sm:text-[clamp(48px,7vw,84px)] sm:leading-[1.14] sm:tracking-[-0.02em]">
+              Vacancies
+            </h2>
+          </div>
         </div>
-      </div>
 
-      <div className="mx-auto mb-8 w-full max-w-[1440px] overflow-hidden px-4 sm:px-8 md:px-[60px]">
-        {hasVacancies ? (
-          <div className="-mx-4 flex snap-x snap-mandatory justify-end gap-3.5 overflow-x-auto px-4 pb-2 sm:mx-0 sm:gap-[14px] sm:px-0 sm:snap-none">
-            {vacancies.map((vacancy, i) => (
-              <div key={`${vacancy.title}-${i}`} className="snap-start sm:flex-none">
-                <RoleCard {...vacancy} />
+        <div className="mx-auto mb-8 w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px] lg:grid lg:grid-cols-[calc(50%+20px)_minmax(0,1fr)] lg:gap-x-0">
+          {hasVacancies ? (
+            <div className="hidden w-[187px] shrink-0 flex-col items-end gap-7 lg:flex lg:pr-8">
+              <div className="flex w-full flex-col items-end gap-2 text-right">
+                <span className="text-lg font-semibold leading-none text-[#0a0a0a]">
+                  Open Roles
+                </span>
+                <span className="text-lg font-semibold leading-none text-[#737373]">
+                  Industrial Installation
+                </span>
               </div>
-            ))}
+
+              <Link
+                href="/vacancies"
+                className="group flex size-12 items-center justify-center rounded-[6px] bg-[#f5f5f5] transition-colors hover:bg-[#1cc14b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400"
+                aria-label="View all vacancies"
+              >
+                <span className="text-center text-base font-medium leading-none text-[#737373] transition-colors group-hover:text-white">
+                  {vacancies.length}+
+                </span>
+              </Link>
+            </div>
+          ) : (
+            <div className="hidden w-[187px] shrink-0 flex-col items-end gap-7 lg:flex lg:pr-8" />
+          )}
+
+          <div
+            className={[
+              'mt-8 max-w-[640px] flex-1',
+              hasVacancies ? ' lg:mt-0 lg:pl-0' : ' lg:mt-0 ',
+            ].join(' ')}
+          >
+            <p className="text-[18px] font-semibold leading-7 sm:text-2xl sm:leading-8">
+              <span className="text-[#737373]">
+                We are building teams for installation, welding, assembly, and
+                commissioning
+              </span>
+              <span className="text-[#0a0a0a]">
+                {' '}
+                projects across Europe. At Equipra, you work in structured
+                industrial environments where safety,
+              </span>
+              <span className="text-[#737373]">
+                {' '}
+                precision, and accountability matter from
+              </span>
+              <span className="text-[#0a0a0a]"> mobilisation to handover.</span>
+            </p>
+          </div>
+        </div>
+
+        <div className="mx-auto mb-8 w-full max-w-[1440px] overflow-hidden px-4 sm:px-8 md:px-[60px]">
+          {hasVacancies ? (
+            <div className="-mx-4 flex snap-x snap-mandatory justify-end gap-3.5 overflow-x-auto px-4 pb-2 sm:mx-0 sm:gap-[14px] sm:px-0 sm:snap-none">
+              {vacancies.map((vacancy, i) => (
+                <div key={`${vacancy.title}-${i}`} className="snap-start sm:flex-none">
+                  <RoleCard {...vacancy} />
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </div>
+
+        {hasVacancies ? (
+          <div className="mx-auto mb-8 w-full max-w-[1440px] px-4 sm:hidden">
+            <div className="flex items-start justify-between">
+              <div className="inline-flex h-11 flex-col items-start justify-start gap-2">
+                <div className="text-lg font-semibold leading-4 text-[#0a0a0a]">
+                  Open Roles
+                </div>
+                <div className="text-lg font-semibold leading-4 text-[#737373]">
+                  Industrial Installation
+                </div>
+              </div>
+              <Link
+                href="/vacancies"
+                className="group relative size-12 rounded-md bg-neutral-100 transition-colors hover:bg-[#1cc14b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400"
+                aria-label="View all vacancies"
+              >
+                <div className="absolute inset-0 flex items-center justify-center text-center text-base font-medium leading-4 text-[#737373] transition-colors group-hover:text-white">
+                  {vacancies.length}+
+                </div>
+              </Link>
+            </div>
           </div>
         ) : null}
-      </div>
 
-      {hasVacancies ? (
-        <div className="mx-auto mb-8 w-full max-w-[1440px] px-4 sm:hidden">
-          <div className="flex items-start justify-between">
-            <div className="inline-flex h-11 flex-col items-start justify-start gap-2">
-              <div className="text-lg font-semibold leading-4 text-[#0a0a0a]">
-                Open Roles
-              </div>
-              <div className="text-lg font-semibold leading-4 text-[#737373]">
-                Industrial Installation
-              </div>
+        <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px]">
+          <div className="lg:pl-[calc(50%+20px)]">
+            <div className="max-w-[640px]">
+              <HowToApply onApplyClick={() => setIsApplyModalOpen(true)} />
             </div>
-            <Link
-              href="/vacancies"
-              className="group relative size-12 rounded-md bg-neutral-100 transition-colors hover:bg-[#1cc14b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400"
-              aria-label="View all vacancies"
-            >
-              <div className="absolute inset-0 flex items-center justify-center text-center text-base font-medium leading-4 text-[#737373] transition-colors group-hover:text-white">
-                {vacancies.length}+
-              </div>
-            </Link>
           </div>
         </div>
-      ) : null}
-
-      <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px]">
-        <div className="lg:pl-[calc(50%+20px)]">
-          <div className="max-w-[640px]">
-            <HowToApply />
-          </div>
-        </div>
-      </div>
-    </section>
+      </section>
+      <CareerApplicationModal
+        isOpen={isApplyModalOpen}
+        onClose={() => setIsApplyModalOpen(false)}
+      />
+    </>
   )
 }

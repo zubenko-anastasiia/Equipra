@@ -93,9 +93,9 @@ function BlogCard({ post }: { post: BlogPostSummary }) {
 
 function EmptyState() {
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-neutral-50 px-6 py-8 text-sm leading-6 text-neutral-600">
-      <p className="font-medium text-neutral-900">No blog posts published yet.</p>
-      <p className="mt-2">
+    <div className="px-6 py-8 text-sm leading-6 text-neutral-400">
+      <p className="font-mono text-[12px] font-normal uppercase leading-4 tracking-[1.8px] text-[#191919] sm:text-[11px]">No blog posts published yet</p>
+      <p className="mt-2 text-sm font-normal leading-5 text-[#acacac]">
         New project updates and company insights will appear here once they are
         available.
       </p>

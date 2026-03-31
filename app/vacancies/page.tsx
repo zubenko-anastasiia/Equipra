@@ -3,6 +3,8 @@ import { Footer, Header } from '../_components/landing'
 import VacancyHubPage from './VacancyHubPage'
 import { getVacancies } from './vacancyData'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Vacancies',
   description:

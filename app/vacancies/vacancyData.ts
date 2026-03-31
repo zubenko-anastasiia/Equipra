@@ -45,6 +45,7 @@ export interface Vacancy extends VacancySummary {
 
 const DEFAULT_STATUS = 'open'
 const DEFAULT_DATE = '1970-01-01T00:00:00.000Z'
+const vacanciesClient = client.withConfig({ useCdn: false })
 
 function createPlaceholderSvg(label: string) {
   const svg = `
@@ -153,7 +154,7 @@ function mapVacancy(vacancy: SanityVacancy): Vacancy | null {
 }
 
 export async function getVacancies() {
-  const vacancies = await client.fetch<SanityVacancy[]>(vacanciesQuery)
+  const vacancies = await vacanciesClient.fetch<SanityVacancy[]>(vacanciesQuery)
 
   return vacancies
     .map(mapVacancy)
@@ -161,7 +162,7 @@ export async function getVacancies() {
 }
 
 export async function getVacancy(slug: string) {
-  const vacancy = await client.fetch<SanityVacancy | null>(vacancyBySlugQuery, { slug })
+  const vacancy = await vacanciesClient.fetch<SanityVacancy | null>(vacancyBySlugQuery, { slug })
 
   if (!vacancy) {
     return null
