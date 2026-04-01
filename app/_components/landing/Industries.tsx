@@ -245,36 +245,13 @@ const IconAutomotive: FC = () => (
 )
 
 const IconWarehouse: FC = () => (
-  <svg viewBox="0 0 49 49" fill="none" className="size-full">
+  <svg viewBox="0 0 18 20" fill="none" className="size-full">
     <path
-      d="M8 16L24 8L40 16L24 24L8 16Z"
+      d="M17 5.5L9 1L1 5.5M17 5.5V14.5L9 19M17 5.5L9 10M9 19L1 14.5V5.5M9 19V10M1 5.5L9 10"
       stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="square"
-    />
-    <path
-      d="M8 16V34L24 42V24"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="square"
-    />
-    <path
-      d="M40 16V34L24 42"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="square"
-    />
-    <path
-      d="M16 12V30"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="square"
-    />
-    <path
-      d="M32 12V30"
-      stroke="currentColor"
-      strokeWidth="3"
-      strokeLinecap="square"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 )
