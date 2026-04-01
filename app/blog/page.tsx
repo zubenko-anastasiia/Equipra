@@ -1,22 +1,25 @@
 import type { Metadata } from 'next'
 import { Footer, Header } from '../_components/landing'
-import BlogArticlePage from './BlogArticlePage'
+import BlogHubPage from './BlogHubPage'
+import { getBlogPosts } from './blogData'
 
 export const metadata: Metadata = {
   title: 'Blog',
   description:
-    'Example Equipra blog article covering international electrical installation works in Portugal.',
+    'Latest Equipra news, updates, partnerships, certifications, and industry insights.',
   alternates: {
     canonical: '/blog',
   },
 }
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const posts = await getBlogPosts()
+
   return (
     <>
-      <Header />
+      <Header activeItem="blog" />
       <main>
-        <BlogArticlePage />
+        <BlogHubPage posts={posts} />
       </main>
       <Footer />
     </>

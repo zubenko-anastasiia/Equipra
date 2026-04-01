@@ -2,13 +2,14 @@ import { PortableText, type PortableTextComponents } from '@portabletext/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
-import BlogArticleToc, { type TocItem } from './BlogArticleToc'
-import { type BlogPost } from './blogData'
+import VacancyApplyButton from './VacancyApplyButton'
+import VacancyToc, { type TocItem } from './engineer-supervisor/VacancyToc'
+import { type Vacancy } from './vacancyData'
 
 function BackButton() {
   return (
     <Link
-      href="/blog"
+      href="/vacancies"
       scroll
       className="inline-flex items-center gap-1.5 rounded-[2px] border border-neutral-300 bg-white px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-400 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400"
     >
@@ -34,19 +35,17 @@ function BackButton() {
   )
 }
 
-function AuthorTag({ post }: { post: BlogPost }) {
+function HiringTag({ status }: { status: string }) {
   return (
     <div className="flex items-center gap-3">
       <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#f5f5f5_0%,#e5e5e5_55%,#d4d4d4_100%)] text-sm font-semibold text-neutral-600">
-        {post.author.name.charAt(0).toUpperCase()}
+        E
       </div>
       <div className="flex flex-col">
         <span className="text-sm font-semibold leading-tight text-neutral-900">
-          {post.author.name}
+          Equipra Recruitment
         </span>
-        <span className="text-xs leading-tight text-neutral-500">
-          {post.author.role}
-        </span>
+        <span className="text-xs leading-tight text-neutral-500">{status} Position</span>
       </div>
     </div>
   )
@@ -72,10 +71,10 @@ function SectionHeading({
 function EmptyArticleState() {
   return (
     <div className="rounded-2xl border border-neutral-200 bg-neutral-50 px-6 py-6 text-sm leading-6 text-neutral-600">
-      <p className="font-medium text-neutral-900">Article content is coming soon.</p>
+      <p className="font-medium text-neutral-900">Vacancy details are coming soon.</p>
       <p className="mt-2">
-        This post has been published, but its full section content has not been
-        added yet.
+        This role has been listed, but its full section content has not been added
+        yet.
       </p>
     </div>
   )
@@ -84,13 +83,13 @@ function EmptyArticleState() {
 function NotFoundState() {
   return (
     <article className="min-w-0 flex-1 pb-24">
-      <p className="mb-2 text-sm text-neutral-500">Blog</p>
+      <p className="mb-2 text-sm text-neutral-500">Vacancies</p>
       <h1 className="mb-4 text-4xl font-bold leading-[1.15] tracking-tight text-neutral-900 lg:text-[2.5rem]">
-        Article not found
+        Vacancy not found
       </h1>
       <div className="rounded-2xl border border-neutral-200 bg-neutral-50 px-6 py-6 text-sm leading-6 text-neutral-600">
         <p className="font-medium text-neutral-900">
-          We couldn&apos;t find the article you were looking for.
+          We couldn&apos;t find the vacancy you were looking for.
         </p>
         <p className="mt-2">
           It may have been removed, renamed, or is not published yet.
@@ -161,9 +160,9 @@ function formatDate(date: string) {
   }).format(new Date(date))
 }
 
-export default function BlogArticlePage({ post }: { post: BlogPost | null }) {
+export default function VacancyArticlePage({ vacancy }: { vacancy: Vacancy | null }) {
   const tocItems: TocItem[] =
-    post?.sections.map((section) => ({
+    vacancy?.sections.map((section) => ({
       id: section.id,
       label: section.label,
     })) ?? []
@@ -177,32 +176,32 @@ export default function BlogArticlePage({ post }: { post: BlogPost | null }) {
           </div>
 
           <div className="flex flex-col gap-10 lg:flex-row lg:gap-16">
-            {post ? (
+            {vacancy ? (
               <article className="min-w-0 flex-1 pb-24">
                 <div className="mb-2 flex items-center gap-2 text-sm text-neutral-500">
-                  <time dateTime={post.date}>{formatDate(post.date)}</time>
+                  <time dateTime={vacancy.date}>{formatDate(vacancy.date)}</time>
                   <span aria-hidden="true">·</span>
-                  <span>{post.category}</span>
+                  <span>{vacancy.department}</span>
                 </div>
 
                 <h1 className="mb-4 text-4xl font-bold leading-[1.15] tracking-tight text-neutral-900 lg:text-[2.5rem]">
-                  {post.title}
+                  {vacancy.title}
                 </h1>
 
-                {post.excerpt ? (
+                {vacancy.description ? (
                   <p className="mb-6 text-sm leading-relaxed text-neutral-500">
-                    {post.excerpt}
+                    {vacancy.description}
                   </p>
                 ) : null}
 
                 <div className="mb-7">
-                  <AuthorTag post={post} />
+                  <HiringTag status={vacancy.status} />
                 </div>
 
                 <div className="relative mb-8 aspect-[16/9] overflow-hidden rounded-xl bg-neutral-100">
                   <Image
-                    src={post.image}
-                    alt={post.title}
+                    src={vacancy.image}
+                    alt={vacancy.title}
                     fill
                     sizes="(max-width: 1024px) 100vw, 768px"
                     className="object-cover"
@@ -212,14 +211,14 @@ export default function BlogArticlePage({ post }: { post: BlogPost | null }) {
 
                 {tocItems.length > 0 ? (
                   <div className="mb-8 mt-7 lg:hidden">
-                    <BlogArticleToc items={tocItems} />
+                    <VacancyToc items={tocItems} />
                   </div>
                 ) : null}
 
-                {post.sections.length === 0 ? (
+                {vacancy.sections.length === 0 ? (
                   <EmptyArticleState />
                 ) : (
-                  post.sections.map((section) => (
+                  vacancy.sections.map((section) => (
                     <section key={section.id}>
                       <SectionHeading id={section.id}>{section.heading}</SectionHeading>
                       <PortableText
@@ -229,15 +228,32 @@ export default function BlogArticlePage({ post }: { post: BlogPost | null }) {
                     </section>
                   ))
                 )}
+
+                <h2 className="mb-3 mt-10 text-xl font-bold text-neutral-900">
+                  How to Apply
+                </h2>
+                <p className="mb-2 text-sm leading-relaxed text-neutral-700">
+                  Send your CV and a short description of your most relevant project
+                  experience (1-2 paragraphs) to
+                </p>
+                <div className="flex items-center gap-[9px]">
+                  <VacancyApplyButton />
+
+                  <div className="h-[18px] w-px bg-[#e5e5e5]" aria-hidden="true" />
+
+                  <span className="whitespace-nowrap text-sm font-normal leading-none text-[#0a0a0a]">
+                    office@equipra.eu
+                  </span>
+                </div>
               </article>
             ) : (
               <NotFoundState />
             )}
 
-            {post && tocItems.length > 0 ? (
+            {vacancy && tocItems.length > 0 ? (
               <aside className="hidden w-52 shrink-0 lg:block">
                 <div className="sticky top-8 pt-[calc(1.75rem+1.5rem+2px)]">
-                  <BlogArticleToc items={tocItems} />
+                  <VacancyToc items={tocItems} />
                 </div>
               </aside>
             ) : null}

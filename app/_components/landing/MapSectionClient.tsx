@@ -1,5 +1,6 @@
-"use client";
+'use client';
 
+import QuoteRequestModal from '@/app/_components/QuoteRequestModal';
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ComposableMap,
@@ -132,6 +133,7 @@ export default function MapSectionClient({
   const sectionRef = useRef<HTMLElement | null>(null);
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 
   const highlightedCountries = useMemo(
     () => new Set(projectSites.map((project) => project.countryName)),
@@ -202,6 +204,7 @@ export default function MapSectionClient({
   }, [activeCountry, sortedProjects]);
 
   return (
+    <>
     <section
       id="projects"
       data-nav-section
@@ -438,11 +441,14 @@ export default function MapSectionClient({
               </div>
 
               <div className="pointer-events-auto flex flex-col gap-2 sm:flex-row sm:flex-wrap lg:order-1">
-                <a
-                  href="#contact"
-                  className="inline-flex h-11 shrink-0 items-center justify-center gap-1 rounded-[2px] border border-[#1cc14b] bg-[#1cc14b] px-[20px] no-underline transition-colors hover:bg-[#18ad43] sm:h-9 sm:justify-start"
+                <button
+                  type="button"
+                  onClick={() => setIsQuoteModalOpen(true)}
+                  className="inline-flex cursor-pointer h-11 shrink-0 items-center justify-center gap-1 rounded-[2px] border border-[#1cc14b] bg-[#1cc14b] px-[20px] no-underline transition-colors hover:bg-[#18ad43] sm:h-9 sm:justify-start"
                 >
-                 
+                 <span className="relative flex h-4 w-6 shrink-0 items-center justify-center text-white">
+                    <FileIcon />
+                  </span>
 
                   <span
                     className="whitespace-nowrap text-center leading-6 text-white"
@@ -454,9 +460,9 @@ export default function MapSectionClient({
                   >
                     Request a Quote
                   </span>
-                </a>
+                </button>
 
-                <a
+                {/* <a
                   href="#contact"
                   className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-1 rounded-[2px] border border-[#e5e5e5] bg-white px-[9px] no-underline transition-colors hover:bg-neutral-100 sm:h-9 sm:w-[177px] sm:justify-start"
                 >
@@ -474,7 +480,7 @@ export default function MapSectionClient({
                   >
                    View our catalog
                   </span>
-                </a>
+                </a> */}
               </div>
 
               <div className="hidden justify-start lg:order-2 lg:flex lg:justify-end">
@@ -538,5 +544,10 @@ export default function MapSectionClient({
         </div>
       </div>
     </section>
+    <QuoteRequestModal
+      isOpen={isQuoteModalOpen}
+      onClose={() => setIsQuoteModalOpen(false)}
+    />
+    </>
   );
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import QuoteRequestModal from '@/app/_components/QuoteRequestModal'
 import { useEffect, useState, type FC } from 'react'
 
 const FileIcon: FC = () => (
@@ -35,6 +36,7 @@ const headlineLines = ['Reliability', 'Every Connection']
 
 export function Intro() {
   const [mounted, setMounted] = useState(false)
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => setMounted(true), 60)
@@ -43,140 +45,148 @@ export function Intro() {
   }, [])
 
   return (
-    <section
-      className="relative h-[100svh] w-full overflow-hidden bg-black md:min-h-[700px] md:max-h-[846px]"
-    >
-      <div
-        className="absolute inset-0 pointer-events-none"
-        aria-hidden="true"
-        style={{
-          overflow: 'hidden',
-          clipPath: mounted ? 'inset(0 0% 0 0)' : 'inset(0 100% 0 0)',
-          transition: `clip-path 1.35s ${easeOut}`,
-        }}
+    <>
+      <section
+        className="relative h-[100svh] w-full overflow-hidden bg-black md:min-h-[700px] md:max-h-[846px]"
       >
         <div
-          className="absolute inset-0 intro-image"
+          className="absolute inset-0 pointer-events-none"
+          aria-hidden="true"
           style={{
-            backgroundImage: "url('/img1.webp')",
-            backgroundPosition: 'center top',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: 'cover',
-            transform: mounted ? 'translate3d(0, 0, 0) scale(1.08)' : 'translate3d(0, 16px, 0) scale(1.12)',
-            transition: `transform 1.5s ${easeOut}`,
-            willChange: 'transform',
+            overflow: 'hidden',
+            clipPath: mounted ? 'inset(0 0% 0 0)' : 'inset(0 100% 0 0)',
+            transition: `clip-path 1.35s ${easeOut}`,
+          }}
+        >
+          <div
+            className="absolute inset-0 intro-image"
+            style={{
+              backgroundImage: "url('/img1.webp')",
+              backgroundPosition: 'center top',
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: 'cover',
+              transform: mounted ? 'translate3d(0, 0, 0) scale(1.08)' : 'translate3d(0, 16px, 0) scale(1.12)',
+              transition: `transform 1.5s ${easeOut}`,
+              willChange: 'transform',
+            }}
+          />
+        </div>
+
+        <div
+          className="absolute inset-0 pointer-events-none"
+          aria-hidden="true"
+          style={{
+            background:
+              'linear-gradient(to top, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.18) 55%, transparent 100%)',
           }}
         />
-      </div>
 
-      <div
-        className="absolute inset-0 pointer-events-none"
-        aria-hidden="true"
-        style={{
-          background:
-            'linear-gradient(to top, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.18) 55%, transparent 100%)',
-        }}
-      />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          aria-hidden="true"
+          style={{
+            zIndex: 2,
+            background:
+              'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 38%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0.05) 62%, transparent 100%)',
+            transform: mounted ? 'translate3d(200%, 0, 0)' : 'translate3d(-100%, 0, 0)',
+            transition: mounted
+              ? `transform 1.25s ${easeOut} 0.45s`
+              : 'none',
+          }}
+        />
 
-      <div
-        className="absolute inset-0 pointer-events-none"
-        aria-hidden="true"
-        style={{
-          zIndex: 2,
-          background:
-            'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 38%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0.05) 62%, transparent 100%)',
-          transform: mounted ? 'translate3d(200%, 0, 0)' : 'translate3d(-100%, 0, 0)',
-          transition: mounted
-            ? `transform 1.25s ${easeOut} 0.45s`
-            : 'none',
-        }}
-      />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          aria-hidden="true"
+          style={{
+            zIndex: 1,
+            background:
+              'radial-gradient(ellipse at 45% 30%, rgba(28,193,75,0.07) 0%, transparent 60%)',
+            opacity: mounted ? 1 : 0,
+            animation: mounted ? 'intro-shimmer 3.2s ease-in-out 1.8s 1' : 'none',
+          }}
+        />
 
-      <div
-        className="absolute inset-0 pointer-events-none"
-        aria-hidden="true"
-        style={{
-          zIndex: 1,
-          background:
-            'radial-gradient(ellipse at 45% 30%, rgba(28,193,75,0.07) 0%, transparent 60%)',
-          opacity: mounted ? 1 : 0,
-          animation: mounted ? 'intro-shimmer 3.2s ease-in-out 1.8s 1' : 'none',
-        }}
-      />
-
-      <div
-        className="absolute inset-x-0 bottom-3 sm:bottom-8 md:bottom-[60px]"
-        style={{ zIndex: 4 }}
-      >
-        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 px-4 sm:px-8 md:px-[60px] lg:flex-row lg:items-end lg:justify-between">
-          <h1
-            className="w-full max-w-[1174px] uppercase font-bold leading-[0.95] tracking-[0.8px] text-white md:font-medium md:leading-[0.82] md:tracking-normal"
-            style={{
-              fontFamily:
-                "'Druk Trial', Impact, 'Arial Narrow', Arial, sans-serif",
-              fontSize: 'clamp(68px, 18vw, 150px)',
-            }}
-          >
-            {headlineLines.map((line, index) => (
-              <span
-                key={line}
-                className="block overflow-hidden"
-                style={{ lineHeight: 0 }}
-              >
-                <span
-                  className="block"
-                  style={{
-                    lineHeight: 0.82,
-                    transform: mounted ? 'translate3d(0, 0, 0)' : 'translate3d(0, 108%, 0)',
-                    opacity: mounted ? 1 : 0,
-                    transition: `transform 1.05s ${easeOut} ${0.52 + index * 0.09}s, opacity 1.05s ${easeOut} ${0.52 + index * 0.09}s`,
-                    willChange: 'transform, opacity',
-                  }}
-                >
-                  {line}
-                </span>
-              </span>
-            ))}
-          </h1>
-
-          <a
-            href="#contact"
-            className="inline-flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-[2px] border border-[#e5e5e5] bg-white px-3 no-underline transition-colors hover:bg-neutral-100 sm:h-10 sm:w-[177px] sm:justify-start sm:gap-1 sm:px-[9px]"
-            style={{
-              opacity: mounted ? 1 : 0,
-              transform: mounted ? 'translate3d(0, 0, 0)' : 'translate3d(0, 20px, 0)',
-              transition: `opacity 0.9s ${easeOut} 1.15s, transform 0.9s ${easeOut} 1.15s`,
-            }}
-          >
-            <span className="relative flex h-4 w-6 shrink-0 items-center justify-center text-black">
-              <FileIcon />
-            </span>
-
-            <span
-              className="whitespace-nowrap text-center leading-6 text-black"
+        <div
+          className="absolute inset-x-0 bottom-3 sm:bottom-8 md:bottom-[60px]"
+          style={{ zIndex: 4 }}
+        >
+          <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 px-4 sm:px-8 md:px-[60px] lg:flex-row lg:items-end lg:justify-between">
+            <h1
+              className="w-full max-w-[1174px] uppercase font-bold leading-[0.95] tracking-[0.8px] text-white md:font-medium md:leading-[0.82] md:tracking-normal"
               style={{
-                fontFamily: 'var(--font-geist-sans)',
-                fontSize: '16px',
-                fontWeight: 500,
+                fontFamily:
+                  "'Druk Trial', Impact, 'Arial Narrow', Arial, sans-serif",
+                fontSize: 'clamp(68px, 18vw, 150px)',
               }}
             >
-              Request a Quote
-            </span>
-          </a>
-        </div>
-      </div>
+              {headlineLines.map((line, index) => (
+                <span
+                  key={line}
+                  className="block overflow-hidden"
+                  style={{ lineHeight: 0 }}
+                >
+                  <span
+                    className="block"
+                    style={{
+                      lineHeight: 0.82,
+                      transform: mounted ? 'translate3d(0, 0, 0)' : 'translate3d(0, 108%, 0)',
+                      opacity: mounted ? 1 : 0,
+                      transition: `transform 1.05s ${easeOut} ${0.52 + index * 0.09}s, opacity 1.05s ${easeOut} ${0.52 + index * 0.09}s`,
+                      willChange: 'transform, opacity',
+                    }}
+                  >
+                    {line}
+                  </span>
+                </span>
+              ))}
+            </h1>
 
-      <style jsx>{`
-        @keyframes intro-shimmer {
-          0%,
-          100% {
-            opacity: 0;
+            <button
+              type="button"
+              onClick={() => setIsQuoteModalOpen(true)}
+              className="inline-flex h-12 w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[2px] border border-[#e5e5e5] bg-white px-3 no-underline transition-colors hover:bg-neutral-100 sm:h-10 sm:w-[177px] sm:justify-start sm:gap-1 sm:px-[9px]"
+              style={{
+                opacity: mounted ? 1 : 0,
+                transform: mounted ? 'translate3d(0, 0, 0)' : 'translate3d(0, 20px, 0)',
+                transition: `opacity 0.9s ${easeOut} 1.15s, transform 0.9s ${easeOut} 1.15s`,
+              }}
+            >
+              <span className="relative flex h-4 w-6 shrink-0 items-center justify-center text-black">
+                <FileIcon />
+              </span>
+
+              <span
+                className="whitespace-nowrap text-center leading-6 text-black"
+                style={{
+                  fontFamily: 'var(--font-geist-sans)',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                }}
+              >
+                Request a Quote
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <style jsx>{`
+          @keyframes intro-shimmer {
+            0%,
+            100% {
+              opacity: 0;
+            }
+            35% {
+              opacity: 1;
+            }
           }
-          35% {
-            opacity: 1;
-          }
-        }
-      `}</style>
-    </section>
+        `}</style>
+      </section>
+
+      <QuoteRequestModal
+        isOpen={isQuoteModalOpen}
+        onClose={() => setIsQuoteModalOpen(false)}
+      />
+    </>
   )
 }
