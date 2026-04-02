@@ -8,6 +8,8 @@ import {
   Clients,
   VacanciesPreview,
   Footer,
+  ImageSectionOne,
+  ImageSectionTwo
 } from './_components/landing'
 import QualityAssurance from './_components/landing/QualityAssurance'
 import { getVacancies } from './vacancies/vacancyData'
@@ -26,13 +28,13 @@ export default async function HomePage() {
   return (
     <>
       <Header />
-      <main className='flex flex-col gap-20'>
+      <main className='landing-mobile-gradient flex flex-col gap-20'>
         <Intro />
         <AboutCompany />
         <QualityAssurance />
-        {/* <ImageSectionOne /> */}
+        <ImageSectionOne />
         <Industries />
-        {/* <ImageSectionTwo /> */}
+        <ImageSectionTwo />
         <Services />
         <MapSection />
         <Clients />
