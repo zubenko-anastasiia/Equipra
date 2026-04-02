@@ -58,18 +58,41 @@ export function Intro() {
             transition: `clip-path 1.35s ${easeOut}`,
           }}
         >
-          <div
-            className="absolute inset-0 intro-image"
-            style={{
-              backgroundImage: "url('/img1.webp')",
-              backgroundPosition: 'center top',
-              backgroundRepeat: 'no-repeat',
-              backgroundSize: 'cover',
-              transform: mounted ? 'translate3d(0, 0, 0) scale(1.08)' : 'translate3d(0, 16px, 0) scale(1.12)',
-              transition: `transform 1.5s ${easeOut}`,
-              willChange: 'transform',
-            }}
-          />
+          {mounted ? (
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              poster="/img1.webp"
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{
+                transform: 'translate3d(0, 0, 0) scale(1.08)',
+                transition: `transform 1.5s ${easeOut}`,
+                willChange: 'transform',
+              }}
+              aria-hidden="true"
+            >
+              <source
+                src="https://9havy7hddire10tm.public.blob.vercel-storage.com/eq-2.mp4"
+                type="video/mp4"
+              />
+            </video>
+          ) : (
+            <div
+              className="absolute inset-0 intro-image"
+              style={{
+                backgroundImage: "url('/img1.webp')",
+                backgroundPosition: 'center top',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: 'cover',
+                transform: 'translate3d(0, 16px, 0) scale(1.12)',
+                transition: `transform 1.5s ${easeOut}`,
+                willChange: 'transform',
+              }}
+            />
+          )}
         </div>
 
         <div
