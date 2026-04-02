@@ -13,6 +13,7 @@
     "@sanity/client": "^7.20.0",
     "@sanity/image-url": "^2.1.1",
     "@sanity/vision": "^5.18.0",
+    "@vercel/blob": "^2.3.2",
     "@vnedyalk0v/react19-simple-maps": "2.0.2",
     "create-sanity": "^5.2.11",
     "next": "16.2.1",
