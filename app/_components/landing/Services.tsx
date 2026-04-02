@@ -310,7 +310,7 @@ const ServiceRow: FC<{
         </span>
       </div>
 
-      <div className="flex w-[264px] flex-col sm:hidden">
+      <div className="flex min-w-0 flex-1 flex-col md:hidden">
         <div className="pt-5">
           <p className="text-[18px] font-semibold leading-7 text-[#0a0a0a]">
             {title}
@@ -328,7 +328,7 @@ const ServiceRow: FC<{
                 .filter(Boolean)
                 .join(' ')}
             >
-              <span className="whitespace-nowrap text-[14px] font-medium leading-5 text-[#0a0a0a]">
+              <span className="text-[14px] font-medium leading-5 text-[#0a0a0a]">
                 {bullet}
               </span>
             </div>
@@ -341,7 +341,7 @@ const ServiceRow: FC<{
               alt={title}
               fill
               className="object-contain mix-blend-darken"
-              sizes="264px"
+              sizes="(max-width: 767px) calc(100vw - 7rem), 264px"
             />
           </div>
         </div>
