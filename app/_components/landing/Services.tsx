@@ -133,13 +133,11 @@ const SERVICES: ServiceItem[] = [
   },
 ]
 
-const useDesktopHoverMedia = () => {
+const useDesktopMedia = () => {
   const [enabled, setEnabled] = useState(false)
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia(
-      '(min-width: 1024px) and (hover: hover) and (pointer: fine)'
-    )
+    const mediaQuery = window.matchMedia('(min-width: 1024px)')
     const update = () => setEnabled(mediaQuery.matches)
 
     update()
@@ -155,7 +153,7 @@ const ServiceMedia: FC<{
   imageSrc: string
   videoSrc?: string
   alt: string
-  showVideo: boolean
+  shouldPlay: boolean
   videoScale?: number
   softenVideoBackground?: boolean
   softenVideoEdges?: boolean
@@ -164,12 +162,54 @@ const ServiceMedia: FC<{
   imageSrc,
   videoSrc,
   alt,
-  showVideo,
+  shouldPlay,
   videoScale = 1,
   softenVideoBackground = false,
   softenVideoEdges = false,
   softenVideoBottomEdge = false,
 }) => {
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const [hasStartedPlayback, setHasStartedPlayback] = useState(false)
+  const [autoplayBlocked, setAutoplayBlocked] = useState(false)
+  const canShowVideo = shouldPlay && hasStartedPlayback && !autoplayBlocked
+
+  useEffect(() => {
+    const video = videoRef.current
+
+    if (!video || !videoSrc || autoplayBlocked) {
+      return
+    }
+
+    if (!shouldPlay) {
+      video.pause()
+      video.currentTime = 0
+      return
+    }
+
+    let cancelled = false
+
+    const tryPlay = async () => {
+      try {
+        await video.play()
+
+        if (!cancelled) {
+          setHasStartedPlayback(true)
+        }
+      } catch {
+        if (!cancelled) {
+          setAutoplayBlocked(true)
+        }
+      }
+    }
+
+    void tryPlay()
+
+    return () => {
+      cancelled = true
+      video.pause()
+    }
+  }, [autoplayBlocked, shouldPlay, videoSrc])
+
   return (
     <div className="relative h-full w-full overflow-hidden bg-zinc-50">
       <Image
@@ -180,10 +220,9 @@ const ServiceMedia: FC<{
         sizes="33vw"
       />
 
-      {showVideo && videoSrc ? (
+      {!autoplayBlocked && videoSrc ? (
         <video
-          key={videoSrc}
-          autoPlay
+          ref={videoRef}
           muted
           loop
           playsInline
@@ -191,22 +230,23 @@ const ServiceMedia: FC<{
           poster={imageSrc}
           className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-200 ${softenVideoBackground ? '[filter:brightness(0.985)_saturate(0.96)]' : ''}`}
           style={{
-            opacity: 1,
+            opacity: canShowVideo ? 1 : 0,
             transform: `scale(${videoScale})`,
           }}
         >
           <source src={videoSrc} type="video/mp4" />
+          {alt}
         </video>
       ) : null}
 
-      {showVideo && softenVideoBackground ? (
+      {canShowVideo && softenVideoBackground ? (
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_62%,rgba(250,250,250,0.24)_100%)]"
         />
       ) : null}
 
-      {showVideo && softenVideoEdges ? (
+      {canShowVideo && softenVideoEdges ? (
         <>
           <div
             aria-hidden="true"
@@ -223,7 +263,7 @@ const ServiceMedia: FC<{
         </>
       ) : null}
 
-      {showVideo && softenVideoBottomEdge ? (
+      {canShowVideo && softenVideoBottomEdge ? (
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 bottom-0 h-[8%] bg-gradient-to-t from-[#fafafa]/45 via-[#fafafa]/18 to-transparent [filter:blur(4px)]"
@@ -267,8 +307,8 @@ const DrawLine: FC<{
 const ServiceRow: FC<{
   service: ServiceItem
   index: number
-  desktopHoverMediaEnabled: boolean
-}> = ({ service, index, desktopHoverMediaEnabled }) => {
+  desktopMediaEnabled: boolean
+}> = ({ service, index, desktopMediaEnabled }) => {
   const {
     num,
     title,
@@ -286,13 +326,13 @@ const ServiceRow: FC<{
     threshold: 0.18,
   })
   const rowDelay = index * 0.06
-  const showVideo = desktopHoverMediaEnabled && hovered && Boolean(videoSrc)
+  const shouldPlayVideo = desktopMediaEnabled && inView && Boolean(videoSrc)
 
   return (
     <div
       ref={ref}
       onMouseEnter={() => {
-        if (desktopHoverMediaEnabled) {
+        if (desktopMediaEnabled) {
           setHovered(true)
         }
       }}
@@ -305,14 +345,14 @@ const ServiceRow: FC<{
       }}
     >
       <div className="relative flex w-16 shrink-0 items-start pt-6 md:hidden">
-        <span className="text-[20px] font-semibold leading-none text-[#737373]">
+        <span className="text-xl font-semibold leading-none text-[#737373]">
           {num}
         </span>
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col md:hidden">
         <div className="pt-5">
-          <p className="text-[18px] font-semibold leading-7 text-[#0a0a0a]">
+          <p className="text-lg font-semibold leading-7 text-[#0a0a0a]">
             {title}
           </p>
         </div>
@@ -328,7 +368,7 @@ const ServiceRow: FC<{
                 .filter(Boolean)
                 .join(' ')}
             >
-              <span className="text-[14px] font-medium leading-5 text-[#0a0a0a]">
+              <span className="text-sm font-medium leading-5 text-[#0a0a0a]">
                 {bullet}
               </span>
             </div>
@@ -415,7 +455,7 @@ const ServiceRow: FC<{
               imageSrc={imageSrc}
               videoSrc={videoSrc}
               alt={title}
-              showVideo={false}
+              shouldPlay={false}
               videoScale={videoScale}
               softenVideoBackground={softenVideoBackground}
               softenVideoEdges={softenVideoEdges}
@@ -488,7 +528,7 @@ const ServiceRow: FC<{
               imageSrc={imageSrc}
               videoSrc={videoSrc}
               alt={title}
-              showVideo={showVideo}
+              shouldPlay={shouldPlayVideo}
               videoScale={videoScale}
               softenVideoBackground={softenVideoBackground}
               softenVideoEdges={softenVideoEdges}
@@ -509,7 +549,7 @@ const ServiceRow: FC<{
 }
 
 export function Services() {
-  const desktopHoverMediaEnabled = useDesktopHoverMedia()
+  const desktopMediaEnabled = useDesktopMedia()
   const { ref: headerRef, inView: headerInView } = useInView<HTMLDivElement>({
     rootMargin: '-60px 0px',
     threshold: 0.2,
@@ -521,7 +561,7 @@ export function Services() {
       data-nav-section
       className="landing-mobile-gradient w-full"
     >
-      <div className="mx-auto w-full max-w-[1440px] px-4 py-8 sm:px-8 sm:py-16 md:px-[60px] lg:py-20">
+      <div className="mx-auto w-full max-w-[1800px] px-4 py-8 sm:px-8 sm:py-16 md:px-[3.75rem] lg:py-20">
         <div
           ref={headerRef}
           className="relative mb-8 lg:mb-10"
@@ -538,13 +578,13 @@ export function Services() {
               aria-hidden="true"
               className="block h-1 w-8 shrink-0 rounded-full bg-[#1cc14b]"
             />
-            <span className="font-mono text-[11px] font-normal uppercase tracking-[1.8px] text-[#737373]">
+            <span className="font-mono text-[0.6875rem] font-normal uppercase tracking-[1.8px] text-[#737373]">
               End-to-end installation
             </span>
           </div>
 
           <div className="pl-16 lg:pl-[calc(50%+20px)]">
-            <h2 className="font-sans text-[32px] font-semibold leading-[32px] tracking-[-0.64px] text-[#0a0a0a] sm:text-[clamp(44px,7vw,84px)] sm:leading-[1.14] sm:tracking-[-0.02em]">
+            <h2 className="font-sans text-[2rem] font-semibold leading-8 tracking-[-0.04rem] text-[#0a0a0a] sm:text-[clamp(2.75rem,7vw,5.25rem)] sm:leading-[1.14] sm:tracking-[-0.02em]">
               Services
             </h2>
           </div>
@@ -556,7 +596,7 @@ export function Services() {
               key={service.num}
               service={service}
               index={index}
-              desktopHoverMediaEnabled={desktopHoverMediaEnabled}
+              desktopMediaEnabled={desktopMediaEnabled}
             />
           ))}
         </div>

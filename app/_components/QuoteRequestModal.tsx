@@ -20,7 +20,7 @@ type QuoteFormData = {
 type QuoteFormErrors = Partial<Record<keyof QuoteFormData, string>>
 
 const MonoLabel: FC<{ children: ReactNode }> = ({ children }) => (
-  <span className="font-mono text-[12px] font-normal uppercase leading-4 tracking-[1.8px] text-[#737373] sm:text-[11px]">
+  <span className="font-mono text-[12px] font-normal uppercase leading-[1.15] tracking-[0.4px] text-[#737373] sm:text-[11px]">
     {children}
   </span>
 )
@@ -103,58 +103,51 @@ const FloatingInput: FC<{
 }
 
 const FloatingTextarea: FC<{
+  label: string
   error?: string
   value: string
   onChange: (value: string) => void
 } & Omit<
   TextareaHTMLAttributes<HTMLTextAreaElement>,
   'value' | 'onChange'
->> = ({ error, value, onChange, ...props }) => {
+>> = ({ label, error, value, onChange, placeholder, ...props }) => {
   const [isFocused, setIsFocused] = useState(false)
+  const labelUp = isFocused || value.trim().length > 0
 
   return (
-    <div className="relative w-full">
-      <label
-        className="mb-1.5 block font-mono text-[11px] font-normal uppercase tracking-[1.8px]"
+    <label className="relative block">
+      <span
+        className="pointer-events-none absolute left-0 top-0 z-[1] font-mono font-normal uppercase tracking-[1.8px]"
         style={{
+          fontSize: labelUp ? 11 : 14,
+          transform: `translate3d(0, ${labelUp ? 0 : 14}px, 0)`,
           color: error ? '#d4183d' : isFocused ? '#1cc14b' : '#737373',
-          transition: 'color 0.2s ease',
+          transition: `transform 0.2s ${easeOut}, font-size 0.2s ${easeOut}, color 0.2s ease`,
         }}
       >
-        Request / project details <span style={{ color: '#1cc14b' }}>*</span>
-      </label>
+        {label} <span style={{ color: '#1cc14b' }}>*</span>
+      </span>
 
-      <div className="relative">
-        <textarea
-          {...props}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          className="block min-h-24 w-full resize-none bg-transparent py-2 text-sm text-[#0a0a0a] outline-none placeholder:text-[#4b5563]"
-          style={{
-            border: 'none',
-            borderBottom: `1px solid ${error ? '#d4183d' : 'rgba(15,23,42,0.12)'}`,
-            boxSizing: 'border-box',
-            transition: 'border-color 0.22s ease',
-          }}
-        />
-
-        <div
-          className="absolute bottom-0 left-0 h-[2px] w-full"
-          style={{
-            backgroundColor: error ? '#d4183d' : '#1cc14b',
-            transform: `scaleX(${isFocused || Boolean(error) ? 1 : 0})`,
-            transformOrigin: '0 50%',
-            transition: `transform 0.26s ${easeOut}`,
-          }}
-        />
-      </div>
+      <textarea
+        {...props}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        placeholder={isFocused ? placeholder ?? '' : ''}
+        className="block min-h-24 w-full resize-none bg-transparent pb-2 pt-5 text-sm text-[#0a0a0a] outline-none placeholder:text-[#4b5563]"
+        style={{
+          border: 'none',
+          borderBottom: `1px solid ${error ? '#d4183d' : isFocused ? '#1cc14b' : 'rgba(15,23,42,0.12)'}`,
+          boxSizing: 'border-box',
+          transition: 'border-color 0.22s ease',
+        }}
+      />
 
       {error ? (
         <p className="mt-1 text-[12px] text-[#d4183d]">{error}</p>
       ) : null}
-    </div>
+    </label>
   )
 }
 
@@ -207,7 +200,7 @@ export default function QuoteRequestModal({
     const timeoutId = window.setTimeout(() => {
       setSubmitStatus('idle')
       onClose()
-    }, 3000)
+    }, 2000)
 
     return () => window.clearTimeout(timeoutId)
   }, [onClose, submitStatus])
@@ -291,50 +284,60 @@ export default function QuoteRequestModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[620px] rounded-[2px] bg-[#f5f5f5] p-5 shadow-[0_28px_80px_rgba(0,0,0,0.18)] sm:p-8"
+        className="relative w-full max-w-[620px] rounded-[2px] bg-[#f5f5f5] p-5 shadow-[0_28px_80px_rgba(0,0,0,0.18)] sm:p-8"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="mb-8 flex items-start justify-between gap-6">
-          <div className="flex flex-col gap-3">
-            <MonoLabel>Request A Quote</MonoLabel>
-            <div className="space-y-2">
-              <h3 className="text-[28px] font-semibold leading-[1.05] text-[#0a0a0a] sm:text-[40px]">
-                Request a Quote
-              </h3>
-              <p className="max-w-[420px] text-sm leading-6 text-[#4b5563]">
-                Share your contact details and project request. We&apos;ll review
-                it and get back to you with the next steps.
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex size-10 cursor-pointer items-center justify-center rounded-full text-[#0a0a0a] transition-colors hover:bg-[#ebebeb]"
-            aria-label="Close request quote form"
-          >
-            <CloseIcon />
-          </button>
-        </div>
-
         {submitStatus === 'success' ? (
-          <div className="flex min-h-[360px] flex-col items-center justify-center gap-4 text-center">
+          <div className="flex min-h-[420px] flex-col items-center justify-center gap-6 text-center">
+            <button
+              type="button"
+              onClick={onClose}
+              className="absolute right-5 top-5 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full p-0 text-[#0a0a0a] transition-colors hover:bg-[#ebebeb] sm:right-8 sm:top-8"
+              aria-label="Close request quote form"
+            >
+              <CloseIcon />
+            </button>
+
             <div className="flex size-16 items-center justify-center rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
               <DoneIcon dark />
             </div>
-            <div className="space-y-2">
-              <h4 className="text-2xl font-semibold text-[#0a0a0a]">
-                Request sent
-              </h4>
-              <p className="text-sm leading-6 text-[#4b5563]">
-                              We received your application and will contact you soon.
 
-              </p>
+            <div className="space-y-3">
+              <h3 className="text-[28px] font-semibold leading-[1.05] text-[#0a0a0a] sm:text-[40px]">
+                Request sent
+              </h3>
+              <MonoLabel>
+                We received your application and will contact you soon.
+              </MonoLabel>
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <>
+            <div className="mb-8 space-y-2">
+              <div className="flex items-center justify-between gap-6">
+                <h3 className="text-[28px] -ml-[2px] font-semibold leading-[1.05] text-[#0a0a0a] sm:text-[40px]">
+                  Request a Quote
+                </h3>
+
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full p-0 text-[#0a0a0a] transition-colors hover:bg-[#ebebeb]"
+                  aria-label="Close request quote form"
+                >
+                  <CloseIcon />
+                </button>
+              </div>
+
+              <div className="hidden sm:block">
+                <MonoLabel>
+                  Share your contact details and project request. We&apos;ll
+                  review it and get back to you with the next steps.
+                </MonoLabel>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <FloatingInput
               label="Full Name"
               value={formData.fullName}
@@ -379,6 +382,7 @@ export default function QuoteRequestModal({
             />
 
             <FloatingTextarea
+              label="Request / project details"
               rows={4}
               value={formData.requestDetails}
               error={errors.requestDetails}
@@ -417,7 +421,8 @@ export default function QuoteRequestModal({
                   : null}
               </p>
             </div>
-          </form>
+            </form>
+          </>
         )}
       </div>
     </div>

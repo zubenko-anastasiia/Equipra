@@ -159,7 +159,7 @@ const SectionLabel: FC = () => (
       aria-hidden="true"
       className="block h-1 w-8 shrink-0 rounded-full bg-[#1cc14b]"
     />
-    <span className="font-mono text-[11px] font-normal uppercase tracking-[1.8px] text-[#737373]">
+    <span className="font-mono text-[0.6875rem] font-normal uppercase tracking-[1.8px] text-[#737373]">
       Our Clients
     </span>
   </div>
@@ -169,12 +169,15 @@ const LogoPlaceholder: FC<{ logo: LogoItem }> = ({ logo }) => {
   return (
     <div
       className={[
-        'relative flex h-8 flex-none items-center justify-center sm:h-10',
+        'relative flex h-8 flex-none items-center justify-center sm:h-10 lg:h-14 xl:h-16',
         logo.blendDifference ? 'mix-blend-difference' : '',
       ]
         .filter(Boolean)
         .join(' ')}
-      style={{ width: logo.w, maxWidth: '100%' }}
+      style={{
+        width: `calc(${logo.w}px * var(--clients-logo-scale, 1))`,
+        maxWidth: '100%',
+      }}
       aria-label={`${logo.alt} logo`}
     >
       <Image
@@ -201,18 +204,15 @@ const LogoPlaceholder: FC<{ logo: LogoItem }> = ({ logo }) => {
 
 const LogoStrip: FC = () => (
   <div className="w-full overflow-hidden px-0 sm:px-6">
-    <div className="overflow-hidden sm:hidden">
-      <div className="clients-logo-marquee flex w-max items-center gap-3 py-2">
+    <div className="overflow-hidden">
+      <div className="clients-logo-marquee flex w-max min-w-full items-center gap-[var(--clients-logo-gap)] py-2">
         {[...LOGOS, ...LOGOS].map((logo, index) => (
-          <LogoPlaceholder
-            key={`${logo.alt}-${index}`}
-            logo={logo}
-          />
+          <LogoPlaceholder key={`${logo.alt}-${index}`} logo={logo} />
         ))}
       </div>
     </div>
 
-    <div className="hidden w-full flex-wrap items-center justify-center gap-x-8 gap-y-8 py-2 sm:flex lg:flex-nowrap lg:gap-10">
+    <div className="sr-only">
       {LOGOS.map((logo) => (
         <LogoPlaceholder key={logo.alt} logo={logo} />
       ))}
@@ -253,17 +253,30 @@ const ReferenceRow: FC<{ item: ReferenceItem; index: number }> = ({
         }}
       >
         <div className="flex max-w-[200px] flex-col gap-2 lg:contents">
-          <p className="shrink-0 text-[16px] font-semibold leading-none text-[#0a0a0a] sm:w-[340px] sm:text-lg sm:leading-7 lg:w-auto lg:pr-8">
+          <p className="shrink-0 text-base font-semibold leading-none text-[#0a0a0a] sm:w-[340px] sm:text-lg sm:leading-7 lg:w-auto lg:pr-8">
             {item.title}
           </p>
 
-          <p className="text-[12px] font-medium leading-none text-[#737373] sm:truncate sm:pr-4 sm:text-sm">
-            {item.scope}
-          </p>
+          <div
+            className="sm:pr-4"
+            style={{
+              paddingBottom: '0.16em',
+              marginBottom: '-0.16em',
+            }}
+          >
+            <p
+              className="text-xs font-medium text-[#737373] sm:max-w-full sm:overflow-hidden sm:text-ellipsis sm:whitespace-nowrap sm:text-sm"
+              style={{
+                lineHeight: 1.15,
+              }}
+            >
+              {item.scope}
+            </p>
+          </div>
         </div>
         <a
           href={item.href}
-          className="shrink-0 whitespace-nowrap text-[14px] font-medium leading-5 text-[#0a0a0a] underline decoration-solid underline-offset-2 sm:text-sm sm:leading-none"
+          className="shrink-0 whitespace-nowrap text-sm font-medium leading-5 text-[#0a0a0a] underline decoration-solid underline-offset-2 sm:leading-none"
           style={{
             opacity: hovered ? 0.7 : 1,
             transition: 'opacity 0.22s ease',
@@ -300,7 +313,7 @@ export function Clients() {
         data-nav-section
         className="landing-mobile-gradient w-full overflow-hidden py-8 sm:py-16 lg:py-24"
       >
-        <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-8">
+        <div className="mx-auto w-full max-w-[1800px] px-4 sm:px-8">
           <div
             ref={headerRef}
             className="relative"
@@ -317,7 +330,7 @@ export function Clients() {
             </div>
 
             <div className="flex flex-col gap-3 pl-16 lg:pl-[calc(50%+20px)]">
-              <h2 className="w-full font-sans text-[32px] font-semibold leading-8 tracking-[-0.6px] text-[#0a0a0a] sm:w-auto sm:text-[clamp(36px,5.5vw,60px)] sm:font-medium sm:leading-[1.05] sm:tracking-[-0.02em]">
+              <h2 className="w-full font-sans text-[2rem] font-semibold leading-8 tracking-[-0.0375rem] text-[#0a0a0a] sm:w-auto sm:text-[clamp(2.25rem,5.5vw,3.75rem)] sm:font-medium sm:leading-[1.05] sm:tracking-[-0.02em]">
                 Companies that trust us
               </h2>
              
@@ -326,12 +339,12 @@ export function Clients() {
         </div>
 
         <div className="mt-8 sm:mt-12 lg:mt-14">
-          <div className="mx-auto w-full max-w-[1440px]">
+          <div className="mx-auto w-full max-w-[1800px]">
             <LogoStrip />
           </div>
         </div>
 
-        <div className="mx-auto mt-8 w-full max-w-[1440px] px-4 sm:mt-12 sm:px-8 lg:mt-14">
+        <div className="mx-auto mt-8 w-full max-w-[1800px] px-4 sm:mt-12 sm:px-8 lg:mt-14">
           <div
             ref={libraryRef}
             className="flex justify-start lg:justify-start lg:pl-[calc(50%+20px)]"
@@ -343,7 +356,7 @@ export function Clients() {
               transition: `opacity 0.88s ${easeOut}, transform 0.88s ${easeOut}`,
             }}
           >
-            <h3 className="mb-3 text-center text-[20px] font-semibold leading-7 text-[#0a0a0a] sm:mb-6 sm:text-3xl sm:leading-9">
+            <h3 className="mb-3 text-center text-xl font-semibold leading-7 text-[#0a0a0a] sm:mb-6 sm:text-3xl sm:leading-9">
               Reference Library
             </h3>
           </div>
@@ -369,10 +382,16 @@ export function Clients() {
               transition: `opacity 0.6s ${easeOut} 0.08s, transform 0.6s ${easeOut} 0.08s`,
             }}
           >
-            <p className="text-[14px] font-medium leading-none text-[#0a0a0a] sm:text-sm sm:font-semibold">
+            <p
+              className="text-sm font-medium text-[#0a0a0a] sm:font-semibold"
+              style={{ lineHeight: 1.08, paddingBottom: '0.08em' }}
+            >
               Trusted across sectors
             </p>
-            <p className="text-[14px] font-medium leading-none text-[#737373]">
+            <p
+              className="text-sm font-medium text-[#737373]"
+              style={{ lineHeight: 1.08, paddingBottom: '0.08em' }}
+            >
               25+ References
             </p>
           </div>
@@ -381,6 +400,8 @@ export function Clients() {
 
       <style jsx global>{`
         .clients-logo-marquee {
+          --clients-logo-gap: 0.75rem;
+          --clients-logo-scale: 1;
           animation: clients-logo-marquee-right 24s linear infinite;
           will-change: transform;
           transform: translate3d(0, 0, 0);
@@ -389,10 +410,30 @@ export function Clients() {
 
         @keyframes clients-logo-marquee-right {
           from {
-            transform: translate3d(calc(-50% - 12px), 0, 0);
+            transform: translate3d(
+              calc(-50% - (var(--clients-logo-gap) / 2)),
+              0,
+              0
+            );
           }
           to {
             transform: translate3d(0, 0, 0);
+          }
+        }
+
+        @media (min-width: 640px) {
+          .clients-logo-marquee {
+            --clients-logo-gap: 2.5rem;
+            --clients-logo-scale: 1.12;
+            animation-duration: 28s;
+          }
+        }
+
+        @media (min-width: 1024px) {
+          .clients-logo-marquee {
+            --clients-logo-gap: clamp(3rem, 4vw, 5rem);
+            --clients-logo-scale: clamp(1.3, 1.1 + 0.45vw, 1.7);
+            animation-duration: 30s;
           }
         }
 

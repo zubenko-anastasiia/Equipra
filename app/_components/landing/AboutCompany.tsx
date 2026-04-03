@@ -66,7 +66,13 @@ function RevealLine({
   className?: string;
 }) {
   return (
-    <div className="overflow-hidden">
+    <div
+      className="overflow-hidden"
+      style={{
+        paddingBottom: "0.16em",
+        marginBottom: "-0.16em",
+      }}
+    >
       <div
         className={className}
         style={{
@@ -89,7 +95,7 @@ function SectionLabel() {
         aria-hidden="true"
         className="block h-[4px] w-8 rounded-full bg-[#1cc14b] shrink-0"
       />
-      <span className="font-mono text-[11px] font-normal uppercase tracking-[1.8px] text-[#737373]">
+      <span className="font-mono text-[0.6875rem] font-normal uppercase tracking-[1.8px] text-[#737373]">
         About Company
       </span>
     </div>
@@ -103,7 +109,7 @@ function Heading({ inView }: { inView: boolean }) {
   ];
 
   return (
-    <h2 className="text-[clamp(32px,5.5vw,60px)] font-medium leading-[1.05] tracking-tight text-[#0a0a0a]">
+    <h2 className="text-[clamp(2rem,5.5vw,3.75rem)] font-medium leading-[1.05] tracking-tight text-[#0a0a0a]">
       <span className="hidden sm:inline">
         {lines.map((line, index) => (
           <RevealLine key={line} inView={inView} delay={index * 0.07}>
@@ -121,12 +127,12 @@ function Heading({ inView }: { inView: boolean }) {
       </span>
       <span className="flex flex-col gap-0 sm:hidden">
         <RevealLine inView={inView}>
-          <span className="block pl-16 text-[24px] leading-none">
+          <span className="block pl-16 text-2xl leading-[1.08]">
             Equipra supports
           </span>
         </RevealLine>
         <RevealLine inView={inView} delay={0.06}>
-          <span className="block text-[24px] leading-tight">
+          <span className="block text-2xl leading-tight">
             the industries installations that keep production running
           </span>
         </RevealLine>
@@ -137,7 +143,7 @@ function Heading({ inView }: { inView: boolean }) {
 
 function BodyText() {
   return (
-    <div className="space-y-4 pl-16 text-[16px] font-medium leading-6 sm:pl-0 sm:text-[15px] sm:font-normal sm:leading-[1.6]">
+    <div className="space-y-4 pl-16 text-base font-medium leading-6 sm:pl-0 sm:text-[0.9375rem] sm:font-normal sm:leading-[1.6]">
       <p>
         <span className="text-[#0a0a0a] sm:font-medium">Equipra was built </span>
         <span className="text-[#0a0a0a] sm:font-medium">
@@ -184,7 +190,7 @@ function BodyText() {
 function VideoCard() {
   return (
     <div className="flex w-full flex-col gap-2 sm:w-auto sm:items-end sm:gap-[14px]">
-      <p className="order-1 w-full pl-16 text-[14px] font-medium text-[#0a0a0a] sm:order-2 sm:w-auto sm:pl-0 sm:text-right sm:text-sm">
+      <p className="order-1 w-full pl-16 text-sm font-medium text-[#0a0a0a] sm:order-2 sm:w-auto sm:pl-0 sm:text-right">
         Watch how we work
       </p>
       <Link
@@ -258,7 +264,7 @@ export default function AboutSection() {
       data-nav-section
       className="landing-mobile-gradient relative w-full overflow-hidden"
     >
-      <div className="mx-auto w-full max-w-[1440px] px-4 py-8 sm:px-8 sm:py-16 md:px-[60px] lg:py-24">
+      <div className="mx-auto w-full max-w-[1800px] px-4 py-8 sm:px-8 sm:py-16 md:px-[3.75rem] lg:py-24">
         {/* Decorative structural drawing — desktop only, absolutely positioned */}
 
         {/* ------------------------------------------------------------------ */}

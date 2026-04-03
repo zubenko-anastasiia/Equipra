@@ -86,7 +86,7 @@ const useInView = <T extends HTMLElement>(
 }
 
 const MonoLabel: FC<{ children: ReactNode }> = ({ children }) => (
-  <span className="font-mono text-[12px] font-normal uppercase leading-4 tracking-[1.8px] text-[#737373] sm:text-[11px]">
+  <span className="font-mono text-xs font-normal uppercase leading-4 tracking-[1.8px] text-[#737373] sm:text-[0.6875rem]">
     {children}
   </span>
 )
@@ -227,7 +227,7 @@ const FloatingInput: FC<{
 
       {error ? (
         <p
-          className="mb-0 mt-1 text-[12px]"
+          className="mb-0 mt-1 text-xs"
           style={{
             color: '#d4183d',
             opacity: 1,
@@ -281,7 +281,7 @@ const FloatingTextarea: FC<{
     >
       <label
         htmlFor={id}
-        className="mb-1.5 block font-mono text-[11px] font-normal uppercase tracking-[1.8px]"
+        className="mb-1.5 block font-mono text-[0.6875rem] font-normal uppercase tracking-[1.8px]"
         style={{
           color: isFocused ? '#1cc14b' : '#737373',
           transition: 'color 0.2s ease',
@@ -325,7 +325,7 @@ const FloatingTextarea: FC<{
 
       {error ? (
         <p
-          className="mb-0 mt-1 text-[12px]"
+          className="mb-0 mt-1 text-xs"
           style={{
             color: '#d4183d',
             opacity: 1,
@@ -766,7 +766,7 @@ const ContactForm: FC = () => {
             <div className="order-1 flex w-full flex-col gap-[18px] sm:order-2 sm:w-[230px]">
               <PrivacyCheckbox checked={accepted} onChange={setAccepted} />
               {errors.accepted ? (
-                <p className="-mt-3 text-[12px] text-[#d4183d]">
+                <p className="-mt-3 text-xs text-[#d4183d]">
                   {errors.accepted}
                 </p>
               ) : null}
@@ -788,9 +788,9 @@ export function Footer() {
 
   return (
     <footer id="contact" data-nav-section className="w-full bg-[#f5f5f5]">
-      <div className="flex w-full flex-col items-center gap-3.5 px-4 py-8 sm:mx-auto sm:max-w-[1440px] sm:px-0 sm:pt-6 sm:pb-0">
+      <div className="flex w-full flex-col items-center gap-3.5 px-4 py-8 sm:mx-auto sm:max-w-[1800px] sm:px-0 sm:pt-6 sm:pb-0">
         <div className="flex w-full flex-col gap-6">
-          <div className=" md:px-[60px]">
+          <div className=" md:px-[3.75rem]">
             <div
               ref={headerRef}
               className="lg:pl-[calc(50%+20px)]"
@@ -802,13 +802,13 @@ export function Footer() {
                 transition: `opacity 0.88s ${easeOut} 0.06s, transform 0.88s ${easeOut} 0.06s`,
               }}
             >
-              <h2 className="py-0 text-[32px] font-semibold leading-8 tracking-[-0.64px] text-[#0a0a0a] sm:py-2.5 sm:text-[clamp(44px,7vw,84px)] sm:leading-[1.14] sm:tracking-[-0.02em]">
+              <h2 className="py-0 text-[2rem] font-semibold leading-8 tracking-[-0.04rem] text-[#0a0a0a] sm:py-2.5 sm:text-[clamp(2.75rem,7vw,5.25rem)] sm:leading-[1.14] sm:tracking-[-0.02em]">
                 Contact us
               </h2>
             </div>
           </div>
 
-          <div className="flex flex-col items-start justify-between gap-8 pb-0 sm:gap-16  sm:pb-[60px] md:px-[60px] lg:grid lg:grid-cols-[calc(50%+20px)_minmax(0,1fr)] lg:gap-x-0">
+          <div className="flex flex-col items-start justify-between gap-8 pb-0 sm:gap-16 sm:pb-[3.75rem] md:px-[3.75rem] lg:grid lg:grid-cols-[calc(50%+20px)_minmax(0,1fr)] lg:gap-x-0">
             <AnimatedSection delay={0.14} className="order-1 w-full lg:order-2">
               <div className="w-full shrink-0 lg:w-auto lg:pl-0">
                 <ContactForm />
@@ -896,7 +896,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="w-full pt-4  md:px-[60px]">
+        <div className="w-full pt-4 md:px-[3.75rem]">
           <div className="mb-3 h-px w-full bg-[#e5e5e5]" />
 
           <div className="flex w-full flex-col items-start gap-3 self-stretch pb-5 md:flex-row md:items-end md:justify-between md:gap-6 md:pb-10">

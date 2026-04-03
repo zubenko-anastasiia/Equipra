@@ -1,5 +1,6 @@
 'use client'
 
+import QuoteRequestModal from '@/app/_components/QuoteRequestModal'
 import Image from 'next/image'
 import { useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
@@ -139,6 +140,7 @@ function LanguageSwitch() {
 
 export function Header({ activeItem }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
   const isHomePage = pathname === '/'
@@ -192,98 +194,34 @@ export function Header({ activeItem }: HeaderProps) {
   }
 
   return (
-    <header
-      data-site-header
-      className={`fixed inset-x-0 top-0 z-50 border-b border-black/5 backdrop-blur-md ${
-        isMenuOpen ? 'bg-white' : 'bg-white/80'
-      }`}
-    >
-      <div className="mx-auto flex min-h-16 w-full max-w-[1440px] items-center gap-3 px-4 sm:px-8 md:px-[60px]">
-        <button
-          type="button"
-          className="group flex shrink-0 items-center rounded-md py-3 pr-2 transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500 active:scale-[0.98]"
-          aria-label="Equipra home"
-          onClick={handleHomeNavigation}
-        >
-          <LogoMark />
-        </button>
-
-        <nav
-          aria-label="Primary"
-          className="hidden min-w-0 flex-1 items-center justify-center lg:flex"
-        >
-          <ul className="flex flex-wrap items-center justify-center gap-1 xl:gap-1.5">
-            {HEADER_NAV_ITEMS.map((item) => {
-              const isActive = item.id === currentSectionId
-
-              return (
-                <li key={item.key}>
-                  <DesktopNavButton
-                    item={item}
-                    isActive={isActive}
-                    onClick={() => handleNavigation(item)}
-                  />
-                </li>
-              )
-            })}
-          </ul>
-        </nav>
-
-        <div className="ml-auto hidden items-center lg:flex">
-          <LanguageSwitch />
-        </div>
-
-        <div className="ml-auto flex items-center gap-2 lg:hidden">
-          <LanguageSwitch />
-
-          <button
-            type="button"
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-navigation"
-            aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-            className="inline-flex cursor-pointer items-center justify-center rounded-md p-2 text-zinc-950 transition-all duration-200 hover:bg-zinc-950/[0.04] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500 active:scale-95"
-            onClick={() => setIsMenuOpen((open) => !open)}
-          >
-            <span className="sr-only">Menu</span>
-            <span className="flex h-5 w-5 flex-col items-center justify-center gap-1">
-              <span
-                className={`block h-0.5 w-4 rounded-full bg-current transition-transform duration-200 ${
-                  isMenuOpen ? 'translate-y-1.5 rotate-45' : ''
-                }`}
-              />
-              <span
-                className={`block h-0.5 w-4 rounded-full bg-current transition-all duration-200 ${
-                  isMenuOpen ? 'opacity-0' : ''
-                }`}
-              />
-              <span
-                className={`block h-0.5 w-4 rounded-full bg-current transition-transform duration-200 ${
-                  isMenuOpen ? '-translate-y-1.5 -rotate-45' : ''
-                }`}
-              />
-            </span>
-          </button>
-        </div>
-      </div>
-
-      <div
-        id="mobile-navigation"
-        className={`absolute left-0 right-0 top-full overflow-hidden border-t border-black/5 bg-[linear-gradient(90deg,#f8f8f8_0%,#fff_16%,#fff_84%,#f8f8f8_100%)] transition-[max-height,opacity] duration-300 lg:hidden ${
-          isMenuOpen ? 'max-h-[calc(100dvh-4rem)] opacity-100' : 'max-h-0 opacity-0'
+    <>
+      <header
+        data-site-header
+        className={`fixed inset-x-0 top-0 z-50 border-b border-black/5 backdrop-blur-md ${
+          isMenuOpen ? 'bg-white' : 'bg-white/80'
         }`}
       >
-        <nav
-          aria-label="Mobile primary"
-          className="mx-auto flex min-h-[calc(100dvh-4rem)] w-full max-w-[1440px] flex-col justify-between px-4 py-4"
-        >
-          <div className="flex flex-col gap-16">
-            <ul className="mt-16 flex flex-col items-end justify-center gap-6">
+        <div className="mx-auto flex min-h-16 w-full max-w-[1800px] items-center gap-3 px-4 sm:px-8 md:px-[3.75rem]">
+          <button
+            type="button"
+            className="group flex shrink-0 items-center rounded-md py-3 pr-2 transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500 active:scale-[0.98]"
+            aria-label="Equipra home"
+            onClick={handleHomeNavigation}
+          >
+            <LogoMark />
+          </button>
+
+          <nav
+            aria-label="Primary"
+            className="hidden min-w-0 flex-1 items-center justify-center lg:flex"
+          >
+            <ul className="flex flex-wrap items-center justify-center gap-1 xl:gap-1.5">
               {HEADER_NAV_ITEMS.map((item) => {
                 const isActive = item.id === currentSectionId
 
                 return (
                   <li key={item.key}>
-                    <MobileNavButton
+                    <DesktopNavButton
                       item={item}
                       isActive={isActive}
                       onClick={() => handleNavigation(item)}
@@ -292,22 +230,95 @@ export function Header({ activeItem }: HeaderProps) {
                 )
               })}
             </ul>
+          </nav>
+
+          <div className="ml-auto hidden items-center lg:flex">
+            <LanguageSwitch />
           </div>
 
-          <div className="pointer-events-auto w-full">
-            <a
-              href="#contact"
-              onClick={(event) => {
-                event.preventDefault()
-                handleNavigation({ id: 'contact', key: 'contact', label: 'Contact' })
-              }}
-              className="inline-flex h-12 w-full items-center justify-center overflow-hidden rounded-[2px] bg-[#1cc14b] px-2.5 py-2 text-base font-medium leading-6 text-neutral-50 no-underline transition-colors hover:bg-[#18ad43]"
+          <div className="ml-auto flex items-center gap-2 lg:hidden">
+            <LanguageSwitch />
+
+            <button
+              type="button"
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-navigation"
+              aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              className="inline-flex cursor-pointer items-center justify-center rounded-md p-2 text-zinc-950 transition-all duration-200 hover:bg-zinc-950/[0.04] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-green-500 active:scale-95"
+              onClick={() => setIsMenuOpen((open) => !open)}
             >
-              Request a Quote
-            </a>
+              <span className="sr-only">Menu</span>
+              <span className="flex h-5 w-5 flex-col items-center justify-center gap-1">
+                <span
+                  className={`block h-0.5 w-4 rounded-full bg-current transition-transform duration-200 ${
+                    isMenuOpen ? 'translate-y-1.5 rotate-45' : ''
+                  }`}
+                />
+                <span
+                  className={`block h-0.5 w-4 rounded-full bg-current transition-all duration-200 ${
+                    isMenuOpen ? 'opacity-0' : ''
+                  }`}
+                />
+                <span
+                  className={`block h-0.5 w-4 rounded-full bg-current transition-transform duration-200 ${
+                    isMenuOpen ? '-translate-y-1.5 -rotate-45' : ''
+                  }`}
+                />
+              </span>
+            </button>
           </div>
-        </nav>
-      </div>
-    </header>
+        </div>
+
+        <div
+          id="mobile-navigation"
+          className={`absolute left-0 right-0 top-full overflow-hidden border-t border-black/5 bg-[linear-gradient(90deg,#f8f8f8_0%,#fff_16%,#fff_84%,#f8f8f8_100%)] transition-[max-height,opacity] duration-300 lg:hidden ${
+            isMenuOpen ? 'max-h-[calc(100dvh-4rem)] opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <nav
+            aria-label="Mobile primary"
+            className="mx-auto flex min-h-[calc(100dvh-4rem)] w-full max-w-[1800px] flex-col justify-between px-4 py-4"
+          >
+            <div className="flex flex-col gap-16">
+              <ul className="mt-16 flex flex-col items-end justify-center gap-6">
+                {HEADER_NAV_ITEMS.map((item) => {
+                  const isActive = item.id === currentSectionId
+
+                  return (
+                    <li key={item.key}>
+                      <MobileNavButton
+                        item={item}
+                        isActive={isActive}
+                        onClick={() => handleNavigation(item)}
+                      />
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+
+            <div className="pointer-events-auto w-full">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMenuOpen(false)
+                  window.setTimeout(() => {
+                    setIsQuoteModalOpen(true)
+                  }, 180)
+                }}
+                className="inline-flex h-12 w-full items-center justify-center overflow-hidden rounded-[2px] bg-[#1cc14b] px-2.5 py-2 text-base font-medium leading-6 text-neutral-50 no-underline transition-colors hover:bg-[#18ad43]"
+              >
+                Request a Quote
+              </button>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <QuoteRequestModal
+        isOpen={isQuoteModalOpen}
+        onClose={() => setIsQuoteModalOpen(false)}
+      />
+    </>
   )
 }

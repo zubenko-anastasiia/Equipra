@@ -19,7 +19,7 @@ type ApplicationFormErrors = Partial<
 >
 
 const MonoLabel: FC<{ children: ReactNode }> = ({ children }) => (
-  <span className="font-mono text-[12px] font-normal uppercase leading-4 tracking-[1.8px] text-[#737373] sm:text-[11px]">
+  <span className="font-mono text-[12px] font-normal uppercase leading-4 tracking-[0.4px] text-[#737373] sm:text-[11px]">
     {children}
   </span>
 )
@@ -149,7 +149,16 @@ const FileUploadField: FC<{
 
   return (
     <div className="flex flex-col gap-3">
-      <MonoLabel>CV Upload *</MonoLabel>
+      <span
+        className="font-mono font-normal uppercase tracking-[1.8px]"
+        style={{
+          fontSize: 14,
+          lineHeight: 1.15,
+          color: error ? '#d4183d' : '#737373',
+        }}
+      >
+        CV Upload <span style={{ color: '#1cc14b' }}>*</span>
+      </span>
       <div
         onClick={() => inputRef.current?.click()}
         className="flex w-full cursor-pointer flex-col items-center gap-6 rounded-lg border border-dashed px-4 py-5 text-center transition-colors"
@@ -172,16 +181,24 @@ const FileUploadField: FC<{
         <div className="flex w-full flex-col items-center gap-3.5">
           <div className="flex w-full flex-col items-center gap-2">
             <span className="w-full text-center text-xl font-semibold leading-7 text-[#18181b]">
-              {file ? file.name : 'Upload file'}
+              {file ? (
+                <span
+                  className="block w-full overflow-hidden text-ellipsis whitespace-nowrap"
+                  title={file.name}
+                >
+                  {file.name}
+                </span>
+              ) : (
+                'Upload file'
+              )}
             </span>
             <span className="w-full text-center text-sm leading-5 text-[#71717a]">
               {file ? (
                 `Selected PDF • ${(file.size / (1024 * 1024)).toFixed(2)} MB`
               ) : (
-                <>
-                  PDF format only, up to{' '}
-                  <span className="font-semibold">10 MB</span>
-                </>
+                <span className="font-mono text-[12px] uppercase tracking-[0.4px] text-[#737373]">
+                  PDF format only, up to 10 MB
+                </span>
               )}
             </span>
           </div>
@@ -213,12 +230,6 @@ const FileUploadField: FC<{
               </button>
             )}
           </div>
-
-          {!file ? (
-            <span className="text-sm leading-5 text-[#52525b]">
-              Files like .doc, .jpg, and .png are rejected.
-            </span>
-          ) : null}
         </div>
       </div>
 
@@ -289,7 +300,7 @@ export default function CareerApplicationModal({
     const timeoutId = window.setTimeout(() => {
       setSubmitStatus('idle')
       onClose()
-    }, 3000)
+    }, 2000)
 
     return () => window.clearTimeout(timeoutId)
   }, [onClose, submitStatus])
@@ -393,126 +404,144 @@ export default function CareerApplicationModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[620px] rounded-[2px] bg-[#f5f5f5] p-5 shadow-[0_28px_80px_rgba(0,0,0,0.18)] sm:p-8"
+        className="relative w-full max-w-[620px] rounded-[2px] bg-[#f5f5f5] p-5 shadow-[0_28px_80px_rgba(0,0,0,0.18)] sm:p-8"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="mb-8 flex items-start justify-between gap-6">
-          <div className="flex flex-col gap-3">
-            <MonoLabel>Career Application</MonoLabel>
-            <div className="space-y-2">
-              <h3 className="text-[28px] font-semibold leading-[1.05] text-[#0a0a0a] sm:text-[40px]">
-                Apply here
-              </h3>
-              <p className="max-w-[420px] text-sm leading-6 text-[#4b5563]">
-                Share your name, the role you want, and your PDF CV. We&apos;ll
-                review your application and get back to you.
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex size-10 cursor-pointer items-center justify-center rounded-full text-[#0a0a0a] transition-colors hover:bg-[#ebebeb]"
-            aria-label="Close application form"
-          >
-            <CloseIcon />
-          </button>
-        </div>
-
         {submitStatus === 'success' ? (
-          <div className="flex min-h-[360px] flex-col items-center justify-center gap-4 text-center">
+          <div className="flex min-h-[420px] flex-col items-center justify-center gap-6 text-center">
+            <button
+              type="button"
+              onClick={onClose}
+              className="absolute right-5 top-5 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full p-0 text-[#0a0a0a] transition-colors hover:bg-[#ebebeb] sm:right-8 sm:top-8"
+              aria-label="Close application form"
+            >
+              <CloseIcon />
+            </button>
+
             <div className="flex size-16 items-center justify-center rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
               <DoneIcon dark />
             </div>
-            <div className="space-y-2">
-              <h4 className="text-2xl font-semibold text-[#0a0a0a]">
+
+            <div className="space-y-3">
+              <h3 className="text-[28px] font-semibold leading-[1.05] text-[#0a0a0a] sm:text-[40px]">
                 Application sent
-              </h4>
-              <p className="text-sm leading-6 text-[#4b5563]">
+              </h3>
+              <MonoLabel>
                 We received your application and will contact you soon.
-              </p>
+              </MonoLabel>
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-            <FloatingInput
-              label="Full Name"
-              value={formData.fullName}
-              error={errors.fullName}
-              placeholder="Jane Smith"
-              onChange={(value) => {
-                setFormData((current) => ({ ...current, fullName: value }))
-                setErrors((current) => ({ ...current, fullName: undefined }))
-                if (submitStatus !== 'idle') {
-                  setSubmitStatus('idle')
-                }
-              }}
-            />
+          <>
+            <div className="mb-8 space-y-2">
+              <div className="flex items-center justify-between gap-6">
+                <h3 className="text-[28px] -ml-[2px] font-semibold leading-[1.05] text-[#0a0a0a] sm:text-[40px]">
+                  Career Application
+                </h3>
 
-            <FloatingInput
-              label="Email"
-              value={formData.email}
-              error={errors.email}
-              placeholder="name@company.com"
-              onChange={(value) => {
-                setFormData((current) => ({ ...current, email: value }))
-                setErrors((current) => ({ ...current, email: undefined }))
-                if (submitStatus !== 'idle') {
-                  setSubmitStatus('idle')
-                }
-              }}
-            />
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full p-0 text-[#0a0a0a] transition-colors hover:bg-[#ebebeb]"
+                  aria-label="Close application form"
+                >
+                  <CloseIcon />
+                </button>
+              </div>
 
-            <FloatingInput
-              label="Position Applied For"
-              value={formData.position}
-              error={errors.position}
-              placeholder="Industrial Installer"
-              onChange={(value) => {
-                setFormData((current) => ({ ...current, position: value }))
-                setErrors((current) => ({ ...current, position: undefined }))
-                if (submitStatus !== 'idle') {
-                  setSubmitStatus('idle')
-                }
-              }}
-            />
-
-            <FileUploadField
-              file={formData.cvFile}
-              error={errors.cvFile}
-              onChange={(file) => {
-                setFormData((current) => ({ ...current, cvFile: file }))
-                setErrors((current) => ({
-                  ...current,
-                  cvFile: file ? undefined : current.cvFile,
-                }))
-                if (submitStatus !== 'idle') {
-                  setSubmitStatus('idle')
-                }
-              }}
-            />
-
-            <div className="flex flex-col items-center gap-1 pt-2">
-              <button
-                type="submit"
-                disabled={submitStatus === 'loading'}
-                className="inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-[2px] bg-[#0a0a0a] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#1e1e1e] disabled:cursor-not-allowed disabled:bg-[#737373]"
-              >
-                {submitStatus === 'loading' ? 'Sending...' : 'Submit application'}
-              </button>
-              <p
-                className="text-sm"
-                style={{
-                  color: submitStatus === 'error' ? '#d4183d' : '#737373',
-                }}
-              >
-                {submitStatus === 'error'
-                  ? 'Please fix the form and try again.'
-                  : null}
-              </p>
+              <div className="hidden sm:block">
+                <MonoLabel>
+                  Share your contact details, the role you&apos;re applying
+                  for, and your CV. We&apos;ll review your application and get
+                  back to you with the next steps.
+                </MonoLabel>
+              </div>
             </div>
-          </form>
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              <FloatingInput
+                label="Full Name"
+                value={formData.fullName}
+                error={errors.fullName}
+                placeholder="Jane Smith"
+                onChange={(value) => {
+                  setFormData((current) => ({ ...current, fullName: value }))
+                  setErrors((current) => ({ ...current, fullName: undefined }))
+                  if (submitStatus !== 'idle') {
+                    setSubmitStatus('idle')
+                  }
+                }}
+              />
+
+              <FloatingInput
+                label="Email"
+                value={formData.email}
+                error={errors.email}
+                placeholder="name@company.com"
+                onChange={(value) => {
+                  setFormData((current) => ({ ...current, email: value }))
+                  setErrors((current) => ({ ...current, email: undefined }))
+                  if (submitStatus !== 'idle') {
+                    setSubmitStatus('idle')
+                  }
+                }}
+              />
+
+              <FloatingInput
+                label="Position Applied For"
+                value={formData.position}
+                error={errors.position}
+                placeholder="Industrial Installer"
+                onChange={(value) => {
+                  setFormData((current) => ({ ...current, position: value }))
+                  setErrors((current) => ({
+                    ...current,
+                    position: undefined,
+                  }))
+                  if (submitStatus !== 'idle') {
+                    setSubmitStatus('idle')
+                  }
+                }}
+              />
+
+              <FileUploadField
+                file={formData.cvFile}
+                error={errors.cvFile}
+                onChange={(file) => {
+                  setFormData((current) => ({ ...current, cvFile: file }))
+                  setErrors((current) => ({
+                    ...current,
+                    cvFile: file ? undefined : current.cvFile,
+                  }))
+                  if (submitStatus !== 'idle') {
+                    setSubmitStatus('idle')
+                  }
+                }}
+              />
+
+              <div className="flex flex-col items-center gap-1 pt-2">
+                <button
+                  type="submit"
+                  disabled={submitStatus === 'loading'}
+                  className="inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-[2px] bg-[#0a0a0a] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#1e1e1e] disabled:cursor-not-allowed disabled:bg-[#737373]"
+                >
+                  {submitStatus === 'loading'
+                    ? 'Sending...'
+                    : 'Submit application'}
+                </button>
+                <p
+                  className="text-sm"
+                  style={{
+                    color: submitStatus === 'error' ? '#d4183d' : '#737373',
+                  }}
+                >
+                  {submitStatus === 'error'
+                    ? 'Please fix the form and try again.'
+                    : null}
+                </p>
+              </div>
+            </form>
+          </>
         )}
       </div>
     </div>

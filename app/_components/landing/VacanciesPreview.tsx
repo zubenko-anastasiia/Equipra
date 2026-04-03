@@ -101,10 +101,10 @@ const RoleCard: FC<VacancyCard> = ({ department, title, href }) => (
     </div>
 
     <div className="relative z-10 flex flex-col gap-3.5 sm:gap-[14px]">
-      <span className="font-mono text-[12px] font-normal uppercase leading-4 tracking-[1.8px] text-[#737373] transition-colors duration-300 sm:text-[11px]">
+      <span className="font-mono text-xs font-normal uppercase leading-4 tracking-[1.8px] text-[#737373] transition-colors duration-300 sm:text-[0.6875rem]">
         {department}
       </span>
-      <span className="text-[20px] font-semibold leading-none text-[#0a0a0a] transition-colors duration-300 sm:text-[clamp(22px,2.5vw,30px)]">
+      <span className="text-xl font-semibold leading-none text-[#0a0a0a] transition-colors duration-300 sm:text-[clamp(1.375rem,2.5vw,1.875rem)]">
         {title}
       </span>
     </div>
@@ -114,13 +114,13 @@ const RoleCard: FC<VacancyCard> = ({ department, title, href }) => (
 const HowToApply: FC<{ onApplyClick: () => void }> = ({ onApplyClick }) => (
   <div className="flex flex-col gap-1 sm:pl-0">
     <div className="pt-[14px] sm:pt-[14px]">
-      <h3 className="text-[20px] font-semibold leading-7 text-[#0a0a0a] sm:text-2xl sm:leading-8">
+      <h3 className="text-xl font-semibold leading-7 text-[#0a0a0a] sm:text-2xl sm:leading-8">
         Don&apos;t see your role listed?
       </h3>
     </div>
 
     <div className="mt-1 flex flex-col gap-3 sm:gap-6">
-      <p className="text-[18px] font-semibold leading-7 text-[#737373] sm:text-[16px] sm:font-normal sm:leading-6 sm:text-[#0a0a0a]">
+      <p className="text-lg font-semibold leading-7 text-[#737373] sm:text-base sm:font-normal sm:leading-6 sm:text-[#0a0a0a]">
         Send your CV and a short description of your most relevant project (1-2
         paragraphs) to <span className="text-[#0a0a0a]">office@equipra.eu</span>
       </p>
@@ -162,7 +162,7 @@ export function VacanciesPreview({ vacancies }: { vacancies: VacancyCard[] }) {
       >
         <div
           ref={headerRef}
-          className="relative mx-auto mb-8 w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px]"
+          className="relative mx-auto mb-8 w-full max-w-[1800px] px-4 sm:px-8 md:px-[3.75rem]"
           style={{
             opacity: headerInView ? 1 : 0,
             transform: headerInView
@@ -177,20 +177,20 @@ export function VacanciesPreview({ vacancies }: { vacancies: VacancyCard[] }) {
                 aria-hidden="true"
                 className="block h-1 w-8 shrink-0 rounded-full bg-[#1cc14b]"
               />
-              <span className="font-mono text-[11px] font-normal uppercase tracking-[1.8px] text-[#737373]">
+              <span className="font-mono text-[0.6875rem] font-normal uppercase tracking-[1.8px] text-[#737373]">
                 We are growing across industrial projects
               </span>
             </div>
           </div>
 
           <div className="pl-16 lg:pl-[calc(50%+20px)]">
-            <h2 className="font-sans text-[32px] font-semibold leading-[32px] tracking-[-0.64px] text-[#0a0a0a] sm:text-[clamp(48px,7vw,84px)] sm:leading-[1.14] sm:tracking-[-0.02em]">
+            <h2 className="font-sans text-[2rem] font-semibold leading-8 tracking-[-0.04rem] text-[#0a0a0a] sm:text-[clamp(3rem,7vw,5.25rem)] sm:leading-[1.14] sm:tracking-[-0.02em]">
               Vacancies
             </h2>
           </div>
         </div>
 
-        <div className="mx-auto mb-8 w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px] lg:grid lg:grid-cols-[calc(50%+20px)_minmax(0,1fr)] lg:gap-x-0">
+        <div className="mx-auto mb-8 w-full max-w-[1800px] px-4 sm:px-8 md:px-[3.75rem] lg:grid lg:grid-cols-[calc(50%+20px)_minmax(0,1fr)] lg:gap-x-0">
           {hasVacancies ? (
             <div className="hidden w-[187px] shrink-0 flex-col items-end gap-7 lg:flex lg:pr-8">
               <div className="flex w-full flex-col items-end gap-2 text-right">
@@ -222,7 +222,7 @@ export function VacanciesPreview({ vacancies }: { vacancies: VacancyCard[] }) {
               hasVacancies ? ' lg:mt-0 lg:pl-0' : ' lg:mt-0 ',
             ].join(' ')}
           >
-            <p className="text-[18px] font-semibold leading-7 sm:text-2xl sm:leading-8">
+            <p className="text-lg font-semibold leading-7 sm:text-2xl sm:leading-8">
               <span className="text-[#737373]">
                 We are building teams for installation, welding, assembly, and
                 commissioning
@@ -241,7 +241,7 @@ export function VacanciesPreview({ vacancies }: { vacancies: VacancyCard[] }) {
           </div>
         </div>
 
-        <div className="mx-auto mb-8 w-full max-w-[1440px] overflow-hidden px-4 sm:px-8 md:px-[60px]">
+        <div className="mx-auto mb-8 w-full max-w-[1800px] overflow-hidden px-4 sm:px-8 md:px-[3.75rem]">
           {hasVacancies ? (
             <div className="-mx-4 flex snap-x snap-mandatory justify-end gap-3.5 overflow-x-auto px-4 pb-2 sm:mx-0 sm:gap-[14px] sm:px-0 sm:snap-none">
               {vacancies.map((vacancy, i) => (
@@ -254,7 +254,7 @@ export function VacanciesPreview({ vacancies }: { vacancies: VacancyCard[] }) {
         </div>
 
         {hasVacancies ? (
-          <div className="mx-auto mb-8 w-full max-w-[1440px] px-4 sm:hidden">
+          <div className="mx-auto mb-8 w-full max-w-[1800px] px-4 sm:hidden">
             <div className="flex items-start justify-between">
               <div className="inline-flex h-11 flex-col items-start justify-start gap-2">
                 <div className="text-lg font-semibold leading-4 text-[#0a0a0a]">
@@ -277,7 +277,7 @@ export function VacanciesPreview({ vacancies }: { vacancies: VacancyCard[] }) {
           </div>
         ) : null}
 
-        <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-8 md:px-[60px]">
+        <div className="mx-auto w-full max-w-[1800px] px-4 sm:px-8 md:px-[3.75rem]">
           <div className="lg:pl-[calc(50%+20px)]">
             <div className="max-w-[640px]">
               <HowToApply onApplyClick={() => setIsApplyModalOpen(true)} />
