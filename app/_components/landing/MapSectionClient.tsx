@@ -8,7 +8,7 @@ import {
   Geography,
   Marker,
   Graticule,
-  Line,
+  ZoomableGroup,
   createCoordinates,
 } from "@vnedyalk0v/react19-simple-maps";
 
@@ -174,11 +174,6 @@ const projectSites: ProjectSite[] = [
   },
 ];
 
-const centralHub = {
-  name: "Poland Hub",
-  coordinates: createCoordinates(19.1451, 51.9194),
-};
-
 const borderColor = "#1CC14B";
 const baseFill = "#E9F8EC";
 const highlightedFill = "#D7F3DF";
@@ -191,6 +186,30 @@ const defaultCountryPriority = "Poland";
 const blockedCountries = new Set(["Russia", "Belarus"]);
 const blockedCountryMessage =
   "Equipra does not operate in Russia or Belarus — a conscious choice aligned with our values.";
+const defaultProjectionConfig = {
+  center: createCoordinates(-28, 31),
+  scale: 182,
+};
+const defaultMapZoom = 1;
+const minMapZoom = 1;
+const maxMapZoom = 6;
+const zoomStep = 0.7;
+
+function clampZoom(zoom: number) {
+  return Math.min(maxMapZoom, Math.max(minMapZoom, zoom));
+}
+
+function allowMapZoom(event: Event) {
+  if (event instanceof WheelEvent) {
+    return event.ctrlKey;
+  }
+
+  if (event instanceof MouseEvent) {
+    return event.button === 0;
+  }
+
+  return true;
+}
 
 function FileIcon() {
   return (
@@ -231,6 +250,8 @@ export default function MapSectionClient({
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+  const [mapCenter, setMapCenter] = useState(defaultProjectionConfig.center);
+  const [mapZoom, setMapZoom] = useState(defaultMapZoom);
 
   const highlightedCountries = useMemo(
     () => new Set(projectSites.map((project) => project.countryName)),
@@ -307,26 +328,28 @@ export default function MapSectionClient({
     );
   }, [activeCountry, sortedProjects]);
 
+  const resetMapView = () => {
+    setMapCenter(defaultProjectionConfig.center);
+    setMapZoom(defaultMapZoom);
+  };
+
   return (
     <>
     <section
       id="projects"
       data-nav-section
       ref={sectionRef}
-      className="relative overflow-hidden bg-background pb-8 pt-8 sm:pb-12 sm:pt-16 lg:pb-16 lg:pt-20"
+      className="relative h-[calc(100dvh-65px)] overflow-hidden bg-background"
       style={{ backgroundColor: "rgba(28, 193, 75, 0.01)" }}
     >
       <div
-        className="relative w-full"
+        className="relative h-full w-full"
         style={{ backgroundColor: "rgba(28, 193, 75, 0.01)" }}
       >
-        <div className="h-[760px] overflow-hidden sm:h-[600px]">
+        <div className="h-full overflow-hidden">
             <ComposableMap
               projection="geoMercator"
-              projectionConfig={{
-                scale: 380,
-                center: createCoordinates(-30, 48),
-              }}
+              projectionConfig={defaultProjectionConfig}
               style={{
                 width: "100%",
                 height: "100%",
@@ -340,159 +363,181 @@ export default function MapSectionClient({
                 pointerEvents="none"
               />
 
-              <Geographies geography={geographyData as never}>
-                {({ geographies }) =>
-                  geographies.map((geo, index) => {
-                    const countryName =
-                      geo.properties.name || geo.properties.NAME || "";
-                    const isHighlightedCountry =
-                      highlightedCountries.has(countryName);
-                    const isPoland = countryName === "Poland";
-                    const isSelectedCountry = selectedCountry === countryName;
-                    const isActiveCountry = activeCountry === countryName;
-                    const geographyKey =
-                      String((geo.id ?? countryName) || `geo-${index}`) +
-                      `-${index}`;
-                    const currentFill = isPoland
-                      ? isActiveCountry
-                        ? polandHoverFill
-                        : polandFill
-                      : isActiveCountry
-                        ? hoverFill
-                        : isHighlightedCountry
-                          ? highlightedFill
-                          : baseFill;
-                    const currentStroke = isSelectedCountry
-                      ? isPoland
-                        ? selectedPolandStroke
-                        : selectedStroke
-                      : borderColor;
-                    const currentStrokeWidth = isSelectedCountry
-                      ? isPoland
-                        ? 2.2
-                        : 1.8
-                      : isPoland
-                        ? isActiveCountry
-                          ? 2
-                          : 1.9
-                        : isActiveCountry
-                          ? 1.25
-                          : 1.1;
-
-                    return (
-                      <Geography
-                        key={geographyKey}
-                        geography={geo}
-                        strokeLinejoin="round"
-                        strokeLinecap="round"
-                        className="cursor-pointer"
-                        fill={currentFill}
-                        stroke={currentStroke}
-                        strokeWidth={currentStrokeWidth}
-                        onMouseEnter={() => {
-                          if (!selectedCountry) {
-                            setHoveredCountry(countryName);
-                          }
-                        }}
-                        onMouseMove={() => {
-                          if (!selectedCountry && hoveredCountry !== countryName) {
-                            setHoveredCountry(countryName);
-                          }
-                        }}
-                        onFocus={() => {
-                          if (!selectedCountry) {
-                            setHoveredCountry(countryName);
-                          }
-                        }}
-                        onClick={() => {
-                          setSelectedCountry(countryName);
-                          setHoveredCountry(countryName);
-                        }}
-                        onMouseLeave={() => {
-                          if (!selectedCountry) {
-                            setHoveredCountry((currentCountry) =>
-                              currentCountry === countryName ? null : currentCountry
-                            );
-                          }
-                        }}
-                        style={{
-                          default: {
-                            fill: currentFill,
-                            stroke: currentStroke,
-                            strokeWidth: currentStrokeWidth,
-                            outline: "none",
-                            vectorEffect: "non-scaling-stroke",
-                            opacity: 1,
-                            transition:
-                              "fill 180ms ease, stroke 180ms ease, stroke-width 180ms ease, opacity 180ms ease",
-                            cursor: "pointer",
-                          },
-                          hover: {
-                            fill: currentFill,
-                            stroke: currentStroke,
-                            strokeWidth: currentStrokeWidth,
-                            outline: "none",
-                            vectorEffect: "non-scaling-stroke",
-                            opacity: 1,
-                            cursor: "pointer",
-                          },
-                          pressed: {
-                            fill: currentFill,
-                            stroke: currentStroke,
-                            strokeWidth: currentStrokeWidth,
-                            outline: "none",
-                            vectorEffect: "non-scaling-stroke",
-                            opacity: 1,
-                            cursor: "pointer",
-                          },
-                        }}
-                      />
-                    );
-                  })
-                }
-              </Geographies>
-
-              {projectSites.map((project) => (
-                <Line
-                  key={`line-${project.name}`}
-                  from={centralHub.coordinates}
-                  to={project.coordinates}
-                  stroke="rgba(28, 193, 75, 0.4)"
-                  strokeWidth={1}
-                  strokeLinecap="round"
-                  strokeDasharray="3 6"
-                  pointerEvents="none"
-                />
-              ))}
-
-              {projectSites.map((project) => (
-                <Marker
-                  key={project.name}
-                  coordinates={project.coordinates}
-                  pointerEvents="none"
-                >
-                  <>
-                    <circle r={7} fill="rgba(28, 193, 75, 0.12)" />
-                    <circle r={4.5} fill="rgba(28, 193, 75, 0.95)" />
-                  </>
-                </Marker>
-              ))}
-
-              <Marker
-                coordinates={centralHub.coordinates}
-                pointerEvents="none"
+              <ZoomableGroup
+                center={mapCenter}
+                zoom={mapZoom}
+                minZoom={minMapZoom}
+                maxZoom={maxMapZoom}
+                filterZoomEvent={allowMapZoom}
+                onMove={(position) => {
+                  setMapCenter(position.coordinates);
+                  setMapZoom(position.zoom);
+                }}
               >
-                <>
-                  <circle r={14} fill="rgba(28, 193, 75, 0.12)" />
-                  <circle r={9} fill="rgba(28, 193, 75, 0.22)" />
-                  <circle r={5.5} fill="rgba(28, 193, 75, 1)" />
-                </>
-              </Marker>
+                <Geographies geography={geographyData as never}>
+                  {({ geographies }) =>
+                    geographies.map((geo, index) => {
+                      const countryName =
+                        geo.properties.name || geo.properties.NAME || "";
+                      const isHighlightedCountry =
+                        highlightedCountries.has(countryName);
+                      const isPoland = countryName === "Poland";
+                      const isSelectedCountry = selectedCountry === countryName;
+                      const isActiveCountry = activeCountry === countryName;
+                      const geographyKey =
+                        String((geo.id ?? countryName) || `geo-${index}`) +
+                        `-${index}`;
+                      const currentFill = isPoland
+                        ? isActiveCountry
+                          ? polandHoverFill
+                          : polandFill
+                        : isActiveCountry
+                          ? hoverFill
+                          : isHighlightedCountry
+                            ? highlightedFill
+                            : baseFill;
+                      const currentStroke = isSelectedCountry
+                        ? isPoland
+                          ? selectedPolandStroke
+                          : selectedStroke
+                        : borderColor;
+                      const currentStrokeWidth = isSelectedCountry
+                        ? isPoland
+                          ? 2.2
+                          : 1.8
+                        : isPoland
+                          ? isActiveCountry
+                            ? 2
+                            : 1.9
+                          : isActiveCountry
+                            ? 1.25
+                            : 1.1;
+
+                      return (
+                        <Geography
+                          key={geographyKey}
+                          geography={geo}
+                          strokeLinejoin="round"
+                          strokeLinecap="round"
+                          className="cursor-pointer"
+                          fill={currentFill}
+                          stroke={currentStroke}
+                          strokeWidth={currentStrokeWidth}
+                          onMouseEnter={() => {
+                            if (!selectedCountry) {
+                              setHoveredCountry(countryName);
+                            }
+                          }}
+                          onMouseMove={() => {
+                            if (!selectedCountry && hoveredCountry !== countryName) {
+                              setHoveredCountry(countryName);
+                            }
+                          }}
+                          onFocus={() => {
+                            if (!selectedCountry) {
+                              setHoveredCountry(countryName);
+                            }
+                          }}
+                          onClick={() => {
+                            setSelectedCountry(countryName);
+                            setHoveredCountry(countryName);
+                          }}
+                          onMouseLeave={() => {
+                            if (!selectedCountry) {
+                              setHoveredCountry((currentCountry) =>
+                                currentCountry === countryName ? null : currentCountry
+                              );
+                            }
+                          }}
+                          style={{
+                            default: {
+                              fill: currentFill,
+                              stroke: currentStroke,
+                              strokeWidth: currentStrokeWidth,
+                              outline: "none",
+                              vectorEffect: "non-scaling-stroke",
+                              opacity: 1,
+                              transition:
+                                "fill 180ms ease, stroke 180ms ease, stroke-width 180ms ease, opacity 180ms ease",
+                              cursor: "pointer",
+                            },
+                            hover: {
+                              fill: currentFill,
+                              stroke: currentStroke,
+                              strokeWidth: currentStrokeWidth,
+                              outline: "none",
+                              vectorEffect: "non-scaling-stroke",
+                              opacity: 1,
+                              cursor: "pointer",
+                            },
+                            pressed: {
+                              fill: currentFill,
+                              stroke: currentStroke,
+                              strokeWidth: currentStrokeWidth,
+                              outline: "none",
+                              vectorEffect: "non-scaling-stroke",
+                              opacity: 1,
+                              cursor: "pointer",
+                            },
+                          }}
+                        />
+                      );
+                    })
+                  }
+                </Geographies>
+
+                {projectSites.map((project) => (
+                  <Marker
+                    key={project.name}
+                    coordinates={project.coordinates}
+                    pointerEvents="none"
+                  >
+                    <>
+                      <circle r={7} fill="rgba(28, 193, 75, 0.12)" />
+                      <circle r={4.5} fill="rgba(28, 193, 75, 0.95)" />
+                    </>
+                  </Marker>
+                ))}
+              </ZoomableGroup>
+
             </ComposableMap>
           </div>
 
+        <div className="pointer-events-none absolute right-4 top-20 z-20 flex flex-col items-end gap-3 sm:right-8 md:right-[3.75rem]">
+          <div className="pointer-events-auto inline-flex flex-col overflow-hidden rounded-[2px] border border-[#1CC14B] bg-white shadow-[0_18px_40px_rgba(12,32,21,0.1)]">
+            <button
+              type="button"
+              onClick={() => setMapZoom((currentZoom) => clampZoom(currentZoom + zoomStep))}
+              className="flex h-11 w-11 items-center justify-center border-b border-[#d9eadf] text-2xl leading-none text-[#0a0a0a] transition-colors hover:bg-[#f4fbf6]"
+              aria-label="Zoom in"
+            >
+              +
+            </button>
+            <button
+              type="button"
+              onClick={() => setMapZoom((currentZoom) => clampZoom(currentZoom - zoomStep))}
+              className="flex h-11 w-11 items-center justify-center text-2xl leading-none text-[#0a0a0a] transition-colors hover:bg-[#f4fbf6]"
+              aria-label="Zoom out"
+            >
+              -
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={resetMapView}
+            className="pointer-events-auto inline-flex h-10 items-center justify-center rounded-[2px] border border-[#d9eadf] bg-white px-3 text-[0.72rem] font-mono uppercase tracking-[1.8px] text-[#0a0a0a] shadow-[0_18px_40px_rgba(12,32,21,0.08)] transition-colors hover:bg-[#f4fbf6]"
+          >
+            Reset view
+          </button>
+
+          <div className="hidden opacity-50 text-right max-w-[220px] rounded-[2px] border border-[#d9eadf] bg-white/92 px-3 py-2  text-[0.72rem] font-mono uppercase tracking-[1.8px] text-[#737373] shadow-[0_18px_40px_rgba(12,32,21,0.08)] backdrop-blur-sm lg:block">
+            Pinch to zoom <br/>Drag to move
+          </div>
+        </div>
+
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10">
-          <div className="mx-auto w-full max-w-[1800px] px-4 sm:px-8 md:px-[3.75rem]">
+          <div className="mx-auto w-full max-w-[1800px] px-4  sm:px-8 md:px-[3.75rem]">
             <div className="inline-flex w-full justify-center bg-white p-0 sm:w-auto sm:max-w-[634px]">
               <div className="w-full pr-4 text-2xl font-medium leading-8 text-neutral-950 sm:w-auto sm:pl-0 sm:pr-0 sm:text-4xl sm:leading-10">
                 From Europe to beyond, Equipra transforms complex challenges
