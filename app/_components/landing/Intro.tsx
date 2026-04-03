@@ -65,7 +65,7 @@ export function Intro() {
               loop
               playsInline
               preload="metadata"
-              poster="/img1.webp"
+              poster="/intro.webp"
               className="absolute inset-0 h-full w-full object-cover"
               style={{
                 transform: 'translate3d(0, 0, 0) scale(1.08)',
@@ -83,7 +83,7 @@ export function Intro() {
             <div
               className="absolute inset-0 intro-image"
               style={{
-                backgroundImage: "url('/img1.webp')",
+                backgroundImage: "url('/intro.webp')",
                 backgroundPosition: 'center top',
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: 'cover',
@@ -131,10 +131,10 @@ export function Intro() {
         />
 
         <div
-          className="absolute inset-x-0 bottom-3 sm:bottom-8 md:bottom-[60px]"
+          className="absolute inset-x-0 bottom-3 sm:bottom-8 md:bottom-[3.75rem]"
           style={{ zIndex: 4 }}
         >
-          <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 px-4 sm:px-8 md:px-[60px] lg:flex-row lg:items-end lg:justify-between">
+          <div className="mx-auto flex w-full max-w-[1800px] flex-col gap-6 px-4 sm:px-8 md:px-[3.75rem] lg:flex-row lg:items-end lg:justify-between">
             <h1
               className="w-full max-w-[1174px] uppercase font-bold leading-[0.95] tracking-[0.8px] text-white md:font-medium md:leading-[0.82] md:tracking-normal"
               style={{
@@ -147,13 +147,18 @@ export function Intro() {
                 <span
                   key={line}
                   className="block overflow-hidden"
-                  style={{ lineHeight: 0 }}
+                  style={{
+                    lineHeight: '0.9em',
+                    
+                  }}
                 >
                   <span
                     className="block"
                     style={{
                       lineHeight: 0.82,
-                      transform: mounted ? 'translate3d(0, 0, 0)' : 'translate3d(0, 108%, 0)',
+                      transform: mounted
+                        ? 'translate3d(0, 0.06em, 0)'
+                        : 'translate3d(0, 108%, 0)',
                       opacity: mounted ? 1 : 0,
                       transition: `transform 1.05s ${easeOut} ${0.52 + index * 0.09}s, opacity 1.05s ${easeOut} ${0.52 + index * 0.09}s`,
                       willChange: 'transform, opacity',
@@ -168,7 +173,7 @@ export function Intro() {
             <button
               type="button"
               onClick={() => setIsQuoteModalOpen(true)}
-              className="inline-flex h-12 w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[2px] border border-[#e5e5e5] bg-white px-3 no-underline transition-colors hover:bg-neutral-100 sm:h-10 sm:w-[177px] sm:justify-start sm:gap-1 sm:px-[9px]"
+              className="inline-flex h-12 w-full mb-4 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[2px] border border-[#e5e5e5] bg-white px-3 no-underline transition-colors hover:bg-neutral-100 sm:h-10 sm:w-auto sm:justify-start sm:gap-1 sm:px-4"
               style={{
                 opacity: mounted ? 1 : 0,
                 transform: mounted ? 'translate3d(0, 0, 0)' : 'translate3d(0, 20px, 0)',
@@ -183,7 +188,7 @@ export function Intro() {
                 className="whitespace-nowrap text-center leading-6 text-black"
                 style={{
                   fontFamily: 'var(--font-geist-sans)',
-                  fontSize: '16px',
+                  fontSize: '1rem',
                   fontWeight: 500,
                 }}
               >

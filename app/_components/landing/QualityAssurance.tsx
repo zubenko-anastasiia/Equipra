@@ -112,7 +112,7 @@ function SectionLabel() {
         aria-hidden="true"
         className="block h-1 w-8 shrink-0 rounded-full bg-[#1cc14b]"
       />
-      <span className="font-mono text-[11px] font-normal uppercase tracking-[1.8px] text-[#737373]">
+      <span className="font-mono text-[0.6875rem] font-normal uppercase tracking-[1.8px] text-[#737373]">
         Quality assurance
       </span>
     </div>
@@ -122,7 +122,7 @@ function SectionLabel() {
 /** Large display heading */
 function Heading({ inView }: { inView: boolean }) {
   return (
-    <h2 className="text-[clamp(28px,5.5vw,60px)] font-medium leading-[1.05] tracking-tight text-[#0a0a0a]">
+    <h2 className="text-[clamp(1.75rem,5.5vw,3.75rem)] font-medium leading-[1.05] tracking-tight text-[#0a0a0a]">
       <span className="hidden sm:inline">
         <RevealLine inView={inView}>
           <span className="block lg:[text-indent:clamp(220px,23.611vw,340px)]">
@@ -138,12 +138,12 @@ function Heading({ inView }: { inView: boolean }) {
       </span>
       <span className="flex flex-col gap-0 sm:hidden">
         <RevealLine inView={inView}>
-          <span className="block pl-16 text-[24px] leading-none">
+          <span className="block pl-16 text-2xl leading-none">
             Our teams work across
           </span>
         </RevealLine>
         <RevealLine inView={inView} delay={0.06}>
-          <span className="block text-[24px] leading-tight">
+          <span className="block text-2xl leading-tight">
             complex environments where accuracy, safety, and execution
             discipline are critical for long-term operational performance.
           </span>
@@ -227,7 +227,7 @@ function StatValue({
   }, [delay, inView, value]);
 
   return (
-    <p className="text-[24px] font-medium leading-none text-[#0a0a0a] sm:text-[clamp(36px,5vw,60px)]">
+    <p className="text-2xl font-medium leading-none text-[#0a0a0a] sm:text-[clamp(2.25rem,5vw,3.75rem)]">
       {displayValue}
     </p>
   );
@@ -259,11 +259,11 @@ function StatTile({
             }
       }
     >
-      <p className="text-[16px] font-medium leading-none text-[#0a0a0a] sm:text-base sm:font-semibold">
+      <p className="text-base font-medium leading-none text-[#0a0a0a] sm:font-semibold">
         {label}
       </p>
       {hidden ? (
-        <p className="text-[clamp(36px,5vw,60px)] font-medium leading-none text-[#0a0a0a]">
+        <p className="text-[clamp(2.25rem,5vw,3.75rem)] font-medium leading-none text-[#0a0a0a]">
           {value}
         </p>
       ) : (
@@ -342,12 +342,12 @@ function QualityBlurb() {
     <div className="w-full py-2.5 pl-16 lg:pl-[calc(50%+20px)]">
       <div className="flex flex-col gap-2.5 sm:gap-3.5">
         {/* Label */}
-        <p className="text-[16px] font-medium leading-none text-[#0a0a0a] sm:text-base sm:font-semibold">
+        <p className="text-base font-medium leading-none text-[#0a0a0a] sm:font-semibold">
           Quality guaranteed
         </p>
 
         {/* Body copy – mixed-weight spans exactly as in Figma */}
-        <p className="text-[18px] font-semibold leading-7 text-[#737373] sm:text-[clamp(18px,2vw,24px)] sm:leading-[1.35]">
+        <p className="text-lg font-semibold leading-7 text-[#737373] sm:text-[clamp(1.125rem,2vw,1.5rem)] sm:leading-[1.35]">
           From{" "}
           <span className="text-[#0a0a0a]">workshop preparation</span> to{" "}
           <span className="text-[#0a0a0a]">on-site installation</span>
@@ -383,7 +383,7 @@ const QualityAssurance: FC = () => {
       id="quality-assurance"
       className="landing-mobile-gradient w-full"
     >
-      <div className="mx-auto w-full max-w-[1440px] px-4 py-8 sm:px-8 sm:py-16 md:px-[60px] lg:py-24">
+      <div className="mx-auto w-full max-w-[1800px] px-4 py-8 sm:px-8 sm:py-16 md:px-[3.75rem] lg:py-24">
         {/* ── Top block: label + heading + stats ─────────────────────────── */}
         <div className="flex flex-col gap-8 sm:gap-16 lg:gap-24">
           {/* Header */}
