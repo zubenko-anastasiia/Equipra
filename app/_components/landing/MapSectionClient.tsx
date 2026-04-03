@@ -1,18 +1,18 @@
 'use client';
 
 import QuoteRequestModal from '@/app/_components/QuoteRequestModal';
+import type { CSSProperties } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ComposableMap,
   Geographies,
+  type GeographyData,
+  type GeographyProps,
   Geography,
   Marker,
   Graticule,
-  ZoomableGroup,
   createCoordinates,
 } from "@vnedyalk0v/react19-simple-maps";
-
-type GeographyData = Record<string, unknown>;
 
 type ProjectSite = {
   name: string;
@@ -190,26 +190,213 @@ const defaultProjectionConfig = {
   center: createCoordinates(-28, 31),
   scale: 182,
 };
+const geographyPath = "/countries-110m.json";
 const defaultMapZoom = 1;
 const minMapZoom = 1;
 const maxMapZoom = 6;
 const zoomStep = 0.7;
+const mapViewport = {
+  width: 1000,
+  height: 600,
+};
+const mapViewportCenter = {
+  x: mapViewport.width / 2,
+  y: mapViewport.height / 2,
+};
+type GeographyInteractionStyle = NonNullable<GeographyProps["style"]>;
+
+const defaultCountryStyle = {
+  outline: "none",
+  vectorEffect: "non-scaling-stroke",
+  opacity: 1,
+  transition:
+    "fill 180ms ease, stroke 180ms ease, stroke-width 180ms ease, opacity 180ms ease",
+  cursor: "pointer",
+} satisfies CSSProperties;
+const baseGeographyStyle = {
+  default: defaultCountryStyle,
+  hover: defaultCountryStyle,
+  pressed: defaultCountryStyle,
+} satisfies GeographyInteractionStyle;
+
+type CountryVisualState = {
+  fill: string;
+  stroke: string;
+  strokeWidth: number;
+};
+
+type MapView = {
+  x: number;
+  y: number;
+  zoom: number;
+};
+
+const defaultCountryVisualState: CountryVisualState = {
+  fill: baseFill,
+  stroke: borderColor,
+  strokeWidth: 1.1,
+};
+
+const highlightedCountryVisualState: CountryVisualState = {
+  fill: highlightedFill,
+  stroke: borderColor,
+  strokeWidth: 1.1,
+};
+
+const polandCountryVisualState: CountryVisualState = {
+  fill: polandFill,
+  stroke: borderColor,
+  strokeWidth: 1.9,
+};
+
+const polandActiveCountryVisualState: CountryVisualState = {
+  fill: polandHoverFill,
+  stroke: borderColor,
+  strokeWidth: 2,
+};
+
+function getCountryVisualState({
+  countryName,
+  activeCountry,
+  selectedCountry,
+  highlightedCountries,
+}: {
+  countryName: string;
+  activeCountry: string | null;
+  selectedCountry: string | null;
+  highlightedCountries: Set<string>;
+}): CountryVisualState {
+  const isPoland = countryName === "Poland";
+  const isHighlightedCountry = highlightedCountries.has(countryName);
+  const isActiveCountry = activeCountry === countryName;
+  const isSelectedCountry = selectedCountry === countryName;
+
+  if (isSelectedCountry) {
+    return {
+      fill: isPoland
+        ? isActiveCountry
+          ? polandHoverFill
+          : polandFill
+        : isActiveCountry
+          ? hoverFill
+          : isHighlightedCountry
+            ? highlightedFill
+            : baseFill,
+      stroke: isPoland ? selectedPolandStroke : selectedStroke,
+      strokeWidth: isPoland ? 2.2 : 1.8,
+    };
+  }
+
+  if (isPoland) {
+    return isActiveCountry
+      ? polandActiveCountryVisualState
+      : polandCountryVisualState;
+  }
+
+  if (isActiveCountry) {
+    return {
+      fill: hoverFill,
+      stroke: borderColor,
+      strokeWidth: 1.25,
+    };
+  }
+
+  return isHighlightedCountry
+    ? highlightedCountryVisualState
+    : defaultCountryVisualState;
+}
 
 function clampZoom(zoom: number) {
   return Math.min(maxMapZoom, Math.max(minMapZoom, zoom));
 }
 
-function allowMapZoom(event: Event) {
-  if (event instanceof WheelEvent) {
-    return event.ctrlKey;
+function clampPanCoordinate(coordinate: number, zoom: number, axisSize: number) {
+  const overflow = ((zoom - 1) * axisSize) / 2;
+
+  if (overflow <= 0) {
+    return 0;
   }
 
-  if (event instanceof MouseEvent) {
-    return event.button === 0;
-  }
-
-  return true;
+  return Math.max(-overflow, Math.min(overflow, coordinate));
 }
+
+function clampMapView(view: MapView): MapView {
+  const zoom = clampZoom(view.zoom);
+
+  return {
+    zoom,
+    x: clampPanCoordinate(view.x, zoom, mapViewport.width),
+    y: clampPanCoordinate(view.y, zoom, mapViewport.height),
+  };
+}
+
+function createDefaultMapView(): MapView {
+  return {
+    x: 0,
+    y: 0,
+    zoom: defaultMapZoom,
+  };
+}
+
+function createMapTransform({ x, y, zoom }: MapView) {
+  return [
+    `translate(${mapViewportCenter.x + x} ${mapViewportCenter.y + y})`,
+    `scale(${zoom})`,
+    `translate(${-mapViewportCenter.x} ${-mapViewportCenter.y})`,
+  ].join(" ");
+}
+
+function getPointerDistance(first: PointerEventState, second: PointerEventState) {
+  return Math.hypot(second.x - first.x, second.y - first.y);
+}
+
+function getPointerMidpoint(first: PointerEventState, second: PointerEventState) {
+  return {
+    x: (first.x + second.x) / 2,
+    y: (first.y + second.y) / 2,
+  };
+}
+
+function zoomAroundPoint(view: MapView, nextZoom: number, point: { x: number; y: number }) {
+  const zoom = clampZoom(nextZoom);
+
+  if (zoom === view.zoom) {
+    return clampMapView(view);
+  }
+
+  const contentX =
+    (point.x - mapViewportCenter.x - view.x) / view.zoom + mapViewportCenter.x;
+  const contentY =
+    (point.y - mapViewportCenter.y - view.y) / view.zoom + mapViewportCenter.y;
+  const nextX = point.x - mapViewportCenter.x - (contentX - mapViewportCenter.x) * zoom;
+  const nextY = point.y - mapViewportCenter.y - (contentY - mapViewportCenter.y) * zoom;
+
+  return clampMapView({
+    x: nextX,
+    y: nextY,
+    zoom,
+  });
+}
+
+type PointerEventState = {
+  x: number;
+  y: number;
+};
+
+type PointerGestureState =
+  | {
+      type: "pan";
+      pointerId: number;
+      startPointer: PointerEventState;
+      startView: MapView;
+    }
+  | {
+      type: "pinch";
+      pointerIds: [number, number];
+      startDistance: number;
+      startMidpoint: PointerEventState;
+      startView: MapView;
+    };
 
 function FileIcon() {
   return (
@@ -241,17 +428,19 @@ function FileIcon() {
   );
 }
 
-export default function MapSectionClient({
-  geographyData,
-}: {
-  geographyData: GeographyData;
-}) {
+export default function MapSectionClient() {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const mapInteractionRef = useRef<HTMLDivElement | null>(null);
+  const mapLayerRef = useRef<SVGGElement | null>(null);
+  const mapViewRef = useRef<MapView>(createDefaultMapView());
+  const activePointersRef = useRef(new Map<number, PointerEventState>());
+  const gestureRef = useRef<PointerGestureState | null>(null);
+  const didDragRef = useRef(false);
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
-  const [mapCenter, setMapCenter] = useState(defaultProjectionConfig.center);
-  const [mapZoom, setMapZoom] = useState(defaultMapZoom);
+  const [geographyData, setGeographyData] = useState<GeographyData | null>(null);
+  const [mapView, setMapView] = useState<MapView>(createDefaultMapView);
 
   const highlightedCountries = useMemo(
     () => new Set(projectSites.map((project) => project.countryName)),
@@ -295,6 +484,35 @@ export default function MapSectionClient({
   }, []);
 
   useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadGeography() {
+      const response = await fetch(geographyPath, { signal: controller.signal });
+
+      if (!response.ok) {
+        throw new Error(`Failed to load geography data: ${response.status}`);
+      }
+
+      const data = (await response.json()) as GeographyData;
+
+      setGeographyData(data);
+    }
+
+    loadGeography().catch((error: unknown) => {
+      if (
+        error instanceof DOMException &&
+        error.name === "AbortError"
+      ) {
+        return;
+      }
+
+      console.error(error);
+    });
+
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
     const node = sectionRef.current;
 
     if (!node) {
@@ -329,9 +547,264 @@ export default function MapSectionClient({
   }, [activeCountry, sortedProjects]);
 
   const resetMapView = () => {
-    setMapCenter(defaultProjectionConfig.center);
-    setMapZoom(defaultMapZoom);
+    const nextView = createDefaultMapView();
+
+    mapViewRef.current = nextView;
+    setMapView(nextView);
   };
+
+  useEffect(() => {
+    mapViewRef.current = mapView;
+    mapLayerRef.current?.setAttribute("transform", createMapTransform(mapView));
+  }, [mapView]);
+
+  const updateMapViewPreview = (nextView: MapView) => {
+    const clampedView = clampMapView(nextView);
+
+    mapViewRef.current = clampedView;
+    mapLayerRef.current?.setAttribute("transform", createMapTransform(clampedView));
+  };
+
+  const commitMapView = () => {
+    setMapView(mapViewRef.current);
+  };
+
+  const beginPanGesture = (pointerId: number, pointer: PointerEventState) => {
+    gestureRef.current = {
+      type: "pan",
+      pointerId,
+      startPointer: pointer,
+      startView: mapViewRef.current,
+    };
+  };
+
+  const beginPinchGesture = () => {
+    const pointers = [...activePointersRef.current.entries()];
+
+    if (pointers.length < 2) {
+      return;
+    }
+
+    const [firstId, firstPointer] = pointers[0];
+    const [secondId, secondPointer] = pointers[1];
+
+    gestureRef.current = {
+      type: "pinch",
+      pointerIds: [firstId, secondId],
+      startDistance: getPointerDistance(firstPointer, secondPointer),
+      startMidpoint: getPointerMidpoint(firstPointer, secondPointer),
+      startView: mapViewRef.current,
+    };
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) {
+      return;
+    }
+
+    const pointer = { x: event.clientX, y: event.clientY };
+    activePointersRef.current.set(event.pointerId, pointer);
+    event.currentTarget.setPointerCapture(event.pointerId);
+
+    if (activePointersRef.current.size >= 2) {
+      beginPinchGesture();
+      return;
+    }
+
+    didDragRef.current = false;
+    beginPanGesture(event.pointerId, pointer);
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const pointer = activePointersRef.current.get(event.pointerId);
+
+    if (!pointer) {
+      return;
+    }
+
+    const nextPointer = { x: event.clientX, y: event.clientY };
+    activePointersRef.current.set(event.pointerId, nextPointer);
+
+    const gesture = gestureRef.current;
+
+    if (!gesture) {
+      return;
+    }
+
+    if (gesture.type === "pinch") {
+      const firstPointer = activePointersRef.current.get(gesture.pointerIds[0]);
+      const secondPointer = activePointersRef.current.get(gesture.pointerIds[1]);
+
+      if (!firstPointer || !secondPointer) {
+        return;
+      }
+
+      const distance = getPointerDistance(firstPointer, secondPointer);
+
+      if (!distance || !gesture.startDistance) {
+        return;
+      }
+
+      const midpoint = getPointerMidpoint(firstPointer, secondPointer);
+      const zoomRatio = distance / gesture.startDistance;
+      const zoomedView = zoomAroundPoint(
+        gesture.startView,
+        gesture.startView.zoom * zoomRatio,
+        midpoint
+      );
+
+      didDragRef.current = true;
+      updateMapViewPreview({
+        ...zoomedView,
+        x: zoomedView.x + (midpoint.x - gesture.startMidpoint.x),
+        y: zoomedView.y + (midpoint.y - gesture.startMidpoint.y),
+      });
+      return;
+    }
+
+    if (gesture.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const deltaX = nextPointer.x - gesture.startPointer.x;
+    const deltaY = nextPointer.y - gesture.startPointer.y;
+
+    if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
+      didDragRef.current = true;
+    }
+
+    updateMapViewPreview({
+      ...gesture.startView,
+      x: gesture.startView.x + deltaX,
+      y: gesture.startView.y + deltaY,
+    });
+  };
+
+  const finishPointerInteraction = (pointerId: number) => {
+    activePointersRef.current.delete(pointerId);
+
+    if (activePointersRef.current.size >= 2) {
+      beginPinchGesture();
+    } else if (activePointersRef.current.size === 1) {
+      const [nextPointerId, nextPointer] = [...activePointersRef.current.entries()][0];
+      beginPanGesture(nextPointerId, nextPointer);
+    } else {
+      gestureRef.current = null;
+      commitMapView();
+
+      window.setTimeout(() => {
+        didDragRef.current = false;
+      }, 0);
+    }
+  };
+
+  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    finishPointerInteraction(event.pointerId);
+  };
+
+  const handlePointerCancel = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    finishPointerInteraction(event.pointerId);
+  };
+
+  const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    if (!event.ctrlKey) {
+      return;
+    }
+
+    event.preventDefault();
+
+    const container = mapInteractionRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const rect = container.getBoundingClientRect();
+    const point = {
+      x: ((event.clientX - rect.left) / rect.width) * mapViewport.width,
+      y: ((event.clientY - rect.top) / rect.height) * mapViewport.height,
+    };
+    const zoomDelta = event.deltaY > 0 ? -0.24 : 0.24;
+    const nextView = zoomAroundPoint(
+      mapViewRef.current,
+      mapViewRef.current.zoom + zoomDelta,
+      point
+    );
+
+    updateMapViewPreview(nextView);
+    commitMapView();
+  };
+
+  const changeZoom = (zoomDelta: number) => {
+    const nextView = zoomAroundPoint(
+      mapViewRef.current,
+      mapViewRef.current.zoom + zoomDelta,
+      mapViewportCenter
+    );
+
+    mapViewRef.current = nextView;
+    setMapView(nextView);
+  };
+
+  const countryVisualStates = useMemo(() => {
+    const states = new Map<string, CountryVisualState>();
+
+    for (const countryName of highlightedCountries) {
+      states.set(
+        countryName,
+        getCountryVisualState({
+          countryName,
+          activeCountry,
+          selectedCountry,
+          highlightedCountries,
+        })
+      );
+    }
+
+    states.set(
+      defaultCountryPriority,
+      getCountryVisualState({
+        countryName: defaultCountryPriority,
+        activeCountry,
+        selectedCountry,
+        highlightedCountries,
+      })
+    );
+
+    if (activeCountry) {
+      states.set(
+        activeCountry,
+        getCountryVisualState({
+          countryName: activeCountry,
+          activeCountry,
+          selectedCountry,
+          highlightedCountries,
+        })
+      );
+    }
+
+    if (selectedCountry) {
+      states.set(
+        selectedCountry,
+        getCountryVisualState({
+          countryName: selectedCountry,
+          activeCountry,
+          selectedCountry,
+          highlightedCountries,
+        })
+      );
+    }
+
+    return states;
+  }, [activeCountry, highlightedCountries, selectedCountry]);
 
   return (
     <>
@@ -347,6 +820,15 @@ export default function MapSectionClient({
         style={{ backgroundColor: "rgba(28, 193, 75, 0.01)" }}
       >
         <div className="h-full overflow-hidden">
+          <div
+            ref={mapInteractionRef}
+            className="h-full w-full touch-none"
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerCancel}
+            onWheel={handleWheel}
+          >
             <ComposableMap
               projection="geoMercator"
               projectionConfig={defaultProjectionConfig}
@@ -355,63 +837,27 @@ export default function MapSectionClient({
                 height: "100%",
                 background: "transparent",
               }}
-              viewBox="0 0 1000 600"
+              viewBox={`0 0 ${mapViewport.width} ${mapViewport.height}`}
             >
-              <Graticule
-                stroke="rgba(28, 193, 75, 0.1)"
-                strokeWidth={0.6}
-                pointerEvents="none"
-              />
+              <g ref={mapLayerRef} transform={createMapTransform(mapView)}>
+                <Graticule
+                  stroke="rgba(28, 193, 75, 0.1)"
+                  strokeWidth={0.6}
+                  pointerEvents="none"
+                />
 
-              <ZoomableGroup
-                center={mapCenter}
-                zoom={mapZoom}
-                minZoom={minMapZoom}
-                maxZoom={maxMapZoom}
-                filterZoomEvent={allowMapZoom}
-                onMove={(position) => {
-                  setMapCenter(position.coordinates);
-                  setMapZoom(position.zoom);
-                }}
-              >
-                <Geographies geography={geographyData as never}>
+                {geographyData ? (
+                  <Geographies geography={geographyData}>
                   {({ geographies }) =>
                     geographies.map((geo, index) => {
                       const countryName =
                         geo.properties.name || geo.properties.NAME || "";
-                      const isHighlightedCountry =
-                        highlightedCountries.has(countryName);
-                      const isPoland = countryName === "Poland";
-                      const isSelectedCountry = selectedCountry === countryName;
-                      const isActiveCountry = activeCountry === countryName;
                       const geographyKey =
                         String((geo.id ?? countryName) || `geo-${index}`) +
                         `-${index}`;
-                      const currentFill = isPoland
-                        ? isActiveCountry
-                          ? polandHoverFill
-                          : polandFill
-                        : isActiveCountry
-                          ? hoverFill
-                          : isHighlightedCountry
-                            ? highlightedFill
-                            : baseFill;
-                      const currentStroke = isSelectedCountry
-                        ? isPoland
-                          ? selectedPolandStroke
-                          : selectedStroke
-                        : borderColor;
-                      const currentStrokeWidth = isSelectedCountry
-                        ? isPoland
-                          ? 2.2
-                          : 1.8
-                        : isPoland
-                          ? isActiveCountry
-                            ? 2
-                            : 1.9
-                          : isActiveCountry
-                            ? 1.25
-                            : 1.1;
+                      const currentVisualState =
+                        countryVisualStates.get(countryName) ??
+                        defaultCountryVisualState;
 
                       return (
                         <Geography
@@ -420,16 +866,11 @@ export default function MapSectionClient({
                           strokeLinejoin="round"
                           strokeLinecap="round"
                           className="cursor-pointer"
-                          fill={currentFill}
-                          stroke={currentStroke}
-                          strokeWidth={currentStrokeWidth}
+                          fill={currentVisualState.fill}
+                          stroke={currentVisualState.stroke}
+                          strokeWidth={currentVisualState.strokeWidth}
                           onMouseEnter={() => {
                             if (!selectedCountry) {
-                              setHoveredCountry(countryName);
-                            }
-                          }}
-                          onMouseMove={() => {
-                            if (!selectedCountry && hoveredCountry !== countryName) {
                               setHoveredCountry(countryName);
                             }
                           }}
@@ -439,6 +880,10 @@ export default function MapSectionClient({
                             }
                           }}
                           onClick={() => {
+                            if (didDragRef.current) {
+                              return;
+                            }
+
                             setSelectedCountry(countryName);
                             setHoveredCountry(countryName);
                           }}
@@ -449,42 +894,20 @@ export default function MapSectionClient({
                               );
                             }
                           }}
-                          style={{
-                            default: {
-                              fill: currentFill,
-                              stroke: currentStroke,
-                              strokeWidth: currentStrokeWidth,
-                              outline: "none",
-                              vectorEffect: "non-scaling-stroke",
-                              opacity: 1,
-                              transition:
-                                "fill 180ms ease, stroke 180ms ease, stroke-width 180ms ease, opacity 180ms ease",
-                              cursor: "pointer",
-                            },
-                            hover: {
-                              fill: currentFill,
-                              stroke: currentStroke,
-                              strokeWidth: currentStrokeWidth,
-                              outline: "none",
-                              vectorEffect: "non-scaling-stroke",
-                              opacity: 1,
-                              cursor: "pointer",
-                            },
-                            pressed: {
-                              fill: currentFill,
-                              stroke: currentStroke,
-                              strokeWidth: currentStrokeWidth,
-                              outline: "none",
-                              vectorEffect: "non-scaling-stroke",
-                              opacity: 1,
-                              cursor: "pointer",
-                            },
+                          onBlur={() => {
+                            if (!selectedCountry) {
+                              setHoveredCountry((currentCountry) =>
+                                currentCountry === countryName ? null : currentCountry
+                              );
+                            }
                           }}
+                          style={baseGeographyStyle}
                         />
                       );
                     })
                   }
-                </Geographies>
+                  </Geographies>
+                ) : null}
 
                 {projectSites.map((project) => (
                   <Marker
@@ -498,16 +921,16 @@ export default function MapSectionClient({
                     </>
                   </Marker>
                 ))}
-              </ZoomableGroup>
-
+              </g>
             </ComposableMap>
           </div>
+        </div>
 
         <div className="pointer-events-none absolute right-4 top-20 z-20 flex flex-col items-end gap-3 sm:right-8 md:right-[3.75rem]">
           <div className="pointer-events-auto inline-flex flex-col overflow-hidden rounded-[2px] border border-[#1CC14B] bg-white shadow-[0_18px_40px_rgba(12,32,21,0.1)]">
             <button
               type="button"
-              onClick={() => setMapZoom((currentZoom) => clampZoom(currentZoom + zoomStep))}
+              onClick={() => changeZoom(zoomStep)}
               className="flex h-11 w-11 items-center justify-center border-b border-[#d9eadf] text-2xl leading-none text-[#0a0a0a] transition-colors hover:bg-[#f4fbf6]"
               aria-label="Zoom in"
             >
@@ -515,7 +938,7 @@ export default function MapSectionClient({
             </button>
             <button
               type="button"
-              onClick={() => setMapZoom((currentZoom) => clampZoom(currentZoom - zoomStep))}
+              onClick={() => changeZoom(-zoomStep)}
               className="flex h-11 w-11 items-center justify-center text-2xl leading-none text-[#0a0a0a] transition-colors hover:bg-[#f4fbf6]"
               aria-label="Zoom out"
             >
