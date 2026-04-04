@@ -139,7 +139,7 @@ export function Intro() {
               className="w-full max-w-[1174px] uppercase font-bold leading-[0.95] tracking-[0.8px] text-white md:font-medium md:leading-[0.82] md:tracking-normal"
               style={{
                 fontFamily:
-                  "'Druk Trial', Impact, 'Arial Narrow', Arial, sans-serif",
+                  "var(--font-druk), sans-serif",
                 fontSize: 'clamp(68px, 18vw, 150px)',
               }}
             >

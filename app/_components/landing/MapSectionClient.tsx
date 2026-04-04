@@ -954,9 +954,9 @@ export default function MapSectionClient() {
             Reset view
           </button>
 
-          <div className="hidden opacity-50 text-right max-w-[220px] rounded-[2px] border border-[#d9eadf] bg-white/92 px-3 py-2  text-[0.72rem] font-mono uppercase tracking-[1.8px] text-[#737373] shadow-[0_18px_40px_rgba(12,32,21,0.08)] backdrop-blur-sm lg:block">
+          {/* <div className="hidden opacity-50 text-right max-w-[220px] rounded-[2px] border border-[#d9eadf] bg-white/92 px-3 py-2  text-[0.72rem] font-mono uppercase tracking-[1.8px] text-[#737373] shadow-[0_18px_40px_rgba(12,32,21,0.08)] backdrop-blur-sm lg:block">
             Pinch to zoom <br/>Drag to move
-          </div>
+          </div> */}
         </div>
 
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10">
